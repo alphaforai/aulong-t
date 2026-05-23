@@ -1,0 +1,93 @@
+import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { teamAssets } from "./assets";
+import { TeamSectionTitle } from "./TeamSectionTitle";
+
+/** 团队业绩数据 — Figma 535:6355 */
+export function TeamPerformanceCard() {
+  return (
+    <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white/61 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <div className="relative px-2.5 pt-2.5">
+        <TeamSectionTitle title="团队业绩数据" />
+
+        <div className="relative mt-2 min-h-[72px] pr-[86px]">
+          <p className="text-xs leading-normal text-[#333]">小区业绩(昨日变化)</p>
+          <div className="mt-0.5 flex flex-wrap items-end gap-1.5 whitespace-nowrap">
+            <p className="font-[family-name:var(--font-mulish)] text-base font-medium leading-normal text-[#db0000]">
+              +122,582
+              <span className="text-[10px] font-normal text-[#db0000]"> USDT</span>
+            </p>
+            <span className="font-[family-name:var(--font-mulish)] text-xs leading-normal text-[#db0000]">
+              +8.5%
+            </span>
+          </div>
+          <EntrustImg
+            src={teamAssets.performanceDeco}
+            alt=""
+            width={86}
+            height={86}
+            className="pointer-events-none absolute right-0 top-1/2 size-[86px] -translate-y-1/2 object-contain"
+          />
+        </div>
+      </div>
+
+      <div className="mt-1 rounded-b-[12px] bg-white/80 px-2.5 pb-2.5 pt-2 backdrop-blur-[7px]">
+        <div className="flex gap-3">
+          <PerformanceSubCard
+            icon={teamAssets.perfIconToday}
+            label="今日委托总额"
+            value="9,215,480"
+            unit="USDT"
+          />
+          <PerformanceSubCard
+            icon={teamAssets.perfIconTeam}
+            label="团队委托总额"
+            value="122,582"
+            unit="USDT"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PerformanceSubCard({
+  icon,
+  label,
+  value,
+  unit,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+  unit: string;
+}) {
+  return (
+    <div className="relative h-[65px] min-w-0 flex-1 overflow-hidden rounded-lg bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <div className="absolute left-2 top-3.5 flex w-[97px] flex-col gap-0.5">
+        <p className="text-xs leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
+        <p className="font-[family-name:var(--font-mulish)] text-base font-medium leading-normal text-[#333]">
+          {value}
+          <span className="text-[10px] font-normal"> {unit}</span>
+        </p>
+      </div>
+      <div className="absolute right-[6px] top-[11px] size-11 overflow-hidden">
+        <EntrustImg
+          src={teamAssets.subCardIconGlow}
+          alt=""
+          width={44}
+          height={44}
+          className="absolute inset-[11.36%_0_-9.09%_2.27%] size-full max-w-none"
+        />
+        <div className="absolute inset-[6.82%] overflow-hidden">
+          <EntrustImg
+            src={icon}
+            alt=""
+            width={40}
+            height={40}
+            className="absolute -left-[37.84%] -top-[37.84%] size-[175.68%] max-w-none"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

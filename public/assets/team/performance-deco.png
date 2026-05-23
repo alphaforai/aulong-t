@@ -1,0 +1,19 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 86 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Frame" opacity="0.29" clip-path="url(#clip0_0_49)">
+<circle id="Ellipse 2691" cx="43.9773" cy="51.0227" r="42.0227" fill="url(#paint0_linear_0_49)"/>
+<path id="Vector" d="M84.3337 6.43537C83.9086 5.44553 83.1198 4.65667 82.1299 4.23162C81.6384 4.01682 81.1075 3.90698 80.5712 3.90912H53.6962C51.4924 3.90912 49.6649 5.73662 49.6649 7.94037C49.6649 10.1441 51.4924 11.9716 53.6962 11.9716H70.8424L42.9462 39.8679L35.0449 31.9666C34.2863 31.2169 33.2627 30.7965 32.1962 30.7965C31.1296 30.7965 30.106 31.2169 29.3474 31.9666L2.52617 58.8954C0.967424 60.4541 0.967424 63.0341 2.52617 64.5929C3.33242 65.3991 4.35367 65.7754 5.37492 65.7754C6.39617 65.7754 7.41742 65.3991 8.22367 64.5929L32.2499 40.5666L40.1512 48.4679C41.7099 50.0266 44.2899 50.0266 45.8487 48.4679L76.5937 17.7229V34.8691C76.5937 37.0729 78.4212 38.9004 80.6249 38.9004C82.8287 38.9004 84.6562 37.0729 84.6562 34.8691V7.99412C84.6562 7.45662 84.5487 6.97287 84.3337 6.43537Z" fill="url(#paint1_linear_0_49)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_49" x1="43.9773" y1="9" x2="43.9773" y2="93.0454" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFC7C7"/>
+<stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_49" x1="93.0001" y1="-6.00008" x2="11.0001" y2="73.9999" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E10000"/>
+<stop offset="1" stop-color="#FA9E9E" stop-opacity="0"/>
+</linearGradient>
+<clipPath id="clip0_0_49">
+<rect width="86" height="86" fill="white"/>
+</clipPath>
+</defs>
+</svg>

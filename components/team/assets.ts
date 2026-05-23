@@ -1,0 +1,21 @@
+/** 团队页静态资源（public/assets/team） */
+export const teamAssets = {
+  levelAvatar: "/assets/team/level-avatar.png",
+  vipBadge: "/assets/team/vip-badge.png",
+  rulesIcon: "/assets/team/rules-icon.svg",
+  statIconGlow: "/assets/team/stat-icon-glow.png",
+  statDivider: "/assets/team/stat-divider.png",
+  statIconCommunity: "/assets/team/stat-icon-community.png",
+  statIconReferral: "/assets/team/stat-icon-referral.png",
+  statIconPersonal: "/assets/team/stat-icon-personal.png",
+  performanceDeco: "/assets/team/performance-deco.png",
+  subCardIconGlow: "/assets/team/sub-card-icon-glow.png",
+  perfIconToday: "/assets/team/perf-icon-today.png",
+  perfIconTeam: "/assets/team/perf-icon-team.png",
+  memberIconGlow: "/assets/team/member-icon-glow.png",
+  memberIconRegister: "/assets/team/member-icon-register.png",
+  memberIconWhitelist: "/assets/team/member-icon-whitelist.png",
+  memberIconNewWhitelist: "/assets/team/member-icon-new-whitelist.png",
+  memberIconEntrust: "/assets/team/member-icon-entrust.png",
+  detailArrow: "/assets/team/detail-arrow.svg",
+} as const;

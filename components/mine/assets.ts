@@ -1,0 +1,16 @@
+/** 我的页静态资源（public/assets/mine） */
+export const mineAssets = {
+  assetCardBg: "/assets/mine/asset-card-bg.png",
+  actionUsdt: "/assets/mine/action-usdt.png",
+  actionX: "/assets/mine/action-x.png",
+  actionInvest: "/assets/mine/action-invest.png",
+  inviteBannerBg: "/assets/mine/invite-banner-bg.png",
+  fundIcon: "/assets/mine/fund-icon.png",
+  statDividerV: "/assets/mine/stat-divider-v.svg",
+  fundDividerH: "/assets/mine/fund-divider-h.svg",
+  fundDividerRow: "/assets/mine/fund-divider-row.svg",
+  chevronDown: "/assets/mine/chevron-down.svg",
+  pageChevronLeft: "/assets/mine/page-chevron-left.svg",
+  pageChevronRight: "/assets/mine/page-chevron-right.svg",
+  pageEllipsis: "/assets/mine/page-ellipsis.svg",
+} as const;
