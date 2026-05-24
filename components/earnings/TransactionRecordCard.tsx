@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { earningsAssets } from "./assets";
 
 type Transaction = {
@@ -23,7 +23,7 @@ export function TransactionRecordCard() {
     <section className="flex h-[436px] w-full min-w-0 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex h-[27px] shrink-0 items-center gap-[3px] overflow-hidden">
         <div className="relative size-[22px] shrink-0 overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={earningsAssets.txIcon}
             alt=""
             width={22}
@@ -51,7 +51,7 @@ export function TransactionRecordCard() {
 function RecordDivider() {
   return (
     <div className="relative h-0 w-full shrink-0">
-      <EntrustImg
+      <AppImage
         src={earningsAssets.txDivider}
         alt=""
         width={327}

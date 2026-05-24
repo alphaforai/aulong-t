@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
 
-type EntrustImgProps = {
+type AppImageProps = {
   src: string;
   alt?: string;
   className?: string;
@@ -17,8 +17,22 @@ function isSvg(src: string) {
   return src.endsWith(".svg");
 }
 
-/** 委托页图片：SVG 用原生 img，位图用 next/image */
-export function EntrustImg({
+/** CSS 改尺寸时不用 next/image，避免宽高比警告 */
+function shouldUseNativeImg(style?: CSSProperties, className?: string) {
+  if (
+    typeof style?.width === "string" ||
+    typeof style?.height === "string"
+  ) {
+    return true;
+  }
+  if (className && /\b[hw]-\[[^\]]+%\]/.test(className)) {
+    return true;
+  }
+  return false;
+}
+
+/** 全站图片：SVG / Figma 裁切用原生 img，常规位图用 next/image */
+export function AppImage({
   src,
   alt = "",
   className,
@@ -28,7 +42,7 @@ export function EntrustImg({
   style,
   sizes,
   priority,
-}: EntrustImgProps) {
+}: AppImageProps) {
   if (isSvg(src)) {
     if (fill) {
       return (
@@ -62,9 +76,23 @@ export function EntrustImg({
         fill
         className={className}
         style={style}
-        sizes={sizes}
+        sizes={sizes ?? "(max-width: 375px) 100vw, 375px"}
         priority={priority}
         unoptimized={src.includes("logo")}
+      />
+    );
+  }
+
+  if (shouldUseNativeImg(style, className)) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        style={style}
       />
     );
   }

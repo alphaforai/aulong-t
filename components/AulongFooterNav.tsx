@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 
 /** 底部导航静态资源（public/assets/nav） */
 const navAssets = {
@@ -30,7 +30,7 @@ type NavTabConfig = {
 const NAV_TABS: NavTabConfig[] = [
   {
     id: "entrust",
-    href: "/entrust",
+    href: "/",
     label: "委托",
     pillLeft: 12,
     inactiveLeft: 28,
@@ -69,6 +69,7 @@ function resolveActiveTab(pathname: string): NavTabId {
   if (pathname.startsWith("/earnings")) return "earnings";
   if (pathname.startsWith("/mine")) return "mine";
   if (pathname.startsWith("/team")) return "team";
+  if (pathname === "/" || pathname.startsWith("/entrust")) return "entrust";
   return "entrust";
 }
 
@@ -81,7 +82,7 @@ const INACTIVE_ITEM_CLASS =
 function NavIcon({ tab, active = false }: { tab: NavTabId; active?: boolean }) {
   if (!active) {
     return (
-      <EntrustImg
+      <AppImage
         src={NAV_INACTIVE[tab]}
         alt=""
         width={24}
@@ -95,14 +96,14 @@ function NavIcon({ tab, active = false }: { tab: NavTabId; active?: boolean }) {
     case "earnings":
       return (
         <div className="relative size-6 shrink-0 overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={navAssets.earningsActiveBottom}
             alt=""
             width={24}
             height={24}
             className="absolute inset-0 size-full max-w-none object-contain"
           />
-          <EntrustImg
+          <AppImage
             src={navAssets.earningsActiveTop}
             alt=""
             width={24}
@@ -114,7 +115,7 @@ function NavIcon({ tab, active = false }: { tab: NavTabId; active?: boolean }) {
     case "entrust":
       return (
         <div className="relative size-6 shrink-0 overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={navAssets.entrustActive}
             alt=""
             width={29}
@@ -131,7 +132,7 @@ function NavIcon({ tab, active = false }: { tab: NavTabId; active?: boolean }) {
       );
     case "mine":
       return (
-        <EntrustImg
+        <AppImage
           src={navAssets.mineActive}
           alt=""
           width={24}
@@ -141,7 +142,7 @@ function NavIcon({ tab, active = false }: { tab: NavTabId; active?: boolean }) {
       );
     case "team":
       return (
-        <EntrustImg
+        <AppImage
           src={navAssets.teamActive}
           alt=""
           width={24}

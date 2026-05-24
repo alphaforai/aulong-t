@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
 import { TeamSectionTitle } from "./TeamSectionTitle";
 
@@ -48,7 +48,7 @@ export function MemberStatsCard() {
             className="flex shrink-0 items-center gap-0.5 text-xs leading-normal text-[rgba(0,0,0,0.7)]"
           >
             直推详情
-            <EntrustImg
+            <AppImage
               src={teamAssets.detailArrow}
               alt=""
               width={14}
@@ -84,7 +84,7 @@ function MemberStatTile({ icon, label, value, iconCrop }: MemberStat) {
         </p>
       </div>
       <div className="absolute right-0 top-[13px] size-11 overflow-hidden">
-        <EntrustImg
+        <AppImage
           src={teamAssets.memberIconGlow}
           alt=""
           width={44}
@@ -92,7 +92,7 @@ function MemberStatTile({ icon, label, value, iconCrop }: MemberStat) {
           className="absolute inset-[2.27%_0_0_2.27%] size-full max-w-none"
         />
         <div className="absolute inset-[9%] overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={icon}
             alt=""
             width={38}

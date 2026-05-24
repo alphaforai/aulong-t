@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { earningsAssets } from "./assets";
 
 /** 收益摘要卡 — 对齐 Figma 439:331 / 438:5985 */
@@ -21,7 +21,7 @@ export function EarningsSummaryCard() {
         className="absolute right-[15px] top-3 z-10 flex items-center gap-1"
       >
         <span className="text-xs leading-normal text-black/70">收益记录</span>
-        <EntrustImg
+        <AppImage
           src={earningsAssets.recordArrow}
           alt=""
           width={14}
@@ -40,7 +40,7 @@ export function EarningsSummaryCard() {
 
       {/* 横线 — 稿居中宽 220, top 197 → top 85 */}
       <div className="absolute left-1/2 top-[85px] z-10 h-px w-[220px] -translate-x-1/2">
-        <EntrustImg
+        <AppImage
           src={earningsAssets.summaryDividerH}
           alt=""
           width={220}
@@ -54,7 +54,7 @@ export function EarningsSummaryCard() {
         <StatBlock label="待发放收益" />
         <div className="flex h-9 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">
-            <EntrustImg
+            <AppImage
               src={earningsAssets.summaryDividerV}
               alt=""
               width={36}
@@ -92,7 +92,7 @@ function SummaryBackground() {
               WebkitMaskPosition: "-65.699px 147.084px",
             }}
           >
-            <EntrustImg
+            <AppImage
               src={earningsAssets.summaryPattern}
               alt=""
               fill
@@ -113,7 +113,7 @@ function SummaryBackground() {
               WebkitMaskPosition: "253.884px 247.714px",
             }}
           >
-            <EntrustImg
+            <AppImage
               src={earningsAssets.summaryPattern}
               alt=""
               fill

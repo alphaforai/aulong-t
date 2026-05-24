@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { mineAssets } from "./assets";
 
 type FundRecord = {
@@ -68,7 +68,7 @@ export function FundDetailsCard() {
     <section className="flex w-full min-w-0 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex h-[27px] w-[129px] items-center gap-[3px] overflow-hidden">
         <div className="relative size-[22px] shrink-0 overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={mineAssets.fundIcon}
             alt=""
             width={22}
@@ -89,7 +89,7 @@ export function FundDetailsCard() {
             className="flex items-center gap-1 text-sm leading-normal text-[#333]"
           >
             {label}
-            <EntrustImg
+            <AppImage
               src={mineAssets.chevronDown}
               alt=""
               width={12}
@@ -101,7 +101,7 @@ export function FundDetailsCard() {
       </div>
 
       <div className="relative h-0 w-full shrink-0">
-        <EntrustImg
+        <AppImage
           src={mineAssets.fundDividerH}
           alt=""
           width={327}
@@ -128,7 +128,7 @@ export function FundDetailsCard() {
 function RowDivider() {
   return (
     <div className="relative h-0 w-full shrink-0">
-      <EntrustImg
+      <AppImage
         src={mineAssets.fundDividerRow}
         alt=""
         width={327}

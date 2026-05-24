@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
 
 type TopStat = {
@@ -49,7 +49,7 @@ export function TeamTopStatsCard() {
 function StatDivider() {
   return (
     <div className="relative h-[73px] w-px shrink-0 self-center" aria-hidden>
-      <EntrustImg
+      <AppImage
         src={teamAssets.statDivider}
         alt=""
         width={1}
@@ -65,7 +65,7 @@ function StatColumn({ icon, label, value, unit }: TopStat) {
     <div className="flex w-[90px] shrink-0 flex-col items-center gap-[9px]">
       <div className="relative size-[42px] shrink-0">
         <div className="absolute inset-[0_-9.52%_-19.05%_-9.52%]">
-          <EntrustImg
+          <AppImage
             src={teamAssets.statIconGlow}
             alt=""
             width={50}
@@ -74,7 +74,7 @@ function StatColumn({ icon, label, value, unit }: TopStat) {
           />
         </div>
         <div className="absolute left-[7px] top-2 size-[27px] overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={icon}
             alt=""
             width={27}

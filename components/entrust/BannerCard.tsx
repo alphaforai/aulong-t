@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { entrustAssets } from "./assets";
-import { EntrustImg } from "./EntrustImg";
+import { AppImage } from "@/components/AppImage";
 
 type BannerCardProps = {
   imageSrc: string;
@@ -24,7 +24,7 @@ export function BannerCard({
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[12px] bg-white">
         {isStartAi ? (
-          <EntrustImg
+          <AppImage
             src={imageSrc}
             alt=""
             width={420}
@@ -38,7 +38,7 @@ export function BannerCard({
             }}
           />
         ) : (
-          <EntrustImg
+          <AppImage
             src={imageSrc}
             alt=""
             width={371}
@@ -56,7 +56,7 @@ export function BannerCard({
 
       {!isStartAi && (
         <div className="pointer-events-none absolute left-[114px] top-[2px] h-[79px] w-[169px]">
-          <EntrustImg
+          <AppImage
             src={entrustAssets.projectGlow}
             alt=""
             width={169}

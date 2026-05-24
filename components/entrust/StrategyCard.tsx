@@ -1,5 +1,5 @@
 import { entrustAssets } from "./assets";
-import { EntrustImg } from "./EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
 
 type StrategyCardProps = {
@@ -23,7 +23,7 @@ export function StrategyCard({
     <article className="relative min-h-[132px] w-full overflow-hidden rounded-[12px] border border-white bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex w-full min-w-0 flex-col gap-[10px]">
         <div className="flex w-full min-w-0 items-center gap-4">
-          <EntrustImg
+          <AppImage
             src={iconSrc}
             alt=""
             width={iconSize}
@@ -39,7 +39,7 @@ export function StrategyCard({
         </div>
 
         <div className="relative h-0 w-[150px] shrink-0">
-          <EntrustImg
+          <AppImage
             src={entrustAssets.dividerLine}
             alt=""
             width={150}

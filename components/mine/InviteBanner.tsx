@@ -1,11 +1,11 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { mineAssets } from "./assets";
 
 export function InviteBanner() {
   return (
     <section className="relative h-[88px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
       <div className="absolute inset-0 overflow-hidden rounded-[12px] backdrop-blur-[7px]">
-        <EntrustImg
+        <AppImage
           src={mineAssets.inviteBannerBg}
           alt=""
           width={351}

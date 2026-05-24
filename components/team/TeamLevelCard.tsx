@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
 
 const PROGRESS = 4500;
@@ -10,7 +10,7 @@ export function TeamLevelCard() {
   return (
     <section className="relative -mb-1 flex w-full min-w-0 gap-3">
       <div className="relative h-[83px] w-[78px] shrink-0">
-        <EntrustImg
+        <AppImage
           src={teamAssets.levelAvatar}
           alt=""
           width={78}
@@ -24,7 +24,7 @@ export function TeamLevelCard() {
           <div className="flex min-w-0 flex-col">
             <p className="text-sm leading-tight text-[#4b4b4b]">当前等级</p>
             <div className="relative mt-0.5 h-10 w-32">
-              <EntrustImg
+              <AppImage
                 src={teamAssets.vipBadge}
                 alt="VIP1"
                 width={128}
@@ -39,7 +39,7 @@ export function TeamLevelCard() {
               className="flex items-center gap-0.5 text-xs leading-normal text-[rgba(51,51,51,0.7)]"
             >
               规则说明
-              <EntrustImg
+              <AppImage
                 src={teamAssets.rulesIcon}
                 alt=""
                 width={13}

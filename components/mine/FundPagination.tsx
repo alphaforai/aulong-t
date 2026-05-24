@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { mineAssets } from "./assets";
 
 const PAGE_NUMBERS = [1, 2, 3, 4, 5] as const;
@@ -70,7 +70,7 @@ function PaginationNavButton({
       aria-label={label}
       className="flex size-[22.5px] shrink-0 items-center justify-center rounded-[2px]"
     >
-      <EntrustImg
+      <AppImage
         src={src}
         alt=""
         width={9}

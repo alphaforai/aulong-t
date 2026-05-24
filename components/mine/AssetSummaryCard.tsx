@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { mineAssets } from "./assets";
 
 /** 总资产卡片 — 背景 Figma 550:7512，内容 Figma 514:6035 */
@@ -21,7 +21,7 @@ export function AssetSummaryCard() {
         <StatColumn label="总收益(USDT)" value="125,682.55" trailingSpace />
         <div className="flex h-7 w-0 items-center justify-center">
           <div className="rotate-90">
-            <EntrustImg
+            <AppImage
               src={mineAssets.statDividerV}
               alt=""
               width={28}
@@ -149,7 +149,7 @@ function ActionButton({
         </>
       ) : null}
       <div className="relative z-10 size-[34px] shrink-0 overflow-hidden">
-        <EntrustImg
+        <AppImage
           src={icon}
           alt=""
           width={34}

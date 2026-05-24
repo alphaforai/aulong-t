@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useInviteCodeStore } from "@/app/store/inviteCode";
+import { useInviteCodeStore } from "@/lib/store";
 
 /** 从地址栏 ?inviteCode= 同步到全局 store */
 export function InviteCodeFromUrlSync() {

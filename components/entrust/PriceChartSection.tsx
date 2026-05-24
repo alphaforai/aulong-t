@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { entrustAssets } from "./assets";
-import { EntrustImg } from "./EntrustImg";
+import { AppImage } from "@/components/AppImage";
 
 const TIME_RANGES = ["1H", "1D", "1W", "1M", "1Y"] as const;
 
@@ -73,10 +73,10 @@ export function PriceChartSection() {
       <div className="relative h-[144px] w-full min-w-0 shrink-0 overflow-hidden">
         <div className="absolute inset-0 left-5 overflow-hidden">
           <div className="absolute inset-[21%_0_0_6.27%] relative overflow-hidden">
-            <EntrustImg src={entrustAssets.chartFill} alt="" fill />
+            <AppImage src={entrustAssets.chartFill} alt="" fill />
           </div>
           <div className="absolute inset-[21%_0_13.37%_6.27%] relative overflow-hidden">
-            <EntrustImg src={entrustAssets.chartLine} alt="" fill />
+            <AppImage src={entrustAssets.chartLine} alt="" fill />
           </div>
 
           <div className="absolute left-[245px] top-1 rounded-full bg-[#e90000] px-1 py-0.5">
@@ -84,7 +84,7 @@ export function PriceChartSection() {
               $5.00
             </span>
           </div>
-          <EntrustImg
+          <AppImage
             src={entrustAssets.chartDot}
             alt=""
             width={6}

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     // metadataBase: new URL("https://fragment.com"),
     title: "Aulong",
     description:
-      "Aulong H5",
+      "Aulong website",
     openGraph: {
       title: "Aulong title",
       description:

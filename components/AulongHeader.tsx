@@ -3,7 +3,7 @@
 import React from "react";
 import DisplayWalletOptions from "@/components/DisplayWalletOptions";
 import { entrustAssets } from "@/components/entrust/assets";
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { bsc } from "wagmi/chains";
 import {
   useConnections,
@@ -12,9 +12,11 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { getNonce, logout, register, walletLogin } from "@/app/api/auth";
-import { useAuthStore } from "@/app/store/authStore";
-import { useUserInfoStore } from "@/app/store/userInfo";
-import { useInviteCodeStore } from "@/app/store/inviteCode";
+import {
+  useAuthStore,
+  useInviteCodeStore,
+  useUserInfoStore,
+} from "@/lib/store";
 import { toast } from "sonner";
 
 const iconDecorate = "/assets/images/section1/iconShield.png";
@@ -240,7 +242,7 @@ export default function AulongHeader() {
       <header className="flex h-14 w-full shrink-0 items-center justify-center px-3">
         <div className="flex h-14 w-full max-w-[351px] items-center justify-between">
           <div className="relative h-11 w-[115px] overflow-hidden">
-            <EntrustImg
+            <AppImage
               src={entrustAssets.logo}
               alt="Aulong"
               width={144}
@@ -262,14 +264,14 @@ export default function AulongHeader() {
               aria-label="切换语言"
               className="relative grid size-[30px] place-items-center"
             >
-              <EntrustImg
+              <AppImage
                 src={entrustAssets.langGlow}
                 alt=""
                 width={30}
                 height={30}
                 className="col-start-1 row-start-1 size-[30px] scale-[2.8] object-contain"
               />
-              <EntrustImg
+              <AppImage
                 src={entrustAssets.langIcon}
                 alt=""
                 width={22}
@@ -283,7 +285,7 @@ export default function AulongHeader() {
               onClick={() => void openWalletModal()}
               className="flex h-[30px] w-[108px] items-center justify-center gap-[5px] rounded-[7px] border border-black/20 px-3 py-2"
             >
-              <EntrustImg
+              <AppImage
                 src={entrustAssets.walletDot}
                 alt=""
                 width={7}

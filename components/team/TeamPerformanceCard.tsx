@@ -1,4 +1,4 @@
-import { EntrustImg } from "@/components/entrust/EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
 import { TeamSectionTitle } from "./TeamSectionTitle";
 
@@ -20,7 +20,7 @@ export function TeamPerformanceCard() {
               +8.5%
             </span>
           </div>
-          <EntrustImg
+          <AppImage
             src={teamAssets.performanceDeco}
             alt=""
             width={86}
@@ -71,7 +71,7 @@ function PerformanceSubCard({
         </p>
       </div>
       <div className="absolute right-[6px] top-[11px] size-11 overflow-hidden">
-        <EntrustImg
+        <AppImage
           src={teamAssets.subCardIconGlow}
           alt=""
           width={44}
@@ -79,7 +79,7 @@ function PerformanceSubCard({
           className="absolute inset-[11.36%_0_-9.09%_2.27%] size-full max-w-none"
         />
         <div className="absolute inset-[6.82%] overflow-hidden">
-          <EntrustImg
+          <AppImage
             src={icon}
             alt=""
             width={40}

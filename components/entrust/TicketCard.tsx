@@ -1,5 +1,5 @@
 import { entrustAssets } from "./assets";
-import { EntrustImg } from "./EntrustImg";
+import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
 
 export function TicketCard() {
@@ -8,7 +8,7 @@ export function TicketCard() {
       <div className="relative z-10 flex w-full min-w-0 flex-col gap-[10px]">
         <div className="relative flex w-full min-w-0 flex-col gap-[5px]">
           <div className="flex h-[27px] w-[129px] items-center gap-[3px] overflow-hidden">
-            <EntrustImg
+            <AppImage
               src={entrustAssets.ticketIcon}
               alt=""
               width={22}
@@ -19,7 +19,7 @@ export function TicketCard() {
               购买门票
             </span>
             <div className="relative h-5 w-[21px] shrink-0 overflow-hidden">
-              <EntrustImg
+              <AppImage
                 src={entrustAssets.hot}
                 alt=""
                 width={21}
@@ -34,7 +34,7 @@ export function TicketCard() {
             className="absolute right-0 top-1 flex w-[74px] items-center justify-end"
           >
             <span className="text-xs leading-[19px] text-[#ffe6d9]">规则说明</span>
-            <EntrustImg
+            <AppImage
               src={entrustAssets.rulesArrow}
               alt=""
               width={16}
@@ -62,7 +62,7 @@ export function TicketCard() {
       </div>
 
       <div className="pointer-events-none absolute -right-16 top-0 size-[219px] opacity-60">
-        <EntrustImg
+        <AppImage
           src={entrustAssets.ticketDeco}
           alt=""
           width={219}
