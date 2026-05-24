@@ -1,10 +1,9 @@
 import { entrustAssets } from "@/components/entrust/assets";
 import { BannerCard } from "@/components/entrust/BannerCard";
-import { AppBottomNav } from "@/components/nav/AppBottomNav";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
 import { TicketCard } from "@/components/entrust/TicketCard";
-import { TopBar } from "@/components/entrust/TopBar";
+import { AulongPageShell } from "@/components/AulongPageShell";
 
 const STRATEGIES = [
   {
@@ -27,50 +26,40 @@ const STRATEGIES = [
 
 export default function EntrustPage() {
   return (
-    <div className="min-h-dvh w-full md:py-8">
-      <div className="relative mx-auto flex min-h-dvh w-full max-w-[375px] flex-col overflow-x-hidden bg-white md:min-h-[calc(100dvh-4rem)] md:overflow-hidden md:rounded-2xl md:shadow-[0_4px_32px_rgba(0,0,0,0.08)]">
-        <div className="h-11 shrink-0" aria-hidden />
+    <AulongPageShell panelClassName="bg-white">
+      <TicketCard />
 
-        <TopBar />
+      <BannerCard
+        imageSrc={entrustAssets.projectBanner}
+        variant="project"
+        title={
+          <>
+            <span>项目</span>
+            <span className="text-[#ec0000]">资料</span>
+          </>
+        }
+        description="了解Aulong 项目愿景、经济模型与AI 智能交易机制"
+      />
 
-        <main className="mt-3 flex w-full min-w-0 flex-1 flex-col gap-3 px-3 pb-[100px]">
-          <TicketCard />
+      <PriceChartSection />
 
-          <BannerCard
-            imageSrc={entrustAssets.projectBanner}
-            variant="project"
-            title={
-              <>
-                <span>项目</span>
-                <span className="text-[#ec0000]">资料</span>
-              </>
-            }
-            description="了解Aulong 项目愿景、经济模型与AI 智能交易机制"
-          />
+      <BannerCard
+        imageSrc={entrustAssets.startAiBanner}
+        variant="startAi"
+        title={
+          <>
+            <span>启动</span>
+            <span className="text-[#ec0000]">AI</span>
+          </>
+        }
+        description="开启智能委托策略"
+      />
 
-          <PriceChartSection />
-
-          <BannerCard
-            imageSrc={entrustAssets.startAiBanner}
-            variant="startAi"
-            title={
-              <>
-                <span>启动</span>
-                <span className="text-[#ec0000]">AI</span>
-              </>
-            }
-            description="开启智能委托策略"
-          />
-
-          <div className="flex flex-col gap-3">
-            {STRATEGIES.map((strategy, index) => (
-              <StrategyCard key={index} {...strategy} />
-            ))}
-          </div>
-        </main>
-
-        <AppBottomNav />
+      <div className="flex flex-col gap-3">
+        {STRATEGIES.map((strategy, index) => (
+          <StrategyCard key={index} {...strategy} />
+        ))}
       </div>
-    </div>
+    </AulongPageShell>
   );
 }

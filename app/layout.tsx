@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Mulish, Noto_Sans_SC } from "next/font/google";
+import { Provider } from "@/components/Provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,9 +27,22 @@ const notoSansScBlack = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: "Aulong",
-  description: "Aulong H5",
-};
+    // metadataBase: new URL("https://fragment.com"),
+    title: "Aulong",
+    description:
+      "Aulong H5",
+    openGraph: {
+      title: "Aulong title",
+      description:
+        "Aulong description",
+      images: ["/assets/entrust/logo.png"],
+      siteName: "Aulong site",
+      type: "website",
+    },
+    icons: {
+      icon: "/assets/entrust/logo.png",
+    },
+  };
 
 export const viewport = {
   width: "device-width",
@@ -47,7 +61,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} ${notoSansScBlack.variable} h-full antialiased`}
     >
       <body className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-white md:bg-[#f5f5f5]">
-        {children}
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
