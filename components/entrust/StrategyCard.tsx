@@ -1,6 +1,9 @@
+"use client";
+
 import { entrustAssets } from "./assets";
 import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
+import { toast } from "sonner";
 
 type StrategyCardProps = {
   iconSrc: string;
@@ -69,7 +72,7 @@ export function StrategyCard({
       </div>
 
       <div className="absolute right-3 top-[84px]">
-        <ImageButton variant="start">启动</ImageButton>
+        <ImageButton variant="start" onClick={() => {toast.info("暂未开放")}}>启动</ImageButton>
       </div>
     </article>
   );

@@ -9,18 +9,20 @@ type Transaction = {
   time: string;
 };
 
-const TRANSACTIONS: Transaction[] = [
-  { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-  { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-  { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-  { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-  { address: "0x715523...e605", amount: "+588.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-  { address: "0x715523...e605", amount: "+588.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-];
+/** 接入 API 后赋值；当前保持空列表 */
+const TRANSACTIONS: Transaction[] = [];
+//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
+//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
+//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
+//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
+//   { address: "0x715523...e605", amount: "+588.65", currency: "USDT", time: "2025.5.6 12:22:53" },
+//   { address: "0x715523...e605", amount: "+588.65", currency: "USDT", time: "2025.5.6 12:22:53" },
 
 export function TransactionRecordCard() {
+  const hasRecords = TRANSACTIONS.length > 0;
+
   return (
-    <section className="flex h-[436px] w-full min-w-0 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+    <section className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex h-[27px] shrink-0 items-center gap-[3px] overflow-hidden">
         <div className="relative size-[22px] shrink-0 overflow-hidden">
           <AppImage
@@ -38,12 +40,20 @@ export function TransactionRecordCard() {
 
       <RecordDivider />
 
-      {TRANSACTIONS.map((tx, index) => (
-        <Fragment key={index}>
-          <TransactionRow {...tx} />
-          {index < TRANSACTIONS.length - 1 ? <RecordDivider /> : null}
-        </Fragment>
-      ))}
+      <div className="flex min-h-0 flex-1 flex-col gap-[10px] overflow-y-auto">
+        {!hasRecords ? (
+          <div className="flex flex-1 items-center justify-center text-sm text-black/50">
+            暂无交易记录
+          </div>
+        ) : (
+          TRANSACTIONS.map((tx, index) => (
+            <Fragment key={index}>
+              <TransactionRow {...tx} />
+              {index < TRANSACTIONS.length - 1 ? <RecordDivider /> : null}
+            </Fragment>
+          ))
+        )}
+      </div>
     </section>
   );
 }
@@ -68,7 +78,7 @@ function TransactionRow({ address, amount, currency, time }: Transaction) {
       <div className="flex flex-col gap-px">
         <p className="text-xs leading-5 tracking-[0.1px] text-black">{address}</p>
         <div className="flex items-end gap-1.5 leading-normal">
-          <span className="font-[family-name:var(--font-mulish)] text-lg font-semibold text-[#138144]">
+          <span className="font-mulish text-lg font-semibold text-[#138144]">
             {amount}
           </span>
           <span className="text-xs text-black/70">{currency}</span>

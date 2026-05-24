@@ -1,9 +1,13 @@
+"use client";
+
 import { entrustAssets } from "@/components/entrust/assets";
 import { BannerCard } from "@/components/entrust/BannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
 import { TicketCard } from "@/components/entrust/TicketCard";
 import { AulongPageShell } from "@/components/AulongPageShell";
+
+import { useUserInfoStore } from "@/lib/store";
 
 const STRATEGIES = [
   {
@@ -25,9 +29,12 @@ const STRATEGIES = [
 ] as const;
 
 export default function HomePage() {
+  const userInfo = useUserInfoStore((state) => state.userInfo);
+  const showTicketCard = userInfo.hasTicket === 0;
+
   return (
     <AulongPageShell panelClassName="bg-white">
-      <TicketCard />
+      {showTicketCard && <TicketCard />}
 
       <BannerCard
         imageSrc={entrustAssets.projectBanner}

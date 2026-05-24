@@ -6,7 +6,7 @@ import { InviteBanner } from "@/components/mine/InviteBanner";
 
 export default function MinePage() {
   return (
-    <AulongPageShell>
+    <AulongPageShell panelClassName="bg-white">
       <AssetSummaryCard />
       <InviteBanner />
       <FundDetailsCard />

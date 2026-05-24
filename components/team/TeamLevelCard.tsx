@@ -1,12 +1,36 @@
 import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
+import { formatAmount, TEAM_LOADING_LABEL } from "./format";
 
-const PROGRESS = 4500;
-const PROGRESS_MAX = 5000;
-const PROGRESS_PCT = (PROGRESS / PROGRESS_MAX) * 100;
+export type TeamLevelCardProps = {
+  isPending?: boolean;
+  vipLevel?: number;
+  smallAreaStake?: number;
+  nextVipLevel?: number;
+  nextLevelSmallAreaStake?: number;
+};
 
 /** VIP 等级与升级进度 — Figma 535:6307 */
-export function TeamLevelCard() {
+export function TeamLevelCard({
+  isPending,
+  vipLevel = 0,
+  smallAreaStake = 0,
+  nextVipLevel,
+  nextLevelSmallAreaStake = 0,
+}: TeamLevelCardProps) {
+  const progressMax =
+    nextLevelSmallAreaStake > 0 ? nextLevelSmallAreaStake : 0;
+  const progress = Math.min(smallAreaStake, progressMax || smallAreaStake);
+  const progressPct = isPending
+    ? 0
+    : progressMax > 0
+      ? Math.min(100, (progress / progressMax) * 100)
+      : 0;
+  const displayVip = Math.max(0, vipLevel);
+  const progressText = isPending
+    ? TEAM_LOADING_LABEL
+    : `${formatAmount(progress, 0)}/${formatAmount(progressMax, 0)}`;
+
   return (
     <section className="relative -mb-1 flex w-full min-w-0 gap-3">
       <div className="relative h-[83px] w-[78px] shrink-0">
@@ -26,7 +50,7 @@ export function TeamLevelCard() {
             <div className="relative mt-0.5 h-10 w-32">
               <AppImage
                 src={teamAssets.vipBadge}
-                alt="VIP1"
+                alt={`VIP${displayVip}`}
                 width={128}
                 height={40}
                 className="size-full object-contain object-left"
@@ -47,9 +71,23 @@ export function TeamLevelCard() {
                 className="size-[13px] shrink-0"
               />
             </button>
-            <p className="text-xs leading-normal whitespace-nowrap">
-              <span className="text-[#424242]">{PROGRESS}/</span>
-              <span className="font-semibold text-[#fd4140]">{PROGRESS_MAX}</span>
+            <p
+              className={`text-xs leading-normal whitespace-nowrap ${
+                isPending ? "text-[#8b8b8b]" : ""
+              }`}
+            >
+              {isPending ? (
+                progressText
+              ) : (
+                <>
+                  <span className="text-[#424242]">
+                    {formatAmount(progress, 0)}/
+                  </span>
+                  <span className="font-semibold text-[#fd4140]">
+                    {formatAmount(progressMax, 0)}
+                  </span>
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -58,7 +96,7 @@ export function TeamLevelCard() {
           <div className="relative h-2 w-full overflow-hidden rounded-[34px] bg-[#e5e5e5]">
             <div
               className="absolute inset-y-0 left-0 rounded-[34px] bg-linear-to-r from-[#c60303] to-[#f33]"
-              style={{ width: `${PROGRESS_PCT}%` }}
+              style={{ width: `${progressPct}%` }}
             />
           </div>
           <p className="text-sm leading-tight tracking-[0.28px] text-[#292929]">

@@ -1,9 +1,17 @@
 import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
 import { TeamSectionTitle } from "./TeamSectionTitle";
+import { displayTeamValue, formatAmount } from "./format";
 
-/** 团队业绩数据 — Figma 535:6355 */
-export function TeamPerformanceCard() {
+export type TeamPerformanceCardProps = {
+  isPending?: boolean;
+};
+
+/** 团队业绩数据 — Figma 535:6355（接口暂无对应字段，先展示占位 0） */
+export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
+  const deltaValue = displayTeamValue(isPending, `+${formatAmount(0)}`);
+  const deltaPctValue = displayTeamValue(isPending, `+${formatAmount(0)}%`);
+
   return (
     <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white/61 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="relative px-2.5 pt-2.5">
@@ -12,12 +20,25 @@ export function TeamPerformanceCard() {
         <div className="relative mt-2 min-h-[72px] pr-[86px]">
           <p className="text-xs leading-normal text-[#333]">小区业绩(昨日变化)</p>
           <div className="mt-0.5 flex flex-wrap items-end gap-1.5 whitespace-nowrap">
-            <p className="font-[family-name:var(--font-mulish)] text-base font-medium leading-normal text-[#db0000]">
-              +122,582
-              <span className="text-[10px] font-normal text-[#db0000]"> USDT</span>
+            <p
+              className={`font-[family-name:var(--font-mulish)] text-base font-medium leading-normal ${
+                isPending ? "text-[#8b8b8b]" : "text-[#db0000]"
+              }`}
+            >
+              {deltaValue}
+              {!isPending ? (
+                <span className="text-[10px] font-normal text-[#db0000]">
+                  {" "}
+                  USDT
+                </span>
+              ) : null}
             </p>
-            <span className="font-[family-name:var(--font-mulish)] text-xs leading-normal text-[#db0000]">
-              +8.5%
+            <span
+              className={`font-[family-name:var(--font-mulish)] text-xs leading-normal ${
+                isPending ? "text-[#8b8b8b]" : "text-[#db0000]"
+              }`}
+            >
+              {deltaPctValue}
             </span>
           </div>
           <AppImage
@@ -35,14 +56,16 @@ export function TeamPerformanceCard() {
           <PerformanceSubCard
             icon={teamAssets.perfIconToday}
             label="今日委托总额"
-            value="9,215,480"
+            value={displayTeamValue(isPending, formatAmount(0))}
             unit="USDT"
+            isPending={isPending}
           />
           <PerformanceSubCard
             icon={teamAssets.perfIconTeam}
             label="团队委托总额"
-            value="122,582"
+            value={displayTeamValue(isPending, formatAmount(0))}
             unit="USDT"
+            isPending={isPending}
           />
         </div>
       </div>
@@ -55,19 +78,27 @@ function PerformanceSubCard({
   label,
   value,
   unit,
+  isPending,
 }: {
   icon: string;
   label: string;
   value: string;
   unit: string;
+  isPending?: boolean;
 }) {
   return (
     <div className="relative h-[65px] min-w-0 flex-1 overflow-hidden rounded-lg bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2 top-3.5 flex w-[97px] flex-col gap-0.5">
         <p className="text-xs leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
-        <p className="font-[family-name:var(--font-mulish)] text-base font-medium leading-normal text-[#333]">
+        <p
+          className={`font-[family-name:var(--font-mulish)] text-base font-medium leading-normal ${
+            isPending ? "text-[#8b8b8b]" : "text-[#333]"
+          }`}
+        >
           {value}
-          <span className="text-[10px] font-normal"> {unit}</span>
+          {!isPending ? (
+            <span className="text-[10px] font-normal"> {unit}</span>
+          ) : null}
         </p>
       </div>
       <div className="absolute right-[6px] top-[11px] size-11 overflow-hidden">

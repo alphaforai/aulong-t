@@ -1,5 +1,8 @@
+"use client";
+
 import { AppImage } from "@/components/AppImage";
 import { earningsAssets } from "./assets";
+import { toast } from "sonner";
 
 /** 收益摘要卡 — 对齐 Figma 439:331 / 438:5985 */
 export function EarningsSummaryCard() {
@@ -11,7 +14,7 @@ export function EarningsSummaryCard() {
       <div className="absolute left-[9px] top-[9px] z-10 flex flex-col gap-2">
         <p className="text-sm leading-normal text-black/70">总收益(USDT)</p>
         <p className="font-[family-name:var(--font-mulish)] text-[32px] font-bold leading-none text-black">
-          125,682.55
+          0.00
         </p>
       </div>
 
@@ -33,7 +36,8 @@ export function EarningsSummaryCard() {
       {/* 领取 — 稿 left 252, top 155 → 相对卡片 left 240, top 43 */}
       <button
         type="button"
-        className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] items-center justify-center rounded-[33px] border border-white bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]"
+        className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] select-none items-center justify-center rounded-[33px] border border-white bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92]"
+        onClick={() => {toast.info("暂未开放")}}
       >
         领取
       </button>
@@ -138,7 +142,7 @@ function StatBlock({
       <p className="text-sm leading-normal text-black/70">{label}</p>
       <p className="text-black leading-none">
         <span className="font-[family-name:var(--font-mulish)] text-base font-bold leading-normal">
-          125,682.55
+          0.00
         </span>
         {withTrailingSpace ? (
           <span className="font-[family-name:var(--font-mulish)] text-sm font-bold leading-normal">

@@ -24,7 +24,7 @@ export function ImageButton({
   return (
     <button
       type="button"
-      className={`relative inline-flex shrink-0 items-center justify-center overflow-visible ${className}`}
+      className={`relative inline-flex shrink-0 select-none items-center justify-center overflow-visible transition-[transform] duration-150 ease-out will-change-transform enabled:active:translate-y-1 enabled:active:scale-[0.92] disabled:cursor-default disabled:opacity-100 ${className}`}
       style={{ width, height, minWidth: width, minHeight: height }}
       {...props}
     >

@@ -1,115 +1,222 @@
 "use client";
 
-import { useState } from "react";
-import { entrustAssets } from "./assets";
-import { AppImage } from "@/components/AppImage";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useUserInfoStore } from "@/lib/store";
+import { useQuery } from "@tanstack/react-query";
+import { getUserAssets, getXcoinPrice, getXpriceOverview } from "@/lib/api/users";
+import {
+  mapOverviewToChart,
+  RANGE_DESC_MAP,
+  RANGE_TABS,
+  type PriceGranularity,
+  XPRICE_OVERVIEW_CACHE_MS,
+} from "./priceChartUtils";
 
-const TIME_RANGES = ["1H", "1D", "1W", "1M", "1Y"] as const;
+function formatAmount(value: unknown, fractionDigits = 2) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return "0.00";
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  });
+}
 
-const Y_LABELS = [
-  { label: "7.00", top: -6 },
-  { label: "6.00", top: 18 },
-  { label: "4.00", top: 41 },
-  { label: "3.50", top: 65 },
-  { label: "2.20", top: 89 },
-  { label: "1.25", top: 113 },
-  { label: "0.50", top: 136 },
-] as const;
+function AmountWithUnit({ amount, unit }: { amount: string; unit: string }) {
+  return (
+    <div className="mt-0.5 inline-flex h-5 items-end gap-1 text-[#1e1917]">
+      <span className="font-mulish text-[20px] font-bold leading-none">{amount}</span>
+      <span className="text-xs font-medium leading-none">{unit}</span>
+    </div>
+  );
+}
+
+function ChartTooltipContent({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: { value?: number }[];
+}) {
+  if (!active || !payload?.length) return null;
+  const value = payload[0]?.value;
+  return (
+    <div className="rounded-md border border-[#f0e0e0] bg-white px-2 py-1 text-xs text-[#333] shadow-sm">
+      ${formatAmount(value)}
+    </div>
+  );
+}
 
 export function PriceChartSection() {
-  const [activeRange, setActiveRange] =
-    useState<(typeof TIME_RANGES)[number]>("1D");
+  const userInfo = useUserInfoStore((state) => state.userInfo);
+  const [granularity, setGranularity] = useState<PriceGranularity>("DAY");
+  const [chartReady, setChartReady] = useState(false);
+
+  useEffect(() => {
+    setChartReady(true);
+  }, []);
+
+  const { data: assetsResponse } = useQuery({
+    queryKey: ["userAssets", userInfo.walletAddress],
+    queryFn: () => getUserAssets(),
+    enabled: Boolean(userInfo.walletAddress),
+  });
+
+//   console.log("assetsResponse", assetsResponse);
+
+  const { data: xcoinPriceResponse } = useQuery({
+    queryKey: ["xcoinPrice"],
+    queryFn: () => getXcoinPrice(),
+  });
+
+  const {
+    data: overviewResponse,
+    isPending: chartPending,
+    isError: chartError,
+  } = useQuery({
+    queryKey: ["xpriceOverview", granularity],
+    queryFn: () => getXpriceOverview({ granularity }),
+    staleTime: XPRICE_OVERVIEW_CACHE_MS,
+    gcTime: XPRICE_OVERVIEW_CACHE_MS,
+  });
+
+  const assets = assetsResponse?.data;
+  const xcoinBalance = assets?.xCoinUnreleasedBalance ?? 0;
+  const currentPrice = xcoinPriceResponse?.data?.currentPrice ?? 0;
+  const dailyRate = xcoinPriceResponse?.data?.defaultDailyRate ?? 0;
+  const holdingsUsd = Number(xcoinBalance) * Number(currentPrice);
+
+  const chartData = useMemo(
+    () => mapOverviewToChart(overviewResponse?.data, granularity),
+    [overviewResponse, granularity],
+  );
+
+  const showChart = chartData.length > 0 && !chartPending && !chartError;
+  const lastPrice = chartData[chartData.length - 1]?.xPrice ?? currentPrice;
 
   return (
     <section className="relative z-0 flex w-full flex-col items-center gap-3 overflow-hidden rounded-[12px] border border-white bg-white px-4 py-3 shadow-[0_5px_5px_rgba(51,51,51,0.08)]">
-      <div className="relative h-[126px] w-full min-w-0 shrink-0 rounded-[12px] shadow-[0_4px_5.2px_rgba(253,101,104,0.06)]">
-        <p className="absolute left-[18px] top-[9px] text-[14px] text-[#5c5c5c]">
-          X 币价格
-        </p>
-        <p className="absolute left-[18px] top-[29px] font-[family-name:var(--font-mulish)] text-[20px] font-bold leading-normal text-[#1e1917]">
-          5.00
-        </p>
-        <p className="absolute left-[61px] top-[36px] text-[10px] font-medium leading-normal text-[#1e1917]">
-          USDT
-        </p>
-        <p className="absolute left-[18px] top-[57px] font-[family-name:var(--font-mulish)] text-[14px] leading-normal text-[#16b86f]">
-          +8.24%
-        </p>
+      <div className="relative flex h-[90px] w-full min-w-0 shrink-0 flex-col rounded-[12px] shadow-[0_4px_5.2px_rgba(253,101,104,0.06)]">
+        <div className="flex min-h-0 flex-1">
+          <div className="flex min-w-0 flex-1 flex-col px-[18px] pt-2">
+            <p className="text-sm text-[#5c5c5c]">AUL 币价格</p>
+            <AmountWithUnit amount={formatAmount(currentPrice)} unit="USDT" />
+            <p className="mt-1 text-sm leading-normal text-[#16b86f]">
+              +{formatAmount(dailyRate)}%
+            </p>
+          </div>
 
-        <div className="absolute left-1/2 top-[15px] h-[51px] w-px -translate-x-1/2 bg-[#f3efeb]" />
+          <div className="my-3 w-px shrink-0 self-stretch bg-[#f3efeb]" />
 
-        <p className="absolute left-[198px] top-[9px] text-[14px] text-[#5c5c5c]">
-          持有 X 币
-        </p>
-        <p className="absolute left-[198px] top-[29px] font-[family-name:var(--font-mulish)] text-[20px] font-bold leading-normal text-[#1e1917]">
-          1,000.00
-        </p>
-        <p className="absolute left-[284px] top-[36px] text-[10px] font-medium leading-normal text-[#1e1917]">
-          X
-        </p>
-        <p className="absolute left-[198px] top-[57px] font-[family-name:var(--font-mulish)] text-[14px] leading-normal text-[#5c5c5c]">
-          ≈ $5,000.00
-        </p>
+          <div className="flex min-w-0 flex-1 flex-col px-[18px] pt-2">
+            <p className="text-sm text-[#5c5c5c]">持有 AUL 币</p>
+            <AmountWithUnit amount={formatAmount(xcoinBalance)} unit="AUL" />
+            <p className="mt-1 text-sm leading-normal text-[#5c5c5c]">
+              ≈ ${formatAmount(holdingsUsd)}
+            </p>
+          </div>
+        </div>
+      </div>
 
-        <div className="absolute left-1/2 top-[81px] flex h-9 w-full max-w-[327px] -translate-x-1/2 items-center justify-between overflow-hidden rounded-[7px] bg-[#f4f4f4] p-1">
-          {TIME_RANGES.map((range) => {
-            const active = range === activeRange;
-            return (
-              <button
-                key={range}
-                type="button"
-                onClick={() => setActiveRange(range)}
-                className={`flex h-7 min-w-0 flex-1 items-center justify-center rounded-lg text-[12px] font-medium leading-4 ${
-                  active ? "bg-[#e90000] text-white" : "text-[#1e1917]"
-                }`}
+      <div className="flex h-9 w-full items-center justify-between overflow-hidden rounded-[7px] bg-[#f4f4f4] p-1">
+        {RANGE_TABS.map(({ granularity: g, label }) => {
+          const active = g === granularity;
+          return (
+            <button
+              key={g}
+              type="button"
+              onClick={() => setGranularity(g)}
+              className={`flex h-7 min-w-0 flex-1 items-center justify-center rounded-lg text-[12px] font-medium leading-4 transition-colors ${
+                active ? "bg-[#e90000] text-white" : "text-[#1e1917]"
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="relative h-[144px] w-full min-h-[144px] min-w-0 shrink-0">
+        {chartPending ? (
+          <div className="flex h-full items-center justify-center text-sm text-[#8b8b8b]">
+            加载中…
+          </div>
+        ) : chartError ? (
+          <div className="flex h-full items-center justify-center text-sm text-[#ea4747]">
+            数据加载失败，请稍后重试
+          </div>
+        ) : !showChart ? (
+          <div className="flex h-full items-center justify-center text-sm text-[#8b8b8b]">
+            暂无{RANGE_DESC_MAP[granularity]}数据
+          </div>
+        ) : (
+          <div className="absolute inset-0 h-full w-full min-h-[144px] min-w-0">
+            <div className="pointer-events-none absolute right-2 top-1 z-10 rounded-full bg-[#e90000] px-1.5 py-0.5">
+              <span className="font-mulish text-[10px] font-semibold leading-normal text-white">
+                ${formatAmount(lastPrice)}
+              </span>
+            </div>
+            {chartReady ? (
+              <ResponsiveContainer width="100%" height={144} minWidth={0}>
+              <AreaChart
+                data={chartData}
+                margin={{ left: 0, right: 8, top: 8, bottom: 0 }}
               >
-                {range}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="relative h-[144px] w-full min-w-0 shrink-0 overflow-hidden">
-        <div className="absolute inset-0 left-5 overflow-hidden">
-          <div className="absolute inset-[21%_0_0_6.27%] relative overflow-hidden">
-            <AppImage src={entrustAssets.chartFill} alt="" fill />
+                <defs>
+                  <linearGradient id="aulPriceFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ff3033" stopOpacity={0.28} />
+                    <stop offset="95%" stopColor="#ff3033" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="#f3efeb" />
+                <XAxis
+                  dataKey="time"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={6}
+                  minTickGap={24}
+                  tick={{ fill: "#9b4949", fontSize: 11 }}
+                />
+                <YAxis
+                  width={40}
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={4}
+                  tick={{ fill: "#000", fontSize: 10, fontWeight: 600 }}
+                  tickFormatter={(v) => formatAmount(v)}
+                />
+                <Tooltip
+                  cursor={{ stroke: "#ff3033", strokeWidth: 1 }}
+                  content={<ChartTooltipContent />}
+                />
+                <Area
+                  dataKey="xPrice"
+                  type="monotone"
+                  fill="url(#aulPriceFill)"
+                  stroke="#e90000"
+                  strokeWidth={2}
+                  activeDot={{
+                    r: 4,
+                    fill: "#e90000",
+                    stroke: "#fff",
+                    strokeWidth: 2,
+                  }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            ) : (
+              <div className="h-[144px] w-full" aria-hidden />
+            )}
           </div>
-          <div className="absolute inset-[21%_0_13.37%_6.27%] relative overflow-hidden">
-            <AppImage src={entrustAssets.chartLine} alt="" fill />
-          </div>
-
-          <div className="absolute left-[245px] top-1 rounded-full bg-[#e90000] px-1 py-0.5">
-            <span className="font-[family-name:var(--font-mulish)] text-[10px] font-semibold leading-normal text-white">
-              $5.00
-            </span>
-          </div>
-          <AppImage
-            src={entrustAssets.chartDot}
-            alt=""
-            width={6}
-            height={6}
-            className="absolute left-[261px] top-[27px]"
-          />
-        </div>
-
-        {Y_LABELS.map(({ label, top }) => (
-          <span
-            key={label}
-            className="absolute left-[5.5px] -translate-x-1/2 font-[family-name:var(--font-mulish)] text-[10px] font-semibold leading-normal text-black"
-            style={{ top }}
-          >
-            {label}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex h-[18px] w-full min-w-0 shrink-0 items-center justify-between text-[11px] leading-[15px] text-[#9b4949]">
-        {["00:00", "06:00", "12:00", "18:00", "24:00"].map((label) => (
-          <span key={label} className="shrink-0">
-            {label}
-          </span>
-        ))}
+        )}
       </div>
     </section>
   );

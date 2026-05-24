@@ -10,62 +10,15 @@ type FundRecord = {
   balance: string;
 };
 
-const FUND_RECORDS: FundRecord[] = [
-  {
-    title: "启动AI",
-    currency: "USDT",
-    time: "2024-03-24 19:33",
-    amount: "+3,597.30",
-    amountTone: "positive",
-    balance: "余额：1598455.24 USDT",
-  },
-  {
-    title: "购买白名单",
-    currency: "X",
-    time: "2024-03-24 19:33",
-    amount: "+26,119.94",
-    amountTone: "positive",
-    balance: "余额：1598455.24 X",
-  },
-  {
-    title: "赎回手续费扣减",
-    currency: "X",
-    time: "2024-03-24 19:33",
-    amount: "-8,888.99",
-    amountTone: "negative",
-    balance: "余额：1598455.24 USDT",
-  },
-  {
-    title: "股东分红",
-    currency: "USDT",
-    time: "2024-03-24 19:33",
-    amount: "+81,872.28",
-    amountTone: "positive",
-    balance: "余额：1598455.24 USDT",
-  },
-  {
-    title: "赎回手续费扣减",
-    currency: "X",
-    time: "2024-03-24 19:33",
-    amount: "-8,888.99",
-    amountTone: "negative",
-    balance: "余额：1598455.24 USDT",
-  },
-  {
-    title: "股东分红",
-    currency: "USDT",
-    time: "2024-03-24 19:33",
-    amount: "+81,872.28",
-    amountTone: "positive",
-    balance: "余额：1598455.24 USDT",
-  },
-];
+const FUND_RECORDS: FundRecord[] = [];
 
 const FILTERS = ["账单类型", "币种", "时间"] as const;
 
 export function FundDetailsCard() {
+  const hasRecords = FUND_RECORDS.length > 0;
+
   return (
-    <section className="flex w-full min-w-0 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+    <section className="flex min-h-[540px] w-full min-w-0 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex h-[27px] w-[129px] items-center gap-[3px] overflow-hidden">
         <div className="relative size-[22px] shrink-0 overflow-hidden">
           <AppImage
@@ -110,16 +63,22 @@ export function FundDetailsCard() {
         />
       </div>
 
-      <div className="flex w-full min-w-0 flex-col">
-        {FUND_RECORDS.map((record, index) => (
-          <div
-            key={`${record.title}-${index}`}
-            className={`flex w-full flex-col ${index < FUND_RECORDS.length - 1 ? "gap-4" : ""}`}
-          >
-            <FundRecordRow {...record} />
-            {index < FUND_RECORDS.length - 1 ? <RowDivider /> : null}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {!hasRecords ? (
+          <div className="flex flex-1 items-center justify-center py-12 text-sm text-black/50">
+            暂无资金明细
           </div>
-        ))}
+        ) : (
+          FUND_RECORDS.map((record, index) => (
+            <div
+              key={`${record.title}-${index}`}
+              className={`flex w-full flex-col ${index < FUND_RECORDS.length - 1 ? "gap-4" : ""}`}
+            >
+              <FundRecordRow {...record} />
+              {index < FUND_RECORDS.length - 1 ? <RowDivider /> : null}
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

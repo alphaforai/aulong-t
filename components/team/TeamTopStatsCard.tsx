@@ -1,6 +1,12 @@
 import { Fragment } from "react";
 import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "./assets";
+import {
+  displayTeamValue,
+  formatAmount,
+  formatCount,
+  TEAM_LOADING_LABEL,
+} from "./format";
 
 type TopStat = {
   icon: string;
@@ -9,33 +15,41 @@ type TopStat = {
   unit: string;
 };
 
-const TOP_STATS: TopStat[] = [
-  {
-    icon: teamAssets.statIconCommunity,
-    label: "小区业绩",
-    value: "380,574,125",
-    unit: "USDT",
-  },
-  {
-    icon: teamAssets.statIconReferral,
-    label: "直推委托",
-    value: "8,000",
-    unit: "人数",
-  },
-  {
-    icon: teamAssets.statIconPersonal,
-    label: "个人委托数量",
-    value: "1,000",
-    unit: "USDT",
-  },
-];
+export type TeamTopStatsCardProps = {
+  isPending?: boolean;
+  smallAreaStake?: number;
+};
 
 /** 顶部三列统计 — Figma 535:6506 */
-export function TeamTopStatsCard() {
+export function TeamTopStatsCard({
+  isPending,
+  smallAreaStake,
+}: TeamTopStatsCardProps) {
+  const topStats: TopStat[] = [
+    {
+      icon: teamAssets.statIconCommunity,
+      label: "小区业绩",
+      value: displayTeamValue(isPending, formatAmount(smallAreaStake)),
+      unit: "USDT",
+    },
+    {
+      icon: teamAssets.statIconReferral,
+      label: "直推委托",
+      value: displayTeamValue(isPending, formatCount(0)),
+      unit: "人数",
+    },
+    {
+      icon: teamAssets.statIconPersonal,
+      label: "个人委托数量",
+      value: displayTeamValue(isPending, formatAmount(0)),
+      unit: "USDT",
+    },
+  ];
+
   return (
     <section className="relative h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
       <div className="relative flex h-full items-center justify-between px-3">
-        {TOP_STATS.map((stat, index) => (
+        {topStats.map((stat, index) => (
           <Fragment key={stat.label}>
             {index > 0 ? <StatDivider /> : null}
             <StatColumn {...stat} />
@@ -85,7 +99,11 @@ function StatColumn({ icon, label, value, unit }: TopStat) {
       </div>
 
       <div className="flex w-full flex-col items-center gap-[3px] text-center">
-        <p className="w-full font-[family-name:var(--font-mulish)] text-base font-medium leading-5 tracking-[-0.32px] text-[#d50000]">
+        <p
+          className={`w-full font-[family-name:var(--font-mulish)] text-base font-medium leading-5 tracking-[-0.32px] ${
+            value === TEAM_LOADING_LABEL ? "text-[#8b8b8b]" : "text-[#d50000]"
+          }`}
+        >
           {value}
         </p>
         <p className="w-full text-xs font-medium leading-normal tracking-[0.24px] text-[#292929]">

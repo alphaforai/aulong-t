@@ -18,4 +18,8 @@ export const teamAssets = {
   memberIconNewWhitelist: "/assets/team/member-icon-new-whitelist.png",
   memberIconEntrust: "/assets/team/member-icon-entrust.png",
   detailArrow: "/assets/team/detail-arrow.svg",
+  directBack: "/assets/team/direct-back.svg",
+  directDivider: "/assets/team/direct-divider.svg",
+  directVip1: "/assets/team/direct-vip1.png",
+  directVip2: "/assets/team/direct-vip2.png",
 } as const;

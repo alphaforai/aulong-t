@@ -4,7 +4,7 @@ import { TransactionRecordCard } from "@/components/earnings/TransactionRecordCa
 
 export default function EarningsPage() {
   return (
-    <AulongPageShell>
+    <AulongPageShell panelClassName="bg-white" mainClassName="flex min-h-0 flex-1 flex-col">
       <EarningsSummaryCard />
       <TransactionRecordCard />
     </AulongPageShell>

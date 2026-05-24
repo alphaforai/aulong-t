@@ -1,16 +1,64 @@
+"use client";
+
+import { useEffect } from "react";
 import { AulongPageShell } from "@/components/AulongPageShell";
 import { MemberStatsCard } from "@/components/team/MemberStatsCard";
 import { TeamLevelCard } from "@/components/team/TeamLevelCard";
 import { TeamPerformanceCard } from "@/components/team/TeamPerformanceCard";
 import { TeamTopStatsCard } from "@/components/team/TeamTopStatsCard";
+import { getTeamOverview } from "@/lib/api/users";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function TeamPage() {
+  const { data: teamOverviewResponse, isPending, isError } = useQuery({
+    queryKey: ["teamOverview"],
+    queryFn: () => getTeamOverview(),
+  });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("获取团队数据失败");
+    }
+  }, [isError]);
+
+  const overview = teamOverviewResponse?.data as
+    | {
+        vipLevel?: number;
+        smallAreaStake?: number;
+        nextVipLevel?: number;
+        nextLevelSmallAreaStake?: number;
+        teamTotalCount?: number;
+        teamWhitelistCount?: number;
+        teamStakerCount?: number;
+        teamTodayWhitelistCount?: number;
+        bigAreaStake?: number;
+        teamTotalStake?: number;
+        teamTodayStake?: number;
+      }
+    | undefined;
+
   return (
-    <AulongPageShell>
-      <TeamLevelCard />
-      <TeamTopStatsCard />
-      <TeamPerformanceCard />
-      <MemberStatsCard />
+    <AulongPageShell panelClassName="bg-white">
+      <TeamLevelCard
+        isPending={isPending}
+        vipLevel={overview?.vipLevel}
+        smallAreaStake={overview?.smallAreaStake}
+        nextVipLevel={overview?.nextVipLevel}
+        nextLevelSmallAreaStake={overview?.nextLevelSmallAreaStake}
+      />
+      <TeamTopStatsCard
+        isPending={isPending}
+        smallAreaStake={overview?.smallAreaStake}
+      />
+      <TeamPerformanceCard isPending={isPending} />
+      <MemberStatsCard
+        isPending={isPending}
+        teamTotalCount={overview?.teamTotalCount}
+        teamWhitelistCount={overview?.teamWhitelistCount}
+        teamStakerCount={overview?.teamStakerCount}
+        teamTodayWhitelistCount={overview?.teamTodayWhitelistCount}
+      />
     </AulongPageShell>
   );
 }

@@ -8,10 +8,13 @@ import { bsc } from "wagmi/chains";
 import {
   useConnection,
   useDisconnect,
-  useSignMessage,
   useSwitchChain,
 } from "wagmi";
-import { getNonce, logout, register, walletLogin } from "@/lib/api/auth";
+import { logout, register } from "@/lib/api/auth";
+import {
+  clearWalletSession,
+  getLastLoginProof,
+} from "@/lib/walletSession";
 import {
   useAuthStore,
   useInviteCodeStore,
@@ -39,14 +42,14 @@ export default function AulongHeader() {
 
   const { isConnected, address, chainId } = useConnection();
   const { disconnect } = useDisconnect();
-  const { signMessageAsync } = useSignMessage();
   const { switchChainAsync } = useSwitchChain();
 
-  const signMessageAsyncRef = React.useRef(signMessageAsync);
-  signMessageAsyncRef.current = signMessageAsync;
-
   const accessToken = useAuthStore((state) => state.accessToken);
+  const needsInviteRegister = useAuthStore((state) => state.needsInviteRegister);
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setNeedsInviteRegister = useAuthStore(
+    (state) => state.setNeedsInviteRegister,
+  );
   const setUserInfo = useUserInfoStore((state) => state.setUserInfo);
   const resetUserInfo = useUserInfoStore((state) => state.resetUserInfo);
 
@@ -92,10 +95,13 @@ export default function AulongHeader() {
     setInviteCode(fromStore == null ? "" : String(fromStore).trim());
   }, [showInviteCodeModal]);
 
+  React.useEffect(() => {
+    if (needsInviteRegister) {
+      setShowInviteCodeModal(true);
+    }
+  }, [needsInviteRegister]);
+
   const prevConnectedRef = React.useRef(isConnected);
-  const authInFlightRef = React.useRef(false);
-  const authedAddressRef = React.useRef<string | null>(null);
-  const lastLoginProofRef = React.useRef({ nonce: "", signature: "" });
 
   React.useEffect(() => {
     if (!prevConnectedRef.current && isConnected && showWalletModal) {
@@ -103,91 +109,6 @@ export default function AulongHeader() {
     }
     prevConnectedRef.current = isConnected;
   }, [isConnected, showWalletModal, closeWalletModal]);
-
-  React.useEffect(() => {
-    const clearLocalSession = () => {
-      authedAddressRef.current = null;
-      setShowWalletModal(false);
-      setWalletSheetEntered(false);
-      setShowInviteCodeModal(false);
-      setInviteSheetEntered(false);
-      setInviteCode("");
-      setInputError("");
-      lastLoginProofRef.current = { nonce: "", signature: "" };
-    };
-
-    const loginWithWallet = async () => {
-      if (!address || !isConnected || authInFlightRef.current) return;
-      if (authedAddressRef.current === address) return;
-
-      authInFlightRef.current = true;
-      try {
-        const { data } = await getNonce(address);
-        const nonce = data?.nonce;
-        if (nonce == null || nonce === "") {
-          throw new Error("nonce is missing");
-        }
-        const message = String(nonce);
-
-        const signature = await signMessageAsyncRef.current({
-          message,
-          account: address,
-        });
-        lastLoginProofRef.current = { nonce: message, signature };
-
-        const loginResult = await walletLogin({
-          walletAddress: address,
-          nonce: message,
-          signature,
-        });
-
-        const payload = loginResult.data;
-        console.log("wallet login result:", payload);
-
-        if (payload == null) {
-          setAccessToken(null);
-          resetUserInfo();
-          setShowInviteCodeModal(true);
-        } else {
-          const token = payload.accessToken;
-          if (!token) {
-            throw new Error("accessToken is missing");
-          }
-          setAccessToken(token);
-          if (payload.user != null) {
-            setUserInfo(payload.user);
-          }
-          setShowInviteCodeModal(false);
-          setInviteSheetEntered(false);
-        }
-
-        authedAddressRef.current = address;
-      } catch (error) {
-        disconnect();
-        setAccessToken(null);
-        resetUserInfo();
-        clearLocalSession();
-        console.error("wallet login failed:", error);
-      } finally {
-        authInFlightRef.current = false;
-      }
-    };
-
-    if (isConnected && address) {
-      void loginWithWallet();
-    } else if (!isConnected) {
-      setAccessToken(null);
-      resetUserInfo();
-      clearLocalSession();
-    }
-  }, [
-    address,
-    isConnected,
-    disconnect,
-    resetUserInfo,
-    setAccessToken,
-    setUserInfo,
-  ]);
 
   async function endWalletSession() {
     try {
@@ -199,13 +120,13 @@ export default function AulongHeader() {
     disconnect();
     setAccessToken(null);
     resetUserInfo();
-    authedAddressRef.current = null;
+    clearWalletSession();
+    setNeedsInviteRegister(false);
     closeWalletModal();
     setInviteSheetEntered(false);
     setShowInviteCodeModal(false);
     setInviteCode("");
     setInputError("");
-    lastLoginProofRef.current = { nonce: "", signature: "" };
   }
 
   async function openWalletModal() {
@@ -230,7 +151,7 @@ export default function AulongHeader() {
       setInputError("请先连接钱包");
       return;
     }
-    const { nonce, signature } = lastLoginProofRef.current;
+    const { nonce, signature } = getLastLoginProof();
     if (!nonce || !signature) {
       setInputError("登录凭证已失效，请重新连接钱包");
       return;
@@ -258,6 +179,7 @@ export default function AulongHeader() {
       if (data?.user != null) {
         setUserInfo(data.user as Parameters<typeof setUserInfo>[0]);
       }
+      setNeedsInviteRegister(false);
 
       toast.success("绑定成功");
       closeInviteSheet();
