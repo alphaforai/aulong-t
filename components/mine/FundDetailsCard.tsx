@@ -11,6 +11,22 @@ type FundRecord = {
 };
 
 const FUND_RECORDS: FundRecord[] = [];
+//   {
+//     title: "启动AI",
+//     currency: "USDT",
+//     time: "2024-03-24 19:33",
+//     amount: "+3,597.30",
+//     amountTone: "positive",
+//     balance: "余额：1598455.24 USDT",
+//   },
+//   {
+//     title: "购买白名单",
+//     currency: "X",
+//     time: "2024-03-24 19:33",
+//     amount: "+26,119.94",
+//     amountTone: "positive",
+//     balance: "余额：1598455.24 X",
+//   }
 
 const FILTERS = ["账单类型", "币种", "时间"] as const;
 

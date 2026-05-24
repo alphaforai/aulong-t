@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { formatEther } from "viem";
 import { getPlatformConfig } from "@/lib/api/platformConfig";
 import { useQuery } from "@tanstack/react-query";
+import { getUserInfo } from "@/lib/api/users";
 
 function getErrorMessage(error: unknown, fallback = "操作失败") {
   if (error instanceof Error) {
@@ -91,9 +92,12 @@ export function TicketCard() {
     hash,
   });
 
+ 
   React.useEffect(() => {
     if (isSuccess) {
       refetch();
+      // 并调用getUserInfo接口更新用户信息
+      getUserInfo();
     }
   }, [isSuccess, refetch]);
 
