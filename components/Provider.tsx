@@ -8,6 +8,7 @@ import { config } from "@/lib/wagmiClient";
 import { InviteCodeFromUrlSync } from "@/components/InviteCodeFromUrlSync";
 
 export function Provider({ children }: { children: React.ReactNode }) {
+  // 初始化函数只在组件首次渲染时执行一次，后续 re-render 继续使用同一个 queryClient，React Query 的缓存和请求状态能稳定保留
   const [queryClient] = useState(() => new QueryClient());
 
   return (

@@ -36,7 +36,7 @@ export default function DisplayWalletOptions() {
   );
 
   if (!connectors.length) {
-    return <p className="text-sm text-[#9B8D7B]">未检测到可用钱包</p>;
+    return <p className="text-sm text-[#8b8b8b]">未检测到可用钱包</p>;
   }
 
   return (
@@ -76,10 +76,24 @@ function WalletOption({
       type="button"
       disabled={!ready}
       onClick={onClick}
-      className="flex h-11 w-full items-center justify-between rounded-[10px] border border-[#EADCC7] bg-[#FFF9EF] px-3 text-left text-sm font-medium text-[#5E4316] transition-colors enabled:hover:bg-[#F7EBD7] disabled:cursor-not-allowed disabled:border-[#EFE5D7] disabled:bg-[#F8F5F0] disabled:text-[#BBAF9F]"
+      className="group relative flex h-14 w-full items-center justify-between overflow-hidden rounded-[10px] border border-[#f0e0e0] bg-white px-4 text-left text-sm font-medium text-[#333] shadow-[0_2px_6px_rgba(0,0,0,0.04)] transition-all enabled:hover:border-[#ff3033]/35 enabled:hover:bg-[#fff8f8] enabled:hover:shadow-[0_4px_10px_rgba(213,0,0,0.1)] disabled:cursor-not-allowed disabled:border-[#eee] disabled:bg-[#fafafa] disabled:text-[#bbb] disabled:shadow-none"
     >
-      {displayName}
-      <span className="text-xs text-[#B9874C]">{ready ? "可用" : "不可用"}</span>
+      <span
+        aria-hidden
+        className={`absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2 rounded-full transition-colors ${
+          ready
+            ? "bg-linear-to-b from-[#ff4d00] to-[#e90000]"
+            : "bg-[#e5e5e5] group-disabled:bg-[#eee]"
+        }`}
+      />
+      <span className="pl-2">{displayName}</span>
+      {ready ? (
+        <span className="inline-flex h-6 items-center rounded-full bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] px-2.5 text-xs font-medium leading-none text-white shadow-[inset_0_-2px_2px_rgba(255,254,227,0.5)]">
+          可用
+        </span>
+      ) : (
+        <span className="text-xs text-[#8b8b8b]">不可用</span>
+      )}
     </button>
   );
 }

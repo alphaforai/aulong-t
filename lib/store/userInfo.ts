@@ -9,6 +9,8 @@ export type UserInfo = {
   nickname: string;
   totalStakeAmount: number;
   directValidUserCount: number;
+  hasTicket: number;
+  ticketTime: string;
   isActiveStaker: number;
   activeTime: string;
   vipLevel: number;
@@ -16,7 +18,7 @@ export type UserInfo = {
   isBot: number;
 };
 
-const initialUserInfo: UserInfo = {
+const initialUserInfo: Partial<UserInfo> = {
   id: "0",
   parentId: "0",
   parentBindAt: "",
@@ -25,6 +27,8 @@ const initialUserInfo: UserInfo = {
   nickname: "",
   totalStakeAmount: 0,
   directValidUserCount: 0,
+  hasTicket: 0,
+  ticketTime: "",
   isActiveStaker: 0,
   activeTime: "",
   vipLevel: 0,
@@ -39,10 +43,10 @@ type UserInfoState = {
 };
 
 export const useUserInfoStore = create<UserInfoState>((set) => ({
-  userInfo: initialUserInfo,
+  userInfo: initialUserInfo as UserInfo,
   setUserInfo: (patch) =>
     set((state) => ({
       userInfo: { ...state.userInfo, ...patch },
     })),
-  resetUserInfo: () => set({ userInfo: initialUserInfo }),
+  resetUserInfo: () => set({ userInfo: initialUserInfo as UserInfo }),
 }));

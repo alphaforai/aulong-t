@@ -6,21 +6,18 @@ import { entrustAssets } from "@/components/entrust/assets";
 import { AppImage } from "@/components/AppImage";
 import { bsc } from "wagmi/chains";
 import {
-  useConnections,
+  useConnection,
   useDisconnect,
   useSignMessage,
   useSwitchChain,
 } from "wagmi";
-import { getNonce, logout, register, walletLogin } from "@/app/api/auth";
+import { getNonce, logout, register, walletLogin } from "@/lib/api/auth";
 import {
   useAuthStore,
   useInviteCodeStore,
   useUserInfoStore,
 } from "@/lib/store";
 import { toast } from "sonner";
-
-const iconDecorate = "/assets/images/section1/iconShield.png";
-const iconError = "/assets/images/section1/iconGantanhao.svg";
 
 function isApiSuccess(result: unknown) {
   if (!result || typeof result !== "object") return false;
@@ -33,14 +30,14 @@ function isApiSuccess(result: unknown) {
 /** 统一顶栏 — 视觉对齐 Figma TopBar，钱包逻辑来自 xwallet TopBar */
 export default function AulongHeader() {
   const [showWalletModal, setShowWalletModal] = React.useState(false);
+  const [walletSheetEntered, setWalletSheetEntered] = React.useState(false);
   const [showInviteCodeModal, setShowInviteCodeModal] = React.useState(false);
+  const [inviteSheetEntered, setInviteSheetEntered] = React.useState(false);
   const [inviteCode, setInviteCode] = React.useState("");
   const [inputError, setInputError] = React.useState("");
   const [registerPending, setRegisterPending] = React.useState(false);
 
-  const connections = useConnections();
-  const isConnected = connections.length > 0;
-  const connectedAddress = connections[0]?.accounts?.[0];
+  const { isConnected, address, chainId } = useConnection();
   const { disconnect } = useDisconnect();
   const { signMessageAsync } = useSignMessage();
   const { switchChainAsync } = useSwitchChain();
@@ -52,6 +49,42 @@ export default function AulongHeader() {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const setUserInfo = useUserInfoStore((state) => state.setUserInfo);
   const resetUserInfo = useUserInfoStore((state) => state.resetUserInfo);
+
+  const closeWalletModal = React.useCallback(() => {
+    setWalletSheetEntered(false);
+    window.setTimeout(() => setShowWalletModal(false), 300);
+  }, []);
+
+  const closeInviteSheet = React.useCallback(() => {
+    setInviteSheetEntered(false);
+    window.setTimeout(() => {
+      setShowInviteCodeModal(false);
+      setInviteCode("");
+      setInputError("");
+    }, 300);
+  }, []);
+
+  React.useEffect(() => {
+    if (!showWalletModal) {
+      setWalletSheetEntered(false);
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setWalletSheetEntered(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [showWalletModal]);
+
+  React.useEffect(() => {
+    if (!showInviteCodeModal) {
+      setInviteSheetEntered(false);
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setInviteSheetEntered(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [showInviteCodeModal]);
 
   React.useEffect(() => {
     if (!showInviteCodeModal) return;
@@ -66,28 +99,30 @@ export default function AulongHeader() {
 
   React.useEffect(() => {
     if (!prevConnectedRef.current && isConnected && showWalletModal) {
-      setShowWalletModal(false);
+      closeWalletModal();
     }
     prevConnectedRef.current = isConnected;
-  }, [isConnected, showWalletModal]);
+  }, [isConnected, showWalletModal, closeWalletModal]);
 
   React.useEffect(() => {
     const clearLocalSession = () => {
       authedAddressRef.current = null;
       setShowWalletModal(false);
+      setWalletSheetEntered(false);
       setShowInviteCodeModal(false);
+      setInviteSheetEntered(false);
       setInviteCode("");
       setInputError("");
       lastLoginProofRef.current = { nonce: "", signature: "" };
     };
 
     const loginWithWallet = async () => {
-      if (!connectedAddress || !isConnected || authInFlightRef.current) return;
-      if (authedAddressRef.current === connectedAddress) return;
+      if (!address || !isConnected || authInFlightRef.current) return;
+      if (authedAddressRef.current === address) return;
 
       authInFlightRef.current = true;
       try {
-        const { data } = await getNonce(connectedAddress);
+        const { data } = await getNonce(address);
         const nonce = data?.nonce;
         if (nonce == null || nonce === "") {
           throw new Error("nonce is missing");
@@ -96,17 +131,18 @@ export default function AulongHeader() {
 
         const signature = await signMessageAsyncRef.current({
           message,
-          account: connectedAddress,
+          account: address,
         });
         lastLoginProofRef.current = { nonce: message, signature };
 
         const loginResult = await walletLogin({
-          walletAddress: connectedAddress,
+          walletAddress: address,
           nonce: message,
           signature,
         });
 
         const payload = loginResult.data;
+        console.log("wallet login result:", payload);
 
         if (payload == null) {
           setAccessToken(null);
@@ -122,9 +158,10 @@ export default function AulongHeader() {
             setUserInfo(payload.user);
           }
           setShowInviteCodeModal(false);
+          setInviteSheetEntered(false);
         }
 
-        authedAddressRef.current = connectedAddress;
+        authedAddressRef.current = address;
       } catch (error) {
         disconnect();
         setAccessToken(null);
@@ -136,7 +173,7 @@ export default function AulongHeader() {
       }
     };
 
-    if (isConnected && connectedAddress) {
+    if (isConnected && address) {
       void loginWithWallet();
     } else if (!isConnected) {
       setAccessToken(null);
@@ -144,7 +181,7 @@ export default function AulongHeader() {
       clearLocalSession();
     }
   }, [
-    connectedAddress,
+    address,
     isConnected,
     disconnect,
     resetUserInfo,
@@ -163,7 +200,8 @@ export default function AulongHeader() {
     setAccessToken(null);
     resetUserInfo();
     authedAddressRef.current = null;
-    setShowWalletModal(false);
+    closeWalletModal();
+    setInviteSheetEntered(false);
     setShowInviteCodeModal(false);
     setInviteCode("");
     setInputError("");
@@ -172,8 +210,7 @@ export default function AulongHeader() {
 
   async function openWalletModal() {
     setShowWalletModal(true);
-    if (!isConnected || connections.length === 0) return;
-    const chainId = connections[0]?.chainId;
+    if (!isConnected) return;
     if (chainId === bsc.id) return;
     try {
       await switchChainAsync({ chainId: bsc.id });
@@ -189,7 +226,7 @@ export default function AulongHeader() {
       setInputError("邀请码不能为空");
       return;
     }
-    if (!connectedAddress) {
+    if (!address) {
       setInputError("请先连接钱包");
       return;
     }
@@ -203,7 +240,7 @@ export default function AulongHeader() {
     setRegisterPending(true);
     try {
       const result = await register({
-        walletAddress: connectedAddress,
+        walletAddress: address,
         nonce,
         signature,
         inviteCode: code,
@@ -223,8 +260,7 @@ export default function AulongHeader() {
       }
 
       toast.success("绑定成功");
-      setShowInviteCodeModal(false);
-      setInviteCode("");
+      closeInviteSheet();
     } catch (error: unknown) {
       const e = error as { message?: string };
       setInputError(e?.message || "注册失败");
@@ -234,8 +270,7 @@ export default function AulongHeader() {
   }
 
   const shortAddress =
-    connectedAddress &&
-    `${connectedAddress.slice(0, 4)}...${connectedAddress.slice(-2)}`;
+    address && `${address.slice(0, 4)}...${address.slice(-2)}`;
 
   return (
     <>
@@ -301,22 +336,39 @@ export default function AulongHeader() {
       </header>
 
       {showWalletModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
-          onClick={() => setShowWalletModal(false)}
-        >
+        <div className="fixed inset-0 z-60 flex flex-col justify-end">
+          <button
+            type="button"
+            aria-label="关闭"
+            className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
+              walletSheetEntered ? "opacity-100" : "opacity-0"
+            }`}
+            onClick={closeWalletModal}
+          />
           <div
-            className="w-full max-w-[329px] rounded-[12px] bg-[#FEFDFA] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="wallet-sheet-title"
+            className={`relative flex h-[50dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
+              walletSheetEntered ? "translate-y-0" : "translate-y-full"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
+            <div
+              className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#e5e5e5]"
+              aria-hidden
+            />
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-base font-medium text-[#1E1917]">
+              <h3
+                id="wallet-sheet-title"
+                className="text-base font-semibold text-[#333]"
+              >
                 {isConnected ? "钱包管理" : "选择钱包"}
               </h3>
               <button
                 type="button"
-                onClick={() => setShowWalletModal(false)}
-                className="text-sm text-[#9B8D7B]"
+                onClick={closeWalletModal}
+                className="text-sm text-[#8b8b8b]"
               >
                 关闭
               </button>
@@ -325,22 +377,23 @@ export default function AulongHeader() {
               <button
                 type="button"
                 onClick={() => void endWalletSession()}
-                className="h-11 w-full rounded-[10px] border border-[#EADCC7] bg-[#FFF9EF] text-sm font-medium text-[#8B3A2E] transition-colors hover:bg-[#F7EBD7]"
+                className="h-11 w-full rounded-[10px] border border-[#f0e0e0] bg-white text-sm font-medium text-[#ea4747] transition-colors hover:bg-[#fff8f8]"
               >
                 断开连接
               </button>
             ) : (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <DisplayWalletOptions />
               </div>
             )}
+            <div className="flex-1" aria-hidden />
           </div>
         </div>
       )}
 
       {showInviteCodeModal && (
         <div
-          className="fixed inset-0 z-60 flex items-center justify-center px-6"
+          className="fixed inset-0 z-70 flex flex-col justify-end"
           role="dialog"
           aria-modal="true"
           aria-labelledby="invite-code-title"
@@ -350,61 +403,70 @@ export default function AulongHeader() {
             type="button"
             disabled={registerPending}
             aria-label={registerPending ? "绑定进行中" : "关闭并断开钱包"}
-            className="absolute inset-0 z-0 h-full w-full cursor-pointer border-0 bg-black/50 p-0 disabled:cursor-wait"
+            className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out disabled:cursor-wait ${
+              inviteSheetEntered ? "opacity-100" : "opacity-0"
+            }`}
             onClick={() => void endWalletSession()}
           />
           <div
-            className="relative z-10 w-full max-w-[329px] rounded-[12px] bg-[#FCF9F4] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
+            className={`relative flex h-[50dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
+              inviteSheetEntered ? "translate-y-0" : "translate-y-full"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={iconDecorate}
-              alt=""
-              className="pointer-events-none absolute right-0 top-[5px] h-[92px] w-[111px]"
+            <div
+              className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#e5e5e5]"
+              aria-hidden
             />
-
-            <div className="min-h-[96px] pr-[116px]">
+            <div className="mb-3 flex items-center justify-between">
               <h3
                 id="invite-code-title"
-                className="text-2xl font-medium leading-normal text-black"
+                className="text-base font-semibold text-[#333]"
               >
-                请输入邀请码
+                绑定<span className="text-[#f82a2a]">邀请码</span>
               </h3>
-              <p className="mt-2 text-xs leading-normal text-[#9B8D7B]">
-                当前账号尚未绑定邀请关系，请输入正确的邀请码后继续。
-              </p>
+              <button
+                type="button"
+                disabled={registerPending}
+                onClick={() => void endWalletSession()}
+                className="text-sm text-[#8b8b8b] disabled:cursor-wait disabled:opacity-50"
+              >
+                取消
+              </button>
             </div>
 
-            <div className="mt-3 h-[38px] w-full rounded-[8px] border-[0.5px] border-[#C8DAF6] bg-white px-2 py-[10px]">
+            <p className="text-xs leading-relaxed text-[#8b8b8b]">
+              当前账号尚未绑定邀请关系，请输入正确的邀请码后继续使用。
+            </p>
+
+            <div className="mt-4 flex h-11 w-full items-center rounded-[10px] border border-[#f0e0e0] bg-white px-3 transition-colors focus-within:border-[#ff3033]/40 focus-within:ring-2 focus-within:ring-[#ff3033]/10">
               <input
                 type="text"
                 value={inviteCode}
+                disabled={registerPending}
                 onChange={(e) => {
                   setInviteCode(e.target.value);
                   if (inputError) setInputError("");
                 }}
                 placeholder="请输入邀请码"
-                className="h-full w-full bg-transparent text-sm font-semibold leading-normal text-[#1E1917] outline-none placeholder:font-normal placeholder:text-[#B0A896]"
+                className="h-full w-full bg-transparent text-sm font-medium text-[#333] outline-none placeholder:font-normal placeholder:text-[#bbb] disabled:cursor-wait"
               />
             </div>
 
             {inputError && (
-              <div className="mt-1 flex items-center gap-0.5">
-                <img src={iconError} alt="" className="h-[13px] w-[13px]" />
-                <span className="text-xs text-[#F70000]">{inputError}</span>
-              </div>
+              <p className="mt-2 text-xs text-[#f70000]">{inputError}</p>
             )}
 
-            <div className="mt-5 flex h-10 items-center justify-center">
-              <button
-                type="button"
-                disabled={registerPending}
-                className="h-10 w-[135px] rounded-full bg-linear-to-l from-[#B18031] to-[#E9CB96] text-base font-medium leading-6 text-white shadow-[0_8px_9px_rgba(87,63,13,0.14)] disabled:opacity-60"
-                onClick={() => void handleRegisterInvite()}
-              >
-                {registerPending ? "绑定中..." : "绑定"}
-              </button>
-            </div>
+            <button
+              type="button"
+              disabled={registerPending}
+              className="mt-5 flex h-11 w-full items-center justify-center rounded-[10px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold text-white shadow-[0_4px_12px_rgba(213,0,0,0.2)] transition-opacity disabled:cursor-wait disabled:opacity-60"
+              onClick={() => void handleRegisterInvite()}
+            >
+              {registerPending ? "绑定中..." : "确认绑定"}
+            </button>
+
+            <div className="flex-1" aria-hidden />
           </div>
         </div>
       )}
