@@ -34,12 +34,12 @@ export function InviteBanner() {
           />
         </div>
 
-        <div className="relative z-10 ml-[120px] mt-[17px]">
-          <h2 className="-skew-x-[10deg] font-[family-name:var(--font-noto-sc-black)] text-[32px] font-black leading-normal text-black">
+        <div className="relative z-10 ml-[120px] mt-[17px] pr-3">
+          <h2 className="-skew-x-[10deg] flex items-center gap-1 font-[family-name:var(--font-noto-sc-black)] text-[28px] font-black leading-normal text-black">
             <span>{t("mine.invitePart1")}</span>
             <span className="text-[#f82a2a]">{t("mine.invitePart2")}</span>
           </h2>
-          <p className="mt-1 text-[10px] leading-normal tracking-[0.5px] text-[#8b8b8b]">
+          <p className="mt-1 max-w-full truncate text-[10px] leading-normal tracking-[0.5px] text-[#8b8b8b]">
             {t("mine.inviteSubtitle")}
           </p>
         </div>

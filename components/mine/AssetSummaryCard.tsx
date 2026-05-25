@@ -16,9 +16,9 @@ export function AssetSummaryCard() {
     <section className="relative h-[258px] w-full shrink-0">
       <AssetCardBackground />
 
-      <div className="absolute left-[66px] top-[27px] z-10 flex w-[219px] flex-col items-center gap-1.5">
-        <div className="flex items-center justify-center gap-0.5">
-          <p className="text-sm leading-normal text-black/70">
+      <div className="absolute inset-x-10 top-[27px] z-10 flex flex-col items-center gap-1.5">
+        <div className="flex items-center justify-center gap-1">
+          <p className="max-w-[180px] truncate text-sm leading-normal text-black/70">
             {t("mine.totalAssets")}
           </p>
           <WhitelistBadge hasTicket={userInfo.hasTicket} />
@@ -28,9 +28,9 @@ export function AssetSummaryCard() {
         </p>
       </div>
 
-      <div className="absolute left-[28.5px] top-[120px] z-10 flex items-center gap-4">
+      <div className="absolute inset-x-4 top-[120px] z-10 flex items-center gap-2">
         <StatColumn label={t("mine.totalEarnings")} value="0.00" trailingSpace />
-        <div className="flex h-7 w-0 items-center justify-center">
+        <div className="flex h-7 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">
             <AppImage
               src={mineAssets.statDividerV}
@@ -134,8 +134,8 @@ function StatColumn({
   trailingSpace?: boolean;
 }) {
   return (
-    <div className="flex w-[131px] flex-col items-center gap-1">
-      <p className="text-center text-sm leading-normal text-black/70">{label}</p>
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+      <p className="text-center text-xs leading-normal text-black/70">{label}</p>
       <p className="text-center leading-none text-black">
         <span className="font-[family-name:var(--font-mulish)] text-base font-semibold leading-normal">
           {value}
