@@ -151,7 +151,7 @@ export function TicketCard() {
               className="size-[22px] shrink-0 object-cover"
             />
             <span className="text-base font-semibold leading-[22px] text-black">
-              {t("entrust.buyTicket")}
+              {t("entrust.buyWhitelist")}
             </span>
             <div className="relative h-5 w-[21px] shrink-0 overflow-hidden">
               <AppImage
