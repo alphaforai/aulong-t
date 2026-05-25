@@ -138,7 +138,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
           </button>
           <h1
             id="direct-panel-title"
-            className="text-lg font-medium leading-[26px] text-[#272727]"
+            className="text-xl font-medium leading-7 text-[#272727]"
           >
             直推详情
           </h1>
@@ -154,19 +154,19 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
             }`}
           >
             {!walletAddress ? (
-              <p className="py-12 text-center text-sm text-[#8b8b8b]">
+              <p className="py-12 text-center text-base text-[#8b8b8b]">
                 请先连接钱包
               </p>
             ) : isPending ? (
-              <p className="py-12 text-center text-sm text-[#8b8b8b]">
+              <p className="py-12 text-center text-base text-[#8b8b8b]">
                 {TEAM_LOADING_LABEL}
               </p>
             ) : isError ? (
-              <p className="py-12 text-center text-sm text-[#8b8b8b]">
+              <p className="py-12 text-center text-base text-[#8b8b8b]">
                 加载失败，请稍后重试
               </p>
             ) : list.length === 0 ? (
-              <p className="py-12 text-center text-sm text-[#8b8b8b]">
+              <p className="py-12 text-center text-base text-[#8b8b8b]">
                 暂无直推记录
               </p>
             ) : (
@@ -278,7 +278,7 @@ function DirectPagination({
             type="button"
             disabled={loading}
             onClick={() => onPageChange(item)}
-            className={`flex h-5 min-w-5 items-center justify-center rounded-[2px] text-xs leading-normal disabled:opacity-50 ${
+            className={`flex h-5 min-w-5 items-center justify-center rounded-[2px] text-sm leading-normal disabled:opacity-50 ${
               item === page
                 ? "w-5 bg-[#ff4646] px-[9px] py-0.5 text-white/90"
                 : "w-5 border-[0.5px] border-white bg-white px-2 py-0.5 text-black/90"
@@ -362,24 +362,24 @@ function DirectReferralItem({ row }: { row: DirectReferralRow }) {
             className="h-[25px] w-20 object-contain object-left"
           />
         </div>
-        <p className="text-sm font-medium leading-normal text-black">
+        <p className="text-base font-medium leading-normal text-black">
           {shortWallet(row.walletAddress)}
         </p>
-        <p className="text-xs leading-5 text-[#424242]">
+        <p className="text-sm leading-5 text-[#424242]">
           注册时间：{formatRegisterTime(row.registerTime)}
         </p>
-        <p className="text-xs leading-5 text-[#424242]">
+        <p className="text-sm leading-5 text-[#424242]">
           团队委托总额USDT：{teamStakeText}
         </p>
       </div>
 
       <div className="flex w-[72px] shrink-0 flex-col items-end gap-1">
-        <p className="text-xs leading-normal text-[#333]">个人委托金额</p>
+        <p className="text-sm leading-normal text-[#333]">个人委托金额</p>
         <div className="text-right">
-          <p className="font-[family-name:var(--font-mulish)] text-base font-semibold leading-[18px] text-[#ea4747]">
+          <p className="font-[family-name:var(--font-mulish)] text-lg font-semibold leading-5 text-[#ea4747]">
             {amountText}
           </p>
-          <p className="font-[family-name:var(--font-mulish)] text-xs font-medium leading-[18px] text-[#989898]">
+          <p className="font-[family-name:var(--font-mulish)] text-sm font-medium leading-5 text-[#989898]">
             USDT
           </p>
         </div>

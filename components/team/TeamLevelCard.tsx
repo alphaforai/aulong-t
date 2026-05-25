@@ -46,7 +46,7 @@ export function TeamLevelCard({
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col">
-            <p className="text-sm leading-tight text-[#4b4b4b]">当前等级</p>
+            <p className="text-base leading-tight text-[#4b4b4b]">当前等级</p>
             <div className="relative mt-0.5 h-10 w-32">
               <AppImage
                 src={teamAssets.vipBadge}
@@ -57,22 +57,9 @@ export function TeamLevelCard({
               />
             </div>
           </div>
-          <div className="flex h-[58px] shrink-0 flex-col items-end justify-between">
-            <button
-              type="button"
-              className="flex items-center gap-0.5 text-xs leading-normal text-[rgba(51,51,51,0.7)]"
-            >
-              规则说明
-              <AppImage
-                src={teamAssets.rulesIcon}
-                alt=""
-                width={13}
-                height={13}
-                className="size-[13px] shrink-0"
-              />
-            </button>
+          <div className="flex h-[58px] shrink-0 flex-col items-end justify-end">
             <p
-              className={`text-xs leading-normal whitespace-nowrap ${
+              className={`text-sm leading-normal whitespace-nowrap ${
                 isPending ? "text-[#8b8b8b]" : ""
               }`}
             >
@@ -99,7 +86,7 @@ export function TeamLevelCard({
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <p className="text-sm leading-tight tracking-[0.28px] text-[#292929]">
+          <p className="text-base leading-tight tracking-[0.28px] text-[#292929]">
             小区业绩
           </p>
         </div>

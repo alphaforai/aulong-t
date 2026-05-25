@@ -68,7 +68,7 @@ export function MemberStatsCard({
             <button
               type="button"
               onClick={() => setShowDirectPanel(true)}
-              className="flex shrink-0 items-center gap-0.5 text-xs leading-normal text-[rgba(0,0,0,0.7)]"
+              className="flex shrink-0 items-center gap-0.5 text-sm leading-normal text-[rgba(0,0,0,0.7)]"
             >
               直推详情
               <AppImage
@@ -110,17 +110,17 @@ function MemberStatTile({
   return (
     <div className="relative h-[70px] overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2.5 top-4 flex flex-col gap-0.5">
-        <p className="whitespace-nowrap text-xs leading-normal text-[rgba(51,51,51,0.8)]">
+        <p className="whitespace-nowrap text-sm leading-normal text-[rgba(51,51,51,0.8)]">
           {label}
         </p>
         <p
-          className={`font-[family-name:var(--font-mulish)] text-base font-medium leading-normal ${
+          className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
             isPending ? "text-[#8b8b8b]" : "text-[#333]"
           }`}
         >
           {value}
           {!isPending ? (
-            <span className="text-[10px] font-normal"> 人</span>
+            <span className="text-xs font-normal"> 人</span>
           ) : null}
         </p>
       </div>

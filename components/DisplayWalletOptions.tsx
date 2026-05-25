@@ -69,7 +69,7 @@ function WalletOption({
   }, [connector]);
 
   const displayName =
-    connector.name.toLowerCase() === "injected" ? "内置的" : connector.name;
+    connector.name.toLowerCase() === "injected" ? "默认（推荐）" : connector.name;
 
   return (
     <button

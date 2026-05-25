@@ -18,23 +18,23 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
         <TeamSectionTitle title="团队业绩数据" />
 
         <div className="relative mt-2 min-h-[72px] pr-[86px]">
-          <p className="text-xs leading-normal text-[#333]">小区业绩(昨日变化)</p>
+          <p className="text-sm leading-normal text-[#333]">小区业绩(昨日变化)</p>
           <div className="mt-0.5 flex flex-wrap items-end gap-1.5 whitespace-nowrap">
             <p
-              className={`font-[family-name:var(--font-mulish)] text-base font-medium leading-normal ${
+              className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
                 isPending ? "text-[#8b8b8b]" : "text-[#db0000]"
               }`}
             >
               {deltaValue}
               {!isPending ? (
-                <span className="text-[10px] font-normal text-[#db0000]">
+                <span className="text-xs font-normal text-[#db0000]">
                   {" "}
                   USDT
                 </span>
               ) : null}
             </p>
             <span
-              className={`font-[family-name:var(--font-mulish)] text-xs leading-normal ${
+              className={`font-[family-name:var(--font-mulish)] text-sm leading-normal ${
                 isPending ? "text-[#8b8b8b]" : "text-[#db0000]"
               }`}
             >
@@ -89,15 +89,15 @@ function PerformanceSubCard({
   return (
     <div className="relative h-[65px] min-w-0 flex-1 overflow-hidden rounded-lg bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2 top-3.5 flex w-[97px] flex-col gap-0.5">
-        <p className="text-xs leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
+        <p className="text-sm leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
         <p
-          className={`font-[family-name:var(--font-mulish)] text-base font-medium leading-normal ${
+          className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
             isPending ? "text-[#8b8b8b]" : "text-[#333]"
           }`}
         >
           {value}
           {!isPending ? (
-            <span className="text-[10px] font-normal"> {unit}</span>
+            <span className="text-xs font-normal"> {unit}</span>
           ) : null}
         </p>
       </div>

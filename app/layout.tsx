@@ -27,7 +27,7 @@ const notoSansScBlack = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-    // metadataBase: new URL("https://fragment.com"),
+    metadataBase: new URL("https://aulong.australianlobster.xyz"),
     title: "Aulong",
     description:
       "Aulong website",

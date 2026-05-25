@@ -7,10 +7,11 @@ import { useUserInfoStore } from "@/lib/store";
 import {
   buildInviteInfoText,
   buildInviteLinkWithCode,
+  buildInviteQrDataUrl,
+  getInviteLinkBase,
+  isValidInviteLink,
 } from "@/lib/inviteUtils";
 import { toast } from "sonner";
-
-const INVITE_LINK_BASE = process.env.NEXT_PUBLIC_BASE_INVITE_LINK ?? "";
 
 type InviteFriendsSheetProps = {
   open: boolean;
@@ -19,12 +20,34 @@ type InviteFriendsSheetProps = {
 
 export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
   const [entered, setEntered] = React.useState(false);
+  const [qrDataUrl, setQrDataUrl] = React.useState<string | null>(null);
 
   const inviteCode = useUserInfoStore((state) => state.userInfo.inviteCode ?? "");
   const needsConnectWallet = inviteCode === "";
   const fullInviteLink = needsConnectWallet
     ? ""
-    : buildInviteLinkWithCode(INVITE_LINK_BASE, inviteCode);
+    : buildInviteLinkWithCode(getInviteLinkBase(), inviteCode);
+
+  React.useEffect(() => {
+    if (!open || needsConnectWallet || !fullInviteLink || !isValidInviteLink(fullInviteLink)) {
+      setQrDataUrl(null);
+      return;
+    }
+
+    setQrDataUrl(null);
+    let cancelled = false;
+    void buildInviteQrDataUrl(fullInviteLink, 208)
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, fullInviteLink, needsConnectWallet, inviteCode]);
 
   const closeSheet = React.useCallback(() => {
     setEntered(false);
@@ -157,13 +180,20 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
           <div className="mt-3 rounded-[12px] border border-white bg-white p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
             <div className="flex gap-3">
               <div className="flex size-[119px] shrink-0 items-center justify-center rounded-[8px] border border-white bg-white/80 p-2 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-                <AppImage
-                  src={mineAssets.inviteSheetQr}
-                  alt="邀请二维码"
-                  width={104}
-                  height={104}
-                  className="size-[104px] object-cover"
-                />
+                {qrDataUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={qrDataUrl}
+                    alt="邀请二维码"
+                    width={104}
+                    height={104}
+                    className="size-[104px] object-contain"
+                  />
+                ) : (
+                  <div className="flex size-[104px] items-center justify-center px-1 text-center text-[10px] leading-snug text-[#8b8b8b]">
+                    {needsConnectWallet ? "请先连接钱包" : "二维码生成中…"}
+                  </div>
+                )}
               </div>
 
               <div className="flex min-w-0 flex-1 flex-col gap-[9px]">

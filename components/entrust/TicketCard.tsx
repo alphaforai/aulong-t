@@ -159,9 +159,9 @@ export function TicketCard() {
             type="button"
             className="absolute right-0 top-1 flex w-[74px] items-center justify-end"
           >
-            <span className="text-xs leading-[19px] text-[#ffe6d9]">
+            {/* <span className="text-xs leading-[19px] text-[#ffe6d9]">
               规则说明
-            </span>
+            </span> */}
             <AppImage
               src={entrustAssets.rulesArrow}
               alt=""
@@ -183,7 +183,7 @@ export function TicketCard() {
             <p className="text-sm leading-[19px] text-black">
               花费
               {ticketPriceWei != null ? formatEther(ticketPriceWei) + " " : "—"}
-              BNB，可获取{platformConfig?.usdtAmount} AUL币的空投
+              BNB，可获取{platformConfig?.usdtAmount} USDT的空投
             </p>
           </div>
         </div>

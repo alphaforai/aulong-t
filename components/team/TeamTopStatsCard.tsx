@@ -100,16 +100,16 @@ function StatColumn({ icon, label, value, unit }: TopStat) {
 
       <div className="flex w-full flex-col items-center gap-[3px] text-center">
         <p
-          className={`w-full font-[family-name:var(--font-mulish)] text-base font-medium leading-5 tracking-[-0.32px] ${
+          className={`w-full font-[family-name:var(--font-mulish)] text-lg font-medium leading-6 tracking-[-0.32px] ${
             value === TEAM_LOADING_LABEL ? "text-[#8b8b8b]" : "text-[#d50000]"
           }`}
         >
           {value}
         </p>
-        <p className="w-full text-xs font-medium leading-normal tracking-[0.24px] text-[#292929]">
+        <p className="w-full text-sm font-medium leading-normal tracking-[0.24px] text-[#292929]">
           {label}
         </p>
-        <p className="w-full text-xs leading-normal tracking-[0.24px] text-[rgba(0,0,0,0.6)]">
+        <p className="w-full text-sm leading-normal tracking-[0.24px] text-[rgba(0,0,0,0.6)]">
           {unit}
         </p>
       </div>
