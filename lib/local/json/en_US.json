@@ -147,7 +147,7 @@
     "filterTime": "Time",
     "noFundRecords": "No fund records yet",
     "whitelist": "Whitelist",
-    "inactive": "Inactive",
+    "inactive": "Not whitelisted",
     "paginationAria": "Fund details pagination",
     "prevPage": "Previous page",
     "nextPage": "Next page",

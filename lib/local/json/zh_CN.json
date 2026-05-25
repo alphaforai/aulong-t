@@ -147,7 +147,7 @@
     "filterTime": "时间",
     "noFundRecords": "暂无资金明细",
     "whitelist": "白名单",
-    "inactive": "未激活",
+    "inactive": "非白名单",
     "paginationAria": "资金明细分页",
     "prevPage": "上一页",
     "nextPage": "下一页",

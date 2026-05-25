@@ -147,7 +147,7 @@
     "filterTime": "시간",
     "noFundRecords": "자금 내역 없음",
     "whitelist": "화이트리스트",
-    "inactive": "미활성",
+    "inactive": "ホワイトリストに登録されていません",
     "paginationAria": "자금 내역 페이지네이션",
     "prevPage": "이전 페이지",
     "nextPage": "다음 페이지",

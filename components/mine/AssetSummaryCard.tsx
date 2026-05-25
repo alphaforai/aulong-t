@@ -44,7 +44,7 @@ export function AssetSummaryCard() {
         <StatColumn label={t("mine.totalRelease")} value="0.00" trailingSpace />
       </div>
 
-      <div className="absolute left-2 top-[177px] z-10 flex w-[335px] items-center justify-center gap-3">
+      <div className="absolute inset-x-0 top-[177px] z-10 flex items-center justify-center gap-3">
         <ActionButton
           icon={mineAssets.actionUsdt}
           iconClassName="left-[-8.14%] top-[-8.14%] size-[116.28%]"
@@ -65,7 +65,7 @@ export function AssetSummaryCard() {
         />
         <ActionButton
           icon={mineAssets.actionInvest}
-          iconClassName="left-[-17.6%] top-[-17.6%] size-[135.21%]"
+          iconClassName="left-0 top-0 size-[90%]"
           label={t("mine.goInvest")}
           variant="primary"
           onClick={() => {
@@ -181,7 +181,7 @@ function ActionButton({
           <span className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]" />
         </>
       ) : null}
-      <div className="relative z-10 size-[34px] shrink-0 overflow-hidden">
+      <div className="relative z-10 size-8.5 shrink-0 overflow-hidden">
         <AppImage
           src={icon}
           alt=""
@@ -191,7 +191,7 @@ function ActionButton({
         />
       </div>
       <span
-        className={`relative z-10 line-clamp-2 max-w-full text-center text-xs leading-tight font-medium ${
+        className={`relative z-10 max-w-full text-center text-xs leading-tight font-medium ${
           isPrimary ? "text-white" : "text-[#e43b3b]"
         }`}
       >

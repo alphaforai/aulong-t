@@ -147,7 +147,7 @@
     "filterTime": "時間",
     "noFundRecords": "資金明細がありません",
     "whitelist": "ホワイトリスト",
-    "inactive": "未アクティブ",
+    "inactive": "ホワイトリストに登録されていません",
     "paginationAria": "資金明細ページネーション",
     "prevPage": "前のページ",
     "nextPage": "次のページ",
