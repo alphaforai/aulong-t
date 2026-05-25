@@ -7,7 +7,7 @@ import { maintenanceAssets } from "./assets";
  */
 export function MaintenanceScreen() {
   return (
-    <div className="relative h-dvh min-h-dvh w-full overflow-hidden bg-white md:mx-auto md:my-8 md:h-auto md:min-h-[812px] md:max-w-[375px] md:rounded-2xl md:shadow-[0_4px_32px_rgba(0,0,0,0.08)]">
+    <div className="relative h-dvh min-h-dvh w-full overflow-hidden bg-white md:mx-auto md:my-8 md:h-auto md:min-h-[812px] md:max-w-[430px] md:rounded-2xl md:shadow-[0_4px_32px_rgba(0,0,0,0.08)]">
       <AppImage
         src={maintenanceAssets.background}
         alt=""

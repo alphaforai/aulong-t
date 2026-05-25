@@ -1,6 +1,6 @@
 /** 与 AulongPageShell 一致：移动端全宽，md+ 居中 375px 面板 */
 
-export const shellMaxWidth = "max-w-[375px]";
+export const shellMaxWidth = "max-w-[430px]";
 export const shellMdHeight = "md:max-h-[calc(100dvh-4rem)]";
 export const shellMdPaddingY = "md:py-8";
 

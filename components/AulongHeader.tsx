@@ -279,7 +279,7 @@ export default function AulongHeader() {
 
       {showWalletModal && (
         <div className={`${bottomSheetOverlayRoot} z-60`}>
-          <div>
+          <div className={bottomSheetOverlayFrame}>
             <button
               type="button"
               aria-label={t("common.close")}
