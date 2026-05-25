@@ -1,4 +1,7 @@
+"use client";
+
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { mineAssets } from "./assets";
 
 type FundRecord = {
@@ -11,26 +14,15 @@ type FundRecord = {
 };
 
 const FUND_RECORDS: FundRecord[] = [];
-//   {
-//     title: "启动AI",
-//     currency: "USDT",
-//     time: "2024-03-24 19:33",
-//     amount: "+3,597.30",
-//     amountTone: "positive",
-//     balance: "余额：1598455.24 USDT",
-//   },
-//   {
-//     title: "购买白名单",
-//     currency: "X",
-//     time: "2024-03-24 19:33",
-//     amount: "+26,119.94",
-//     amountTone: "positive",
-//     balance: "余额：1598455.24 X",
-//   }
 
-const FILTERS = ["账单类型", "币种", "时间"] as const;
+const FILTER_KEYS = [
+  "mine.filterBillType",
+  "mine.filterCurrency",
+  "mine.filterTime",
+] as const;
 
 export function FundDetailsCard() {
+  const { t } = useTranslation();
   const hasRecords = FUND_RECORDS.length > 0;
 
   return (
@@ -46,18 +38,18 @@ export function FundDetailsCard() {
           />
         </div>
         <h2 className="text-base font-semibold leading-[22px] text-black/80">
-          资金明细
+          {t("mine.fundDetails")}
         </h2>
       </div>
 
       <div className="flex items-center gap-4">
-        {FILTERS.map((label) => (
+        {FILTER_KEYS.map((key) => (
           <button
-            key={label}
+            key={key}
             type="button"
             className="flex items-center gap-1 text-sm leading-normal text-[#333]"
           >
-            {label}
+            {t(key)}
             <AppImage
               src={mineAssets.chevronDown}
               alt=""
@@ -82,7 +74,7 @@ export function FundDetailsCard() {
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {!hasRecords ? (
           <div className="flex flex-1 items-center justify-center py-12 text-sm text-black/50">
-            暂无资金明细
+            {t("mine.noFundRecords")}
           </div>
         ) : (
           FUND_RECORDS.map((record, index) => (

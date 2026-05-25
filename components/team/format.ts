@@ -1,10 +1,12 @@
+/** 团队数据加载中的占位符（与语言无关） */
 export const TEAM_LOADING_LABEL = "...";
 
 export function displayTeamValue(
   isPending: boolean | undefined,
   formatted: string,
+  loadingLabel: string = TEAM_LOADING_LABEL,
 ): string {
-  return isPending ? TEAM_LOADING_LABEL : formatted;
+  return isPending ? loadingLabel : formatted;
 }
 
 export function formatAmount(

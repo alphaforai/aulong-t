@@ -1,4 +1,7 @@
+"use client";
+
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
 import { TeamSectionTitle } from "./TeamSectionTitle";
 import { displayTeamValue, formatAmount } from "./format";
@@ -9,16 +12,28 @@ export type TeamPerformanceCardProps = {
 
 /** 团队业绩数据 — Figma 535:6355（接口暂无对应字段，先展示占位 0） */
 export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
-  const deltaValue = displayTeamValue(isPending, `+${formatAmount(0)}`);
-  const deltaPctValue = displayTeamValue(isPending, `+${formatAmount(0)}%`);
+  const { t } = useTranslation();
+  const loadingLabel = t("common.loadingDots");
+  const deltaValue = displayTeamValue(
+    isPending,
+    `+${formatAmount(0)}`,
+    loadingLabel,
+  );
+  const deltaPctValue = displayTeamValue(
+    isPending,
+    `+${formatAmount(0)}%`,
+    loadingLabel,
+  );
 
   return (
     <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white/61 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="relative px-2.5 pt-2.5">
-        <TeamSectionTitle title="团队业绩数据" />
+        <TeamSectionTitle title={t("team.teamPerformance")} />
 
         <div className="relative mt-2 min-h-[72px] pr-[86px]">
-          <p className="text-sm leading-normal text-[#333]">小区业绩(昨日变化)</p>
+          <p className="text-sm leading-normal text-[#333]">
+            {t("team.communityPerfYesterday")}
+          </p>
           <div className="mt-0.5 flex flex-wrap items-end gap-1.5 whitespace-nowrap">
             <p
               className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
@@ -55,17 +70,19 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
         <div className="flex gap-3">
           <PerformanceSubCard
             icon={teamAssets.perfIconToday}
-            label="今日委托总额"
-            value={displayTeamValue(isPending, formatAmount(0))}
+            label={t("team.todayStakeTotal")}
+            value={displayTeamValue(isPending, formatAmount(0), loadingLabel)}
             unit="USDT"
             isPending={isPending}
+            loadingLabel={loadingLabel}
           />
           <PerformanceSubCard
             icon={teamAssets.perfIconTeam}
-            label="团队委托总额"
-            value={displayTeamValue(isPending, formatAmount(0))}
+            label={t("team.teamStakeTotal")}
+            value={displayTeamValue(isPending, formatAmount(0), loadingLabel)}
             unit="USDT"
             isPending={isPending}
+            loadingLabel={loadingLabel}
           />
         </div>
       </div>
@@ -79,24 +96,30 @@ function PerformanceSubCard({
   value,
   unit,
   isPending,
+  loadingLabel,
 }: {
   icon: string;
   label: string;
   value: string;
   unit: string;
   isPending?: boolean;
+  loadingLabel: string;
 }) {
   return (
     <div className="relative h-[65px] min-w-0 flex-1 overflow-hidden rounded-lg bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2 top-3.5 flex w-[97px] flex-col gap-0.5">
-        <p className="text-sm leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
+        <p className="line-clamp-2 text-xs leading-snug text-[rgba(51,51,51,0.8)]">
+          {label}
+        </p>
         <p
           className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
-            isPending ? "text-[#8b8b8b]" : "text-[#333]"
+            isPending || value === loadingLabel
+              ? "text-[#8b8b8b]"
+              : "text-[#333]"
           }`}
         >
           {value}
-          {!isPending ? (
+          {!isPending && value !== loadingLabel ? (
             <span className="text-xs font-normal"> {unit}</span>
           ) : null}
         </p>

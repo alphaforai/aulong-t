@@ -12,6 +12,7 @@ import {
   setAuthInFlight,
   setLastLoginProof,
 } from "@/lib/walletSession";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useAuthStore, useUserInfoStore } from "@/lib/store";
 import { toast } from "sonner";
 
@@ -33,6 +34,7 @@ function getErrorMessage(error: unknown, fallback: string) {
  * 全局钱包登录同步：挂在 Provider 下，避免各页 AulongHeader 重挂载时重复签名。
  */
 export function WalletSessionSync() {
+  const { t } = useTranslation();
   const { isConnected, address } = useConnection();
   const { disconnect } = useDisconnect();
   const { signMessageAsync } = useSignMessage();
@@ -115,7 +117,7 @@ export function WalletSessionSync() {
         clearWalletSession();
         setNeedsInviteRegister(false);
         if (!isUserRejected(error)) {
-          toast.error(getErrorMessage(error, "钱包登录失败，请稍后重试"));
+          toast.error(getErrorMessage(error, t("wallet.loginFailed")));
         }
         console.error("wallet login failed:", error);
       } finally {
@@ -139,6 +141,7 @@ export function WalletSessionSync() {
     setAccessToken,
     setNeedsInviteRegister,
     setUserInfo,
+    t,
   ]);
 
   return null;

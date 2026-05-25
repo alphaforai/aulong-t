@@ -8,8 +8,8 @@ type ImageButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const CONFIG = {
-  whitelist: { src: entrustAssets.btnWhitelist, width: 166 },
-  start: { src: entrustAssets.btnStart, width: 130 },
+  whitelist: { src: entrustAssets.btnWhitelist, minWidth: 150 },
+  start: { src: entrustAssets.btnStart, minWidth: 108 },
 } as const;
 
 export function ImageButton({
@@ -18,14 +18,19 @@ export function ImageButton({
   className = "",
   ...props
 }: ImageButtonProps) {
-  const { src, width } = CONFIG[variant];
+  const { src, minWidth } = CONFIG[variant];
   const height = 44;
 
   return (
     <button
       type="button"
-      className={`relative inline-flex shrink-0 select-none items-center justify-center overflow-visible transition-[transform] duration-150 ease-out will-change-transform enabled:active:translate-y-1 enabled:active:scale-[0.92] disabled:cursor-default disabled:opacity-100 ${className}`}
-      style={{ width, height, minWidth: width, minHeight: height }}
+      className={`relative inline-flex max-w-full shrink-0 select-none items-center justify-center overflow-visible px-4 transition-[transform] duration-150 ease-out will-change-transform enabled:active:translate-y-1 enabled:active:scale-[0.92] disabled:cursor-default disabled:opacity-100 ${className}`}
+      style={{
+        minWidth,
+        width: "max-content",
+        height,
+        minHeight: height,
+      }}
       {...props}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -34,13 +39,13 @@ export function ImageButton({
         alt=""
         className="pointer-events-none absolute max-w-none"
         style={{
-          width: width * 1.14,
-          height: height * 1.54,
-          left: width * -0.07,
-          top: height * -0.18,
+          width: "114%",
+          height: "154%",
+          left: "-7%",
+          top: "-18%",
         }}
       />
-      <span className="relative z-10 text-base font-semibold text-white [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]">
+      <span className="relative z-10 max-w-full text-center text-sm font-semibold leading-tight text-white [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]">
         {children}
       </span>
     </button>

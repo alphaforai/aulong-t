@@ -13,10 +13,9 @@ import {
 import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { getUserAssets, getXcoinPrice, getXpriceOverview } from "@/lib/api/users";
+import { useChartLocale } from "@/lib/hooks/useChartLocale";
 import {
   mapOverviewToChart,
-  RANGE_DESC_MAP,
-  RANGE_TABS,
   type PriceGranularity,
   XPRICE_OVERVIEW_CACHE_MS,
 } from "./priceChartUtils";
@@ -56,6 +55,7 @@ function ChartTooltipContent({
 }
 
 export function PriceChartSection() {
+  const { bcp47, rangeTabs, rangeDescMap, t } = useChartLocale();
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const [granularity, setGranularity] = useState<PriceGranularity>("DAY");
   const [chartReady, setChartReady] = useState(false);
@@ -95,8 +95,8 @@ export function PriceChartSection() {
   const holdingsUsd = Number(xcoinBalance) * Number(currentPrice);
 
   const chartData = useMemo(
-    () => mapOverviewToChart(overviewResponse?.data, granularity),
-    [overviewResponse, granularity],
+    () => mapOverviewToChart(overviewResponse?.data, granularity, bcp47),
+    [overviewResponse, granularity, bcp47],
   );
 
   const showChart = chartData.length > 0 && !chartPending && !chartError;
@@ -107,7 +107,7 @@ export function PriceChartSection() {
       <div className="relative flex h-[90px] w-full min-w-0 shrink-0 flex-col rounded-[12px] shadow-[0_4px_5.2px_rgba(253,101,104,0.06)]">
         <div className="flex min-h-0 flex-1">
           <div className="flex min-w-0 flex-1 flex-col px-[18px] pt-2">
-            <p className="text-sm text-[#5c5c5c]">AUL 币价格</p>
+            <p className="text-sm text-[#5c5c5c]">{t("entrust.aulPrice")}</p>
             <AmountWithUnit amount={formatAmount(currentPrice)} unit="USDT" />
             <p className="mt-1 text-sm leading-normal text-[#16b86f]">
               +{formatAmount(dailyRate)}%
@@ -117,7 +117,7 @@ export function PriceChartSection() {
           <div className="my-3 w-px shrink-0 self-stretch bg-[#f3efeb]" />
 
           <div className="flex min-w-0 flex-1 flex-col px-[18px] pt-2">
-            <p className="text-sm text-[#5c5c5c]">持有 AUL 币</p>
+            <p className="text-sm text-[#5c5c5c]">{t("entrust.holdAul")}</p>
             <AmountWithUnit amount={formatAmount(xcoinBalance)} unit="AUL" />
             <p className="mt-1 text-sm leading-normal text-[#5c5c5c]">
               ≈ ${formatAmount(holdingsUsd)}
@@ -127,7 +127,7 @@ export function PriceChartSection() {
       </div>
 
       <div className="flex h-9 w-full items-center justify-between overflow-hidden rounded-[7px] bg-[#f4f4f4] p-1">
-        {RANGE_TABS.map(({ granularity: g, label }) => {
+        {rangeTabs.map(({ granularity: g, label }) => {
           const active = g === granularity;
           return (
             <button
@@ -147,15 +147,15 @@ export function PriceChartSection() {
       <div className="relative h-[144px] w-full min-h-[144px] min-w-0 shrink-0">
         {chartPending ? (
           <div className="flex h-full items-center justify-center text-sm text-[#8b8b8b]">
-            加载中…
+            {t("entrust.chartLoading")}
           </div>
         ) : chartError ? (
           <div className="flex h-full items-center justify-center text-sm text-[#ea4747]">
-            数据加载失败，请稍后重试
+            {t("entrust.chartLoadFailed")}
           </div>
         ) : !showChart ? (
           <div className="flex h-full items-center justify-center text-sm text-[#8b8b8b]">
-            暂无{RANGE_DESC_MAP[granularity]}数据
+            {t("entrust.chartNoData", { range: rangeDescMap[granularity] })}
           </div>
         ) : (
           <div className="absolute inset-0 h-full w-full min-h-[144px] min-w-0">

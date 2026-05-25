@@ -1,30 +1,57 @@
 "use client";
 
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
+import type { Locale } from "@/lib/local";
 import { earningsAssets } from "./assets";
 import { toast } from "sonner";
 
+/** 底栏统计在窄卡片里用短文案的语言 */
+const COMPACT_STAT_LOCALES: Locale[] = ["en_US", "ko_KR", "vi_VN", "ja_JP", "ms_MY"];
+
+function useEarningsSummaryCopy(locale: Locale, t: (key: string) => string) {
+  const compactStat = COMPACT_STAT_LOCALES.includes(locale);
+  return {
+    totalEarnings: t("earnings.totalEarnings"),
+    earningsRecord: t("earnings.earningsRecord"),
+    invest: t("earnings.investBtn"),
+    pending: compactStat
+      ? t("earnings.pendingEarningsCard")
+      : t("earnings.pendingEarnings"),
+    lastPeriod: compactStat
+      ? t("earnings.lastPeriodEarningsCard")
+      : t("earnings.lastPeriodEarnings"),
+  };
+}
+
 /** 收益摘要卡 — 对齐 Figma 439:331 / 438:5985 */
 export function EarningsSummaryCard() {
+  const { t, locale } = useTranslation();
+  const copy = useEarningsSummaryCopy(locale, t);
+
   return (
     <section className="relative h-[148px] w-full shrink-0 overflow-hidden rounded-[12px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <SummaryBackground />
 
-      {/* 总收益 — left 9px, top 9px（稿 21/121 相对 12/112 卡片） */}
-      <div className="absolute left-[9px] top-[9px] z-10 flex flex-col gap-2">
-        <p className="text-sm leading-normal text-black/70">总收益(USDT)</p>
+      {/* 总收益 — 稿 left 9px, top 9px */}
+      <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-120px)] flex-col gap-2">
+        <p className="text-sm leading-normal text-black/70">{copy.totalEarnings}</p>
         <p className="font-[family-name:var(--font-mulish)] text-[32px] font-bold leading-none text-black">
           0.00
         </p>
       </div>
 
-      {/* 收益记录 — 稿 top 124, 箭头 334px */}
+      {/* 收益记录 — 稿右上角 */}
       <button
         type="button"
-        className="absolute right-[15px] top-3 z-10 flex items-center gap-1"
-        onClick={() => {toast.info("暂未开放")}}
+        className="absolute right-[15px] top-3 z-10 flex max-w-[40%] items-center justify-end gap-1"
+        onClick={() => {
+          toast.info(t("common.notOpen"));
+        }}
       >
-        <span className="text-xs leading-normal text-black/70">收益记录</span>
+        <span className="truncate text-xs leading-normal text-black/70">
+          {copy.earningsRecord}
+        </span>
         <AppImage
           src={earningsAssets.recordArrow}
           alt=""
@@ -34,16 +61,18 @@ export function EarningsSummaryCard() {
         />
       </button>
 
-      {/* 领取 — 稿 left 252, top 155 → 相对卡片 left 240, top 43 */}
+      {/* 去理财 — 稿 right 7px, top 43px，与大号金额同一行 */}
       <button
         type="button"
         className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] select-none items-center justify-center rounded-[33px] border border-white bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92]"
-        onClick={() => {toast.info("暂未开放")}}
+        onClick={() => {
+          toast.info(t("common.notOpen"));
+        }}
       >
-        去理财
+        {copy.invest}
       </button>
 
-      {/* 横线 — 稿居中宽 220, top 197 → top 85 */}
+      {/* 横线 — 稿 top 85px */}
       <div className="absolute left-1/2 top-[85px] z-10 h-px w-[220px] -translate-x-1/2">
         <AppImage
           src={earningsAssets.summaryDividerH}
@@ -54,9 +83,9 @@ export function EarningsSummaryCard() {
         />
       </div>
 
-      {/* 底部统计 — 稿 top 206, left 21, gap 11 */}
-      <div className="absolute left-[9px] top-[94px] z-10 flex items-center gap-[11px]">
-        <StatBlock label="待发放收益" />
+      {/* 底部统计 — 稿 top 94px, gap 11px */}
+      <div className="absolute left-[9px] top-[94px] z-10 flex w-[calc(100%-18px)] items-center gap-[11px]">
+        <StatBlock label={copy.pending} compact={COMPACT_STAT_LOCALES.includes(locale)} />
         <div className="flex h-9 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">
             <AppImage
@@ -68,7 +97,11 @@ export function EarningsSummaryCard() {
             />
           </div>
         </div>
-        <StatBlock label="上期收益" withTrailingSpace />
+        <StatBlock
+          label={copy.lastPeriod}
+          withTrailingSpace
+          compact={COMPACT_STAT_LOCALES.includes(locale)}
+        />
       </div>
     </section>
   );
@@ -86,7 +119,6 @@ function SummaryBackground() {
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
-      {/* 稿 438:6259 — 相对卡片 left 55.7, top -152 */}
       <div className="absolute left-[55.7px] top-[-152px] flex h-[568px] w-[553px] items-center justify-center">
         <div className="flex-none -skew-x-[1.21deg] rotate-[-25.72deg]">
           <div
@@ -107,7 +139,6 @@ function SummaryBackground() {
         </div>
       </div>
 
-      {/* 稿 438:6266 — 相对卡片 left -264, top -253 */}
       <div className="absolute -left-[264px] -top-[253px] flex h-[590px] w-[574px] items-center justify-center">
         <div className="flex-none -skew-x-[1.43deg] rotate-[-33.51deg]">
           <div
@@ -134,14 +165,24 @@ function SummaryBackground() {
 function StatBlock({
   label,
   withTrailingSpace = false,
+  compact = false,
 }: {
   label: string;
   withTrailingSpace?: boolean;
+  compact?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <p className="text-sm leading-normal text-black/70">{label}</p>
-      <p className="text-black leading-none">
+    <div className="min-w-0 flex-1 basis-0">
+      <p
+        className={`leading-normal text-black/70 ${
+          compact
+            ? "line-clamp-2 text-[10px] leading-snug"
+            : "text-sm"
+        }`}
+      >
+        {label}
+      </p>
+      <p className="mt-1 text-black leading-none">
         <span className="font-[family-name:var(--font-mulish)] text-base font-bold leading-normal">
           0.00
         </span>

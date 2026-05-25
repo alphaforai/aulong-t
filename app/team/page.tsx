@@ -7,10 +7,12 @@ import { TeamLevelCard } from "@/components/team/TeamLevelCard";
 import { TeamPerformanceCard } from "@/components/team/TeamPerformanceCard";
 import { TeamTopStatsCard } from "@/components/team/TeamTopStatsCard";
 import { getTeamOverview } from "@/lib/api/users";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export default function TeamPage() {
+  const { t } = useTranslation();
   const { data: teamOverviewResponse, isPending, isError } = useQuery({
     queryKey: ["teamOverview"],
     queryFn: () => getTeamOverview(),
@@ -18,9 +20,9 @@ export default function TeamPage() {
 
   useEffect(() => {
     if (isError) {
-      toast.error("获取团队数据失败");
+      toast.error(t("toast.teamOverviewFailed"));
     }
-  }, [isError]);
+  }, [isError, t]);
 
   const overview = teamOverviewResponse?.data as
     | {

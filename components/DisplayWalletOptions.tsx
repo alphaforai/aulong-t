@@ -8,9 +8,11 @@ import {
   useConnectors,
   useSwitchChain,
 } from "wagmi";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { toast } from "sonner";
 
 export default function DisplayWalletOptions() {
+  const { t } = useTranslation();
   const { connectAsync } = useConnect();
   const { switchChainAsync } = useSwitchChain();
   const connectors = useConnectors();
@@ -28,15 +30,15 @@ export default function DisplayWalletOptions() {
       } catch (error: unknown) {
         const e = error as { shortMessage?: string; message?: string };
         toast.error(
-          e?.shortMessage || e?.message || "连接钱包或切换网络失败",
+          e?.shortMessage || e?.message || t("wallet.connectFailed"),
         );
       }
     },
-    [connectAsync, switchChainAsync],
+    [connectAsync, switchChainAsync, t],
   );
 
   if (!connectors.length) {
-    return <p className="text-sm text-[#8b8b8b]">未检测到可用钱包</p>;
+    return <p className="text-sm text-[#8b8b8b]">{t("wallet.noWallets")}</p>;
   }
 
   return (
@@ -59,6 +61,7 @@ function WalletOption({
   connector: Connector;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
@@ -69,7 +72,9 @@ function WalletOption({
   }, [connector]);
 
   const displayName =
-    connector.name.toLowerCase() === "injected" ? "默认（推荐）" : connector.name;
+    connector.name.toLowerCase() === "injected"
+      ? t("wallet.injectedDefault")
+      : connector.name;
 
   return (
     <button
@@ -88,11 +93,11 @@ function WalletOption({
       />
       <span className="pl-2">{displayName}</span>
       {ready ? (
-        <span className="inline-flex h-6 items-center rounded-full bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] px-2.5 text-xs font-medium leading-none text-white shadow-[inset_0_-2px_2px_rgba(255,254,227,0.5)]">
-          可用
+        <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] px-2 text-[10px] font-medium leading-none text-white shadow-[inset_0_-2px_2px_rgba(255,254,227,0.5)] sm:px-2.5 sm:text-xs">
+          {t("common.available")}
         </span>
       ) : (
-        <span className="text-xs text-[#8b8b8b]">不可用</span>
+        <span className="text-xs text-[#8b8b8b]">{t("common.unavailable")}</span>
       )}
     </button>
   );

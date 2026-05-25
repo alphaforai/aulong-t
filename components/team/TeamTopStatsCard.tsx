@@ -1,12 +1,10 @@
+"use client";
+
 import { Fragment } from "react";
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
-import {
-  displayTeamValue,
-  formatAmount,
-  formatCount,
-  TEAM_LOADING_LABEL,
-} from "./format";
+import { displayTeamValue, formatAmount, formatCount } from "./format";
 
 type TopStat = {
   icon: string;
@@ -25,34 +23,41 @@ export function TeamTopStatsCard({
   isPending,
   smallAreaStake,
 }: TeamTopStatsCardProps) {
+  const { t } = useTranslation();
+  const loadingLabel = t("common.loadingDots");
+
   const topStats: TopStat[] = [
     {
       icon: teamAssets.statIconCommunity,
-      label: "小区业绩",
-      value: displayTeamValue(isPending, formatAmount(smallAreaStake)),
+      label: t("team.smallAreaPerformanceCard"),
+      value: displayTeamValue(
+        isPending,
+        formatAmount(smallAreaStake),
+        loadingLabel,
+      ),
       unit: "USDT",
     },
     {
       icon: teamAssets.statIconReferral,
-      label: "直推委托",
-      value: displayTeamValue(isPending, formatCount(0)),
-      unit: "人数",
+      label: t("team.directReferralCard"),
+      value: displayTeamValue(isPending, formatCount(0), loadingLabel),
+      unit: t("team.peopleCount"),
     },
     {
       icon: teamAssets.statIconPersonal,
-      label: "个人委托数量",
-      value: displayTeamValue(isPending, formatAmount(0)),
+      label: t("team.personalEntrustCountCard"),
+      value: displayTeamValue(isPending, formatAmount(0), loadingLabel),
       unit: "USDT",
     },
   ];
 
   return (
-    <section className="relative h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
-      <div className="relative flex h-full items-center justify-between px-3">
+    <section className="relative min-h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white py-2 shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+      <div className="relative flex h-full items-stretch justify-between gap-1 px-2">
         {topStats.map((stat, index) => (
           <Fragment key={stat.label}>
             {index > 0 ? <StatDivider /> : null}
-            <StatColumn {...stat} />
+            <StatColumn {...stat} loadingLabel={loadingLabel} />
           </Fragment>
         ))}
       </div>
@@ -62,21 +67,27 @@ export function TeamTopStatsCard({
 
 function StatDivider() {
   return (
-    <div className="relative h-[73px] w-px shrink-0 self-center" aria-hidden>
+    <div className="relative w-px shrink-0 self-center py-2" aria-hidden>
       <AppImage
         src={teamAssets.statDivider}
         alt=""
         width={1}
         height={73}
-        className="size-full"
+        className="h-[73px] w-px"
       />
     </div>
   );
 }
 
-function StatColumn({ icon, label, value, unit }: TopStat) {
+function StatColumn({
+  icon,
+  label,
+  value,
+  unit,
+  loadingLabel,
+}: TopStat & { loadingLabel: string }) {
   return (
-    <div className="flex w-[90px] shrink-0 flex-col items-center gap-[9px]">
+    <div className="flex min-w-0 flex-1 basis-0 flex-col items-center gap-1.5 px-0.5">
       <div className="relative size-[42px] shrink-0">
         <div className="absolute inset-[0_-9.52%_-19.05%_-9.52%]">
           <AppImage
@@ -98,18 +109,18 @@ function StatColumn({ icon, label, value, unit }: TopStat) {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-center gap-[3px] text-center">
+      <div className="flex w-full min-w-0 flex-col items-center gap-0.5 text-center">
         <p
-          className={`w-full font-[family-name:var(--font-mulish)] text-lg font-medium leading-6 tracking-[-0.32px] ${
-            value === TEAM_LOADING_LABEL ? "text-[#8b8b8b]" : "text-[#d50000]"
+          className={`w-full font-[family-name:var(--font-mulish)] text-base font-medium leading-tight tracking-[-0.32px] sm:text-lg sm:leading-6 ${
+            value === loadingLabel ? "text-[#8b8b8b]" : "text-[#d50000]"
           }`}
         >
           {value}
         </p>
-        <p className="w-full text-sm font-medium leading-normal tracking-[0.24px] text-[#292929]">
+        <p className="line-clamp-2 w-full text-[10px] font-medium leading-snug tracking-[0.2px] text-[#292929] sm:text-xs sm:leading-normal">
           {label}
         </p>
-        <p className="w-full text-sm leading-normal tracking-[0.24px] text-[rgba(0,0,0,0.6)]">
+        <p className="w-full text-[10px] leading-snug tracking-[0.2px] text-[rgba(0,0,0,0.6)] sm:text-xs sm:leading-normal">
           {unit}
         </p>
       </div>

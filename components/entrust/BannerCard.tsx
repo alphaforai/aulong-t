@@ -78,7 +78,7 @@ export function BannerCard({
       </div>
 
       <p
-        className={`absolute z-20 max-w-[177px] text-left text-xs leading-normal text-[#242424] ${
+        className={`absolute z-20 line-clamp-3 max-w-[min(200px,52%)] text-left text-[10px] leading-snug text-[#242424] sm:text-xs sm:leading-normal ${
           isStartAi ? "left-[133px] top-14" : "left-[116px] top-11"
         }`}
       >

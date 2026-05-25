@@ -3,6 +3,7 @@
 import { entrustAssets } from "./assets";
 import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { toast } from "sonner";
 
 type StrategyCardProps = {
@@ -22,6 +23,8 @@ export function StrategyCard({
   apr = "45.23",
   period = "30",
 }: StrategyCardProps) {
+  const { t } = useTranslation();
+
   return (
     <article className="relative min-h-[132px] w-full overflow-hidden rounded-[12px] border border-white bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex w-full min-w-0 flex-col gap-[10px]">
@@ -53,26 +56,39 @@ export function StrategyCard({
 
         <div className="flex gap-[45px]">
           <div>
-            <p className="text-xs leading-normal text-black/50">APR</p>
+            <p className="text-xs leading-normal text-black/50">
+              {t("entrust.apr")}
+            </p>
             <p className="font-[family-name:var(--font-mulish)] leading-none text-black">
               <span className="text-2xl leading-normal">{apr}</span>
               <span className="text-xs leading-normal">%</span>
             </p>
           </div>
           <div>
-            <p className="text-xs leading-normal text-black/50">周期</p>
+            <p className="text-xs leading-normal text-black/50">
+              {t("entrust.period")}
+            </p>
             <p className="leading-none text-black">
               <span className="font-[family-name:var(--font-mulish)] text-2xl leading-normal">
                 {period}
               </span>
-              <span className="text-xs leading-normal">天</span>
+              <span className="text-xs leading-normal">
+                {t("entrust.periodUnit")}
+              </span>
             </p>
           </div>
         </div>
       </div>
 
       <div className="absolute right-3 top-[84px]">
-        <ImageButton variant="start" onClick={() => {toast.info("暂未开放")}}>启动</ImageButton>
+        <ImageButton
+          variant="start"
+          onClick={() => {
+            toast.info(t("common.notOpen"));
+          }}
+        >
+          {t("entrust.start")}
+        </ImageButton>
       </div>
     </article>
   );

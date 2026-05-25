@@ -1,6 +1,9 @@
+"use client";
+
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
-import { formatAmount, TEAM_LOADING_LABEL } from "./format";
+import { displayTeamValue, formatAmount } from "./format";
 
 export type TeamLevelCardProps = {
   isPending?: boolean;
@@ -18,6 +21,9 @@ export function TeamLevelCard({
   nextVipLevel,
   nextLevelSmallAreaStake = 0,
 }: TeamLevelCardProps) {
+  const { t } = useTranslation();
+  const loadingLabel = t("common.loadingDots");
+
   const progressMax =
     nextLevelSmallAreaStake > 0 ? nextLevelSmallAreaStake : 0;
   const progress = Math.min(smallAreaStake, progressMax || smallAreaStake);
@@ -28,7 +34,7 @@ export function TeamLevelCard({
       : 0;
   const displayVip = Math.max(0, vipLevel);
   const progressText = isPending
-    ? TEAM_LOADING_LABEL
+    ? loadingLabel
     : `${formatAmount(progress, 0)}/${formatAmount(progressMax, 0)}`;
 
   return (
@@ -46,7 +52,9 @@ export function TeamLevelCard({
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col">
-            <p className="text-base leading-tight text-[#4b4b4b]">当前等级</p>
+            <p className="text-base leading-tight text-[#4b4b4b]">
+              {t("team.currentLevel")}
+            </p>
             <div className="relative mt-0.5 h-10 w-32">
               <AppImage
                 src={teamAssets.vipBadge}
@@ -87,7 +95,7 @@ export function TeamLevelCard({
             />
           </div>
           <p className="text-base leading-tight tracking-[0.28px] text-[#292929]">
-            小区业绩
+            {t("team.smallAreaPerformance")}
           </p>
         </div>
       </div>

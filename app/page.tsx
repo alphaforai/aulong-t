@@ -6,37 +6,14 @@ import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
 import { TicketCard } from "@/components/entrust/TicketCard";
 import { AulongPageShell } from "@/components/AulongPageShell";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { useUserInfoStore } from "@/lib/store";
 import { toast } from "sonner";
 import { useReadContract } from "wagmi";
 
-const STRATEGIES = [
-  {
-    iconSrc: entrustAssets.strategyTrend,
-    title: "AI趋势策略",
-    description: "AI 驱动趋势捕捉,顺势而为,获取超额收益",
-    apr: "320",
-    period: "30",
-  },
-  {
-    iconSrc: entrustAssets.strategyArbitrage,
-    title: "稳健套利策略",
-    description: "多市场套利机会,低波动稳健收益",
-    apr: "480",
-    period: "90",
-  },
-  {
-    iconSrc: entrustAssets.strategyHedge,
-    iconSize: 34,
-    title: "稳健套利策略",
-    description: "对冲市场波动,追求稳定低回撤",
-    apr: "600",
-    period: "360",
-  },
-] as const;
-
 export default function HomePage() {
+  const { t } = useTranslation();
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -54,6 +31,31 @@ export default function HomePage() {
   const hasPurchased = Boolean(purchasesData?.[0]);
   const showTicketCard = !hasPurchased;
 
+  const strategies = [
+    {
+      iconSrc: entrustAssets.strategyTrend,
+      title: t("entrust.strategyTrendTitle"),
+      description: t("entrust.strategyTrendDesc"),
+      apr: "320",
+      period: "30",
+    },
+    {
+      iconSrc: entrustAssets.strategyArbitrage,
+      title: t("entrust.strategyArbitrageTitle"),
+      description: t("entrust.strategyArbitrageDesc"),
+      apr: "480",
+      period: "90",
+    },
+    {
+      iconSrc: entrustAssets.strategyHedge,
+      iconSize: 34,
+      title: t("entrust.strategyHedgeTitle"),
+      description: t("entrust.strategyHedgeDesc"),
+      apr: "600",
+      period: "360",
+    },
+  ] as const;
+
   return (
     <AulongPageShell panelClassName="bg-white">
       {showTicketCard && <TicketCard />}
@@ -62,15 +64,15 @@ export default function HomePage() {
         imageSrc={entrustAssets.projectBanner}
         variant="project"
         onClick={() => {
-          toast.info("暂未开放");
+          toast.info(t("common.notOpen"));
         }}
         title={
           <>
-            <span>项目</span>
-            <span className="text-[#ec0000]">资料</span>
+            <span>{t("entrust.projectPart1")}</span>
+            <span className="text-[#ec0000]">{t("entrust.projectPart2")}</span>
           </>
         }
-        description="了解Aulong 项目愿景、经济模型与AI 智能交易机制"
+        description={t("entrust.projectBannerDescCard")}
       />
 
       <PriceChartSection />
@@ -79,19 +81,19 @@ export default function HomePage() {
         imageSrc={entrustAssets.startAiBanner}
         variant="startAi"
         onClick={() => {
-          toast.info("暂未开放");
+          toast.info(t("common.notOpen"));
         }}
         title={
           <>
-            <span>启动</span>
-            <span className="text-[#ec0000]">AI</span>
+            <span>{t("entrust.startAiPart1")}</span>
+            <span className="text-[#ec0000]">{t("entrust.startAiPart2")}</span>
           </>
         }
-        description="开启智能委托策略"
+        description={t("entrust.startAiDescCard")}
       />
 
       <div className="flex flex-col gap-3">
-        {STRATEGIES.map((strategy, index) => (
+        {strategies.map((strategy, index) => (
           <StrategyCard key={index} {...strategy} />
         ))}
       </div>

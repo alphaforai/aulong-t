@@ -2,6 +2,7 @@
 
 import React from "react";
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
 import { DirectPanel } from "./Direct";
 import { TeamSectionTitle } from "./TeamSectionTitle";
@@ -30,31 +31,50 @@ export function MemberStatsCard({
   teamStakerCount,
   teamTodayWhitelistCount,
 }: MemberStatsCardProps) {
+  const { t } = useTranslation();
   const [showDirectPanel, setShowDirectPanel] = React.useState(false);
+  const loadingLabel = t("common.loadingDots");
+  const peopleUnit = t("common.peopleUnit");
 
   const memberStats: MemberStat[] = [
     {
       icon: teamAssets.memberIconRegister,
-      label: "团队总注册人数",
-      value: displayTeamValue(isPending, formatCount(teamTotalCount)),
+      label: t("team.teamTotalRegister"),
+      value: displayTeamValue(
+        isPending,
+        formatCount(teamTotalCount),
+        loadingLabel,
+      ),
       iconCrop: "left-[-24.07%] top-[-24.07%] size-[148.15%]",
     },
     {
       icon: teamAssets.memberIconWhitelist,
-      label: "团队总白名单数",
-      value: displayTeamValue(isPending, formatCount(teamWhitelistCount)),
+      label: t("team.teamTotalWhitelist"),
+      value: displayTeamValue(
+        isPending,
+        formatCount(teamWhitelistCount),
+        loadingLabel,
+      ),
       iconCrop: "left-[-36%] top-[-37.35%] size-[172.01%]",
     },
     {
       icon: teamAssets.memberIconEntrust,
-      label: "团队总委托人数",
-      value: displayTeamValue(isPending, formatCount(teamStakerCount)),
+      label: t("team.teamTotalStakers"),
+      value: displayTeamValue(
+        isPending,
+        formatCount(teamStakerCount),
+        loadingLabel,
+      ),
       iconCrop: "left-[-24.07%] top-[-24.07%] size-[148.15%]",
     },
     {
       icon: teamAssets.memberIconNewWhitelist,
-      label: "今日新增白名单人数",
-      value: displayTeamValue(isPending, formatCount(teamTodayWhitelistCount)),
+      label: t("team.todayNewWhitelist"),
+      value: displayTeamValue(
+        isPending,
+        formatCount(teamTodayWhitelistCount),
+        loadingLabel,
+      ),
       iconCrop: "left-[-24.07%] top-[-24.07%] size-[148.15%]",
     },
   ];
@@ -63,14 +83,14 @@ export function MemberStatsCard({
     <>
       <section className="flex w-full min-w-0 flex-col overflow-hidden rounded-[12px] border border-white bg-white/61 p-2.5 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
         <TeamSectionTitle
-          title="人数统计"
+          title={t("team.memberStats")}
           action={
             <button
               type="button"
               onClick={() => setShowDirectPanel(true)}
               className="flex shrink-0 items-center gap-0.5 text-sm leading-normal text-[rgba(0,0,0,0.7)]"
             >
-              直推详情
+              {t("team.directDetail")}
               <AppImage
                 src={teamAssets.detailArrow}
                 alt=""
@@ -84,7 +104,13 @@ export function MemberStatsCard({
 
         <div className="mt-2 grid grid-cols-2 gap-x-2 gap-y-2">
           {memberStats.map((stat) => (
-            <MemberStatTile key={stat.label} isPending={isPending} {...stat} />
+            <MemberStatTile
+              key={stat.label}
+              isPending={isPending}
+              loadingLabel={loadingLabel}
+              peopleUnit={peopleUnit}
+              {...stat}
+            />
           ))}
         </div>
       </section>
@@ -103,24 +129,32 @@ function MemberStatTile({
   value,
   iconCrop,
   isPending,
-}: MemberStat & { isPending?: boolean }) {
+  loadingLabel,
+  peopleUnit,
+}: MemberStat & {
+  isPending?: boolean;
+  loadingLabel: string;
+  peopleUnit: string;
+}) {
   const crop =
     iconCrop ?? "left-[-24.07%] top-[-24.07%] size-[148.15%]";
 
   return (
     <div className="relative h-[70px] overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2.5 top-4 flex flex-col gap-0.5">
-        <p className="whitespace-nowrap text-sm leading-normal text-[rgba(51,51,51,0.8)]">
+        <p className="line-clamp-2 text-xs leading-snug text-[rgba(51,51,51,0.8)]">
           {label}
         </p>
         <p
           className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
-            isPending ? "text-[#8b8b8b]" : "text-[#333]"
+            isPending || value === loadingLabel
+              ? "text-[#8b8b8b]"
+              : "text-[#333]"
           }`}
         >
           {value}
-          {!isPending ? (
-            <span className="text-xs font-normal"> 人</span>
+          {!isPending && value !== loadingLabel ? (
+            <span className="text-xs font-normal"> {peopleUnit}</span>
           ) : null}
         </p>
       </div>

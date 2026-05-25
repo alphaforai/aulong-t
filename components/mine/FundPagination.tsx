@@ -1,16 +1,24 @@
+"use client";
+
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { mineAssets } from "./assets";
 
 const PAGE_NUMBERS = [1, 2, 3, 4, 5] as const;
 
 /** 分页 — 对齐 Figma 514:5744 */
 export function FundPagination() {
+  const { t } = useTranslation();
+
   return (
     <nav
       className="flex items-center justify-center gap-[6px] py-2"
-      aria-label="资金明细分页"
+      aria-label={t("mine.paginationAria")}
     >
-      <PaginationNavButton src={mineAssets.pageChevronLeft} label="上一页" />
+      <PaginationNavButton
+        src={mineAssets.pageChevronLeft}
+        label={t("mine.prevPage")}
+      />
 
       {PAGE_NUMBERS.map((page) => (
         <button
@@ -28,7 +36,7 @@ export function FundPagination() {
 
       <button
         type="button"
-        aria-label="更多页码"
+        aria-label={t("mine.morePagesAria")}
         className="flex size-[22.5px] shrink-0 items-center justify-center rounded-[2px]"
       >
         <PageEllipsisDots />
@@ -41,12 +49,14 @@ export function FundPagination() {
         11
       </button>
 
-      <PaginationNavButton src={mineAssets.pageChevronRight} label="下一页" />
+      <PaginationNavButton
+        src={mineAssets.pageChevronRight}
+        label={t("mine.nextPage")}
+      />
     </nav>
   );
 }
 
-/** Figma 514:5758 — 横向三个红点，勿用正方形尺寸压扁 SVG */
 function PageEllipsisDots() {
   return (
     <span className="inline-flex items-center gap-[3px]" aria-hidden>

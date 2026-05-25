@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation as useI18nextTranslation } from "react-i18next";
 import {
   DEFAULT_LOCALE,
   formatDateTime,
   formatNumber,
   formatPercent,
   formatRelativeTime,
-  translate,
   type Locale,
 } from "@/lib/local";
 import { useLocaleStore } from "@/lib/store/locale";
@@ -23,18 +23,19 @@ function useHydratedLocale(): Locale {
 }
 
 /**
- * React 侧 i18n / l10n 钩子
+ * React 侧 i18n / l10n 钩子（基于 i18next）
  * @example const { t } = useTranslation(); t("nav.entrust")
  */
 export function useTranslation() {
   const locale = useHydratedLocale();
   const setLocale = useLocaleStore((state) => state.setLocale);
   const toggleLocale = useLocaleStore((state) => state.toggleLocale);
+  const { t: i18nT } = useI18nextTranslation();
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) =>
-      translate(locale, key, params),
-    [locale],
+      i18nT(key, params),
+    [i18nT],
   );
 
   const l10n = useMemo(
