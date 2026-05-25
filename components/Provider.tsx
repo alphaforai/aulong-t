@@ -6,6 +6,7 @@ import { WagmiProvider } from "wagmi";
 import { Toaster } from "sonner";
 import { config } from "@/lib/wagmiClient";
 import { InviteCodeFromUrlSync } from "@/components/InviteCodeFromUrlSync";
+import { LocaleSync } from "@/components/LocaleSync";
 import { WalletSessionSync } from "@/components/WalletSessionSync";
 
 export function Provider({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
           <InviteCodeFromUrlSync />
         </Suspense>
         <WalletSessionSync />
+        <LocaleSync />
         {children}
         <Toaster richColors position="top-center" />
       </QueryClientProvider>

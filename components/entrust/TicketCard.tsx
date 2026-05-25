@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { entrustAssets } from "./assets";
 import { AppImage } from "@/components/AppImage";
@@ -15,6 +17,7 @@ import { formatEther } from "viem";
 import { getPlatformConfig } from "@/lib/api/platformConfig";
 import { useQuery } from "@tanstack/react-query";
 import { getUserInfo } from "@/lib/api/users";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 function getErrorMessage(error: unknown, fallback = "操作失败") {
   if (error instanceof Error) {
@@ -25,6 +28,7 @@ function getErrorMessage(error: unknown, fallback = "操作失败") {
 }
 
 export function TicketCard() {
+  const { t } = useTranslation();
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -125,9 +129,12 @@ export function TicketCard() {
     queryKey: ["platformConfig"],
     queryFn: () => getPlatformConfig("base"),
   });
-  if (platformConfig) {
-    console.log(platformConfig);
-  }
+  const bnbAmount =
+    ticketPriceWei != null ? formatEther(ticketPriceWei) : "—";
+  const usdtAmount =
+    platformConfig?.usdtAmount != null
+      ? String(platformConfig.usdtAmount)
+      : "—";
 
   return (
     <section className="relative h-[180px] w-full overflow-hidden rounded-[12px] border border-white bg-linear-to-b from-white/45 to-white/90 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
@@ -142,7 +149,7 @@ export function TicketCard() {
               className="size-[22px] shrink-0 object-cover"
             />
             <span className="text-base font-semibold leading-[22px] text-black">
-              购买门票
+              {t("entrust.buyTicket")}
             </span>
             <div className="relative h-5 w-[21px] shrink-0 overflow-hidden">
               <AppImage
@@ -181,9 +188,7 @@ export function TicketCard() {
               <span className="text-sm leading-[19px]">BNB</span>
             </p>
             <p className="text-sm leading-[19px] text-black">
-              花费
-              {ticketPriceWei != null ? formatEther(ticketPriceWei) + " " : "—"}
-              BNB，可获取{platformConfig?.usdtAmount} USDT的空投
+              {t("entrust.ticketAirdropDesc", { bnbAmount, usdtAmount })}
             </p>
           </div>
         </div>
@@ -194,7 +199,7 @@ export function TicketCard() {
           onClick={handleBuyTicket}
           disabled={isButtonDisabled}
         >
-          {readEnabled ? "购买白名单" : "请先连接钱包"}
+          {readEnabled ? t("entrust.buyWhitelist") : t("common.connectWallet")}
         </ImageButton>
       </div>
 

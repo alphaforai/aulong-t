@@ -37,24 +37,38 @@ export function clearWalletSession() {
   lastLoginProof = { nonce: "", signature: "" };
 }
 
+/** 钱包切换地址时：清登录凭证，保留 wagmi 连接，由 WalletSessionSync 重新走 nonce + 签名 */
+export function resetSessionForAddressChange() {
+  authedAddress = null;
+  lastLoginProof = { nonce: "", signature: "" };
+}
+
 function normalizeAddress(address: string) {
   return address.toLowerCase();
 }
 
-/** 当前连接地址是否已与后端完成签名登录 */
+/** 当前连接地址是否已与后端完成签名登录（含待绑定邀请码、无 token 场景） */
 export function isWalletSessionSynced(address: string | undefined): boolean {
   if (!address) return false;
 
-  const token = useAuthStore.getState().accessToken;
-  if (!token) return false;
-
   const normalized = normalizeAddress(address);
+  const { accessToken, needsInviteRegister } = useAuthStore.getState();
+
   if (
     authedAddress &&
     normalizeAddress(authedAddress) === normalized
   ) {
-    return true;
+    if (accessToken) return true;
+    if (
+      needsInviteRegister &&
+      lastLoginProof.nonce &&
+      lastLoginProof.signature
+    ) {
+      return true;
+    }
   }
+
+  if (!accessToken) return false;
 
   const storedWallet = useUserInfoStore.getState().userInfo.walletAddress;
   if (

@@ -6,6 +6,8 @@ export type ApiResult<T = unknown> = {
   message?: string;
 };
 
+export function isApiSuccess(result: unknown): boolean;
+
 export function getNonce(
   address: string,
 ): Promise<ApiResult<{ nonce?: string }>>;

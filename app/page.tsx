@@ -58,29 +58,29 @@ export default function HomePage() {
     <AulongPageShell panelClassName="bg-white">
       {showTicketCard && <TicketCard />}
 
-      <button
+      <BannerCard
+        imageSrc={entrustAssets.projectBanner}
+        variant="project"
         onClick={() => {
           toast.info("暂未开放");
         }}
-      >
-        <BannerCard
-          imageSrc={entrustAssets.projectBanner}
-          variant="project"
-          title={
-            <>
-              <span>项目</span>
-              <span className="text-[#ec0000]">资料</span>
-            </>
-          }
-          description="了解Aulong 项目愿景、经济模型与AI 智能交易机制"
-        />
-      </button>
+        title={
+          <>
+            <span>项目</span>
+            <span className="text-[#ec0000]">资料</span>
+          </>
+        }
+        description="了解Aulong 项目愿景、经济模型与AI 智能交易机制"
+      />
 
       <PriceChartSection />
 
       <BannerCard
         imageSrc={entrustAssets.startAiBanner}
         variant="startAi"
+        onClick={() => {
+          toast.info("暂未开放");
+        }}
         title={
           <>
             <span>启动</span>

@@ -7,6 +7,7 @@ type BannerCardProps = {
   title: ReactNode;
   description: string;
   variant?: "project" | "startAi";
+  onClick?: () => void;
 };
 
 export function BannerCard({
@@ -14,12 +15,14 @@ export function BannerCard({
   title,
   description,
   variant = "project",
+  onClick,
 }: BannerCardProps) {
   const isStartAi = variant === "startAi";
 
   return (
     <button
       type="button"
+      onClick={onClick}
       className="relative z-10 isolate block h-[88px] w-full max-w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]"
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[12px] bg-white">

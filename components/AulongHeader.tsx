@@ -14,12 +14,14 @@ import { logout, register } from "@/lib/api/auth";
 import {
   clearWalletSession,
   getLastLoginProof,
+  markWalletAuthed,
 } from "@/lib/walletSession";
 import {
   useAuthStore,
   useInviteCodeStore,
   useUserInfoStore,
 } from "@/lib/store";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { toast } from "sonner";
 
 function isApiSuccess(result: unknown) {
@@ -32,6 +34,7 @@ function isApiSuccess(result: unknown) {
 
 /** 统一顶栏 — 视觉对齐 Figma TopBar，钱包逻辑来自 xwallet TopBar */
 export default function AulongHeader() {
+  const { t, toggleLocale, locale } = useTranslation();
   const [showWalletModal, setShowWalletModal] = React.useState(false);
   const [walletSheetEntered, setWalletSheetEntered] = React.useState(false);
   const [showInviteCodeModal, setShowInviteCodeModal] = React.useState(false);
@@ -96,10 +99,8 @@ export default function AulongHeader() {
   }, [showInviteCodeModal]);
 
   React.useEffect(() => {
-    if (needsInviteRegister) {
-      setShowInviteCodeModal(true);
-    }
-  }, [needsInviteRegister]);
+    setShowInviteCodeModal(Boolean(needsInviteRegister && isConnected));
+  }, [needsInviteRegister, isConnected]);
 
   const prevConnectedRef = React.useRef(isConnected);
 
@@ -180,6 +181,7 @@ export default function AulongHeader() {
         setUserInfo(data.user as Parameters<typeof setUserInfo>[0]);
       }
       setNeedsInviteRegister(false);
+      markWalletAuthed(address);
 
       toast.success("绑定成功");
       closeInviteSheet();
@@ -218,29 +220,42 @@ export default function AulongHeader() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              aria-label="切换语言"
-              className="relative grid size-[30px] place-items-center"
+              aria-label={t("header.switchLanguage")}
+              onClick={toggleLocale}
+              className={`relative grid size-[30px] place-items-center overflow-hidden rounded-full transition-colors duration-200 ${
+                locale === "en" ? "bg-[#2e2e2e]" : "bg-transparent"
+              }`}
             >
               <AppImage
                 src={entrustAssets.langGlow}
                 alt=""
                 width={30}
                 height={30}
-                className="col-start-1 row-start-1 size-[30px] scale-[2.8] object-contain"
+                className={`col-start-1 row-start-1 size-[30px] scale-[2.8] object-contain transition-opacity duration-200 ${
+                  locale === "en" ? "opacity-30" : "opacity-100"
+                }`}
               />
               <AppImage
                 src={entrustAssets.langIcon}
                 alt=""
                 width={22}
                 height={22}
-                className="col-start-1 row-start-1 ml-1 mt-1"
+                className={`col-start-1 row-start-1 ml-1 mt-1 transition-[filter] duration-200 ${
+                  locale === "en" ? "brightness-0 invert" : ""
+                }`}
               />
             </button>
 
             <button
               type="button"
               onClick={() => void openWalletModal()}
-              className="flex h-[30px] w-[108px] items-center justify-center gap-[5px] rounded-[7px] border border-black/20 px-3 py-2"
+              className={`flex h-[30px] shrink-0 items-center justify-center gap-[5px] rounded-[7px] border border-black/20 px-2.5 py-2 ${
+                shortAddress
+                  ? "w-[108px]"
+                  : locale === "en"
+                    ? "min-w-[124px] w-max"
+                    : "w-[108px]"
+              }`}
             >
               <AppImage
                 src={entrustAssets.walletDot}
@@ -249,8 +264,8 @@ export default function AulongHeader() {
                 height={7}
                 className={`shrink-0 ${accessToken ? "opacity-100" : "opacity-40"}`}
               />
-              <span className="text-sm leading-5 tracking-[0.1px] text-[#141414]">
-                {shortAddress || "连接钱包"}
+              <span className="min-w-0 truncate whitespace-nowrap text-sm leading-none tracking-[0.1px] text-[#141414]">
+                {shortAddress || t("header.connectWallet")}
               </span>
             </button>
           </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 /** 底部导航静态资源（public/assets/nav） */
 const navAssets = {
@@ -22,7 +23,7 @@ type NavTabId = "entrust" | "earnings" | "mine" | "team";
 type NavTabConfig = {
   id: NavTabId;
   href: string;
-  label: string;
+  labelKey: string;
   pillLeft: number;
   inactiveLeft: number;
 };
@@ -31,28 +32,28 @@ const NAV_TABS: NavTabConfig[] = [
   {
     id: "entrust",
     href: "/",
-    label: "委托",
+    labelKey: "nav.entrust",
     pillLeft: 12,
     inactiveLeft: 28,
   },
   {
     id: "earnings",
     href: "/earnings",
-    label: "收益",
+    labelKey: "nav.earnings",
     pillLeft: 88,
     inactiveLeft: 104,
   },
   {
     id: "mine",
     href: "/mine",
-    label: "我的",
+    labelKey: "nav.mine",
     pillLeft: 168,
     inactiveLeft: 184,
   },
   {
     id: "team",
     href: "/team",
-    label: "团队",
+    labelKey: "nav.team",
     pillLeft: 247,
     inactiveLeft: 263,
   },
@@ -157,6 +158,7 @@ function NavIcon({ tab, active = false }: { tab: NavTabId; active?: boolean }) {
 
 /** 统一底部导航 */
 export default function AulongFooterNav() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const activeId = resolveActiveTab(pathname);
   const activeTab = NAV_TABS.find((tab) => tab.id === activeId) ?? NAV_TABS[0];
@@ -172,7 +174,9 @@ export default function AulongFooterNav() {
           aria-current="page"
         >
           <NavIcon tab={activeTab.id} active />
-          <span className="text-xs leading-[18px] text-white">{activeTab.label}</span>
+          <span className="text-xs leading-[18px] text-white">
+            {t(activeTab.labelKey)}
+          </span>
         </Link>
 
         {inactiveTabs.map((tab) => (
@@ -183,7 +187,9 @@ export default function AulongFooterNav() {
             style={{ left: tab.inactiveLeft }}
           >
             <NavIcon tab={tab.id} />
-            <span className="text-xs leading-[18px] text-[#9c8787]">{tab.label}</span>
+            <span className="text-xs leading-[18px] text-[#9c8787]">
+              {t(tab.labelKey)}
+            </span>
           </Link>
         ))}
       </div>
