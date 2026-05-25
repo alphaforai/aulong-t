@@ -58,7 +58,7 @@ export function AssetSummaryCard() {
         <ActionButton
           icon={mineAssets.actionInvest}
           iconClassName="left-[-17.6%] top-[-17.6%] size-[135.21%]"
-          label="去理财"
+          label="领取"
           variant="primary"
           onClick={() => {toast.info("暂未开放")}}
         />
