@@ -11,6 +11,10 @@ import {
   getInviteLinkBase,
   isValidInviteLink,
 } from "@/lib/inviteUtils";
+import {
+  bottomSheetOverlayFrame,
+  bottomSheetOverlayRoot,
+} from "@/lib/mobileShell";
 import { toast } from "sonner";
 
 type InviteFriendsSheetProps = {
@@ -119,25 +123,26 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex flex-col justify-end"
+      className={`${bottomSheetOverlayRoot} z-70`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="invite-friends-sheet-title"
     >
-      <button
-        type="button"
-        aria-label="关闭"
-        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
-          entered ? "opacity-100" : "opacity-0"
-        }`}
-        onClick={closeSheet}
-      />
-      <div
-        className={`relative flex max-h-[min(640px,92dvh)] w-full flex-col overflow-hidden rounded-t-[12px] bg-white shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
-          entered ? "translate-y-0" : "translate-y-full"
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={bottomSheetOverlayFrame}>
+        <button
+          type="button"
+          aria-label="关闭"
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
+            entered ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={closeSheet}
+        />
+        <div
+          className={`relative flex max-h-[min(640px,92dvh)] w-full flex-col overflow-hidden rounded-t-[12px] bg-white shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
+            entered ? "translate-y-0" : "translate-y-full"
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
         <button
           type="button"
           aria-label="关闭"
@@ -270,6 +275,7 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
               {needsConnectWallet ? "请先连接钱包" : "复制全部邀请信息"}
             </span>
           </button>
+        </div>
         </div>
       </div>
     </div>

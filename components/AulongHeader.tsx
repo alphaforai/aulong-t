@@ -22,6 +22,10 @@ import {
   useUserInfoStore,
 } from "@/lib/store";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import {
+  bottomSheetOverlayFrame,
+  bottomSheetOverlayRoot,
+} from "@/lib/mobileShell";
 import { toast } from "sonner";
 
 function isApiSuccess(result: unknown) {
@@ -273,24 +277,25 @@ export default function AulongHeader() {
       </header>
 
       {showWalletModal && (
-        <div className="fixed inset-0 z-60 flex flex-col justify-end">
-          <button
-            type="button"
-            aria-label="关闭"
-            className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
-              walletSheetEntered ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={closeWalletModal}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="wallet-sheet-title"
-            className={`relative flex h-[50dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
-              walletSheetEntered ? "translate-y-0" : "translate-y-full"
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className={`${bottomSheetOverlayRoot} z-60`}>
+          <div className={bottomSheetOverlayFrame}>
+            <button
+              type="button"
+              aria-label="关闭"
+              className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
+                walletSheetEntered ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={closeWalletModal}
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="wallet-sheet-title"
+              className={`relative flex h-[50dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out md:rounded-t-2xl ${
+                walletSheetEntered ? "translate-y-0" : "translate-y-full"
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
             <div
               className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#e5e5e5]"
               aria-hidden
@@ -324,33 +329,35 @@ export default function AulongHeader() {
               </div>
             )}
             <div className="flex-1" aria-hidden />
+            </div>
           </div>
         </div>
       )}
 
       {showInviteCodeModal && (
         <div
-          className="fixed inset-0 z-70 flex flex-col justify-end"
+          className={`${bottomSheetOverlayRoot} z-70`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="invite-code-title"
           aria-busy={registerPending}
         >
-          <button
-            type="button"
-            disabled={registerPending}
-            aria-label={registerPending ? "绑定进行中" : "关闭并断开钱包"}
-            className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out disabled:cursor-wait ${
-              inviteSheetEntered ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={() => void endWalletSession()}
-          />
-          <div
-            className={`relative flex h-[50dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
-              inviteSheetEntered ? "translate-y-0" : "translate-y-full"
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className={bottomSheetOverlayFrame}>
+            <button
+              type="button"
+              disabled={registerPending}
+              aria-label={registerPending ? "绑定进行中" : "关闭并断开钱包"}
+              className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out disabled:cursor-wait ${
+                inviteSheetEntered ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={() => void endWalletSession()}
+            />
+            <div
+              className={`relative flex h-[50dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
+                inviteSheetEntered ? "translate-y-0" : "translate-y-full"
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
             <div
               className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#e5e5e5]"
               aria-hidden
@@ -404,6 +411,7 @@ export default function AulongHeader() {
             </button>
 
             <div className="flex-1" aria-hidden />
+            </div>
           </div>
         </div>
       )}

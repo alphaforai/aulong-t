@@ -7,6 +7,10 @@ import { AppImage } from "@/components/AppImage";
 import { mineAssets } from "@/components/mine/assets";
 import { getTeamDirectPage } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
+import {
+  sidePanelOverlayFrame,
+  sidePanelOverlayRoot,
+} from "@/lib/mobileShell";
 import { teamAssets } from "./assets";
 import { formatAmount, TEAM_LOADING_LABEL } from "./format";
 
@@ -108,16 +112,17 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
 
   return (
     <div
-      className="fixed inset-0 z-80 overflow-hidden"
+      className={`${sidePanelOverlayRoot} z-80`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="direct-panel-title"
     >
-      <div
-        className={`fixed inset-0 flex w-full flex-col bg-white transition-transform duration-300 ease-out ${
-          entered ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
+      <div className={sidePanelOverlayFrame}>
+        <div
+          className={`absolute inset-0 flex w-full flex-col bg-white transition-transform duration-300 ease-out ${
+            entered ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
         <div className="h-11 shrink-0 bg-white" aria-hidden />
         <AulongHeader />
 
@@ -203,6 +208,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
               onPageChange={goToPage}
             />
           ) : null}
+        </div>
         </div>
       </div>
     </div>

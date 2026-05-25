@@ -4,15 +4,19 @@ import { injected, walletConnect } from "wagmi/connectors";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
-/** WalletConnect 回跳域名须与当前访问站点一致，否则钱包内浏览器会报 “This page couldn't load” */
+const DEFAULT_DAPP_ORIGIN = "https://aulong.australianlobster.xyz";
+
+/**
+ * WalletConnect metadata.url（见下方 walletConnect.metadata）
+ * 须与当前浏览器地址一致；不要用 NEXT_PUBLIC_BASE_INVITE_LINK（那是邀请链接域名）
+ */
 function getDappOrigin(): string {
-  const fromEnv =
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.NEXT_PUBLIC_BASE_INVITE_LINK ??
-    "";
-  const trimmed = fromEnv.trim().replace(/\/$/, "");
-  if (trimmed) return trimmed;
-  return "https://aulong.australianlobster.xyz";
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+  if (appUrl) return appUrl;
+  return DEFAULT_DAPP_ORIGIN;
 }
 
 const dappOrigin = getDappOrigin();
