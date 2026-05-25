@@ -63,7 +63,7 @@
     "buyWhitelist": "ホワイトリスト購入",
     "ticketAirdropDesc": "{bnbAmount} BNBを使用し、{usdtAmount} USDTのエアドロップを獲得",
     "projectPart1": "プロジェクト",
-    "projectPart2": "資料",
+    "projectPart2": "",
     "projectBannerDesc": "Aulongプロジェクトのビジョン、経済モデル、AIスマート取引メカニズムを知る",
     "startAiPart1": "起動",
     "startAiPart2": "AI",
@@ -153,7 +153,7 @@
     "nextPage": "次のページ",
     "morePagesAria": "その他のページ",
     "usdtBtn": "USDT",
-    "xBtn": "X",
+    "xBtn": "AUL",
     "claimBtn": "受取",
     "copyAllInviteBtn": "すべてコピー"
   },
