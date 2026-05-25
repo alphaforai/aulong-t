@@ -19,7 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserInfo } from "@/lib/api/users";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 
-function getErrorMessage(error: unknown, fallback = "操作失败") {
+function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
     const e = error as Error & { shortMessage?: string };
     return e.shortMessage || e.message || fallback;
@@ -48,11 +48,13 @@ export function TicketCard() {
     },
   });
 
+  const opFailed = t("common.operationFailed");
+
   React.useEffect(() => {
     if (readError) {
-      toast.error(getErrorMessage(readError));
+      toast.error(getErrorMessage(readError, opFailed));
     }
-  }, [readError]);
+  }, [readError, opFailed]);
 
   const hasPurchased = Boolean(data?.[0]);
 
@@ -67,9 +69,9 @@ export function TicketCard() {
 
   React.useEffect(() => {
     if (readTicketPriceError) {
-      toast.error(getErrorMessage(readTicketPriceError));
+      toast.error(getErrorMessage(readTicketPriceError, opFailed));
     }
-  }, [readTicketPriceError]);
+  }, [readTicketPriceError, opFailed]);
 
   const {
     data: hash,
@@ -107,13 +109,13 @@ export function TicketCard() {
 
   React.useEffect(() => {
     if (writeError) {
-      toast.error(getErrorMessage(writeError));
+      toast.error(getErrorMessage(writeError, opFailed));
       return;
     }
     if (receiptError) {
-      toast.error(getErrorMessage(receiptError));
+      toast.error(getErrorMessage(receiptError, opFailed));
     }
-  }, [receiptError, writeError]);
+  }, [receiptError, writeError, opFailed]);
 
   const isButtonDisabled =
     !walletAddress ||
@@ -199,7 +201,9 @@ export function TicketCard() {
           onClick={handleBuyTicket}
           disabled={isButtonDisabled}
         >
-          {readEnabled ? t("entrust.buyWhitelist") : t("common.connectWallet")}
+          {readEnabled
+            ? t("entrust.buyWhitelistBtn")
+            : t("common.connectFirstBtn")}
         </ImageButton>
       </div>
 

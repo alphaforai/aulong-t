@@ -26,6 +26,8 @@ import {
   bottomSheetOverlayFrame,
   bottomSheetOverlayRoot,
 } from "@/lib/mobileShell";
+import { isAlternateLocaleHeaderStyle } from "@/lib/local/locale-meta";
+import { LanguagePickerSheet } from "@/components/LanguagePickerSheet";
 import { toast } from "sonner";
 
 function isApiSuccess(result: unknown) {
@@ -38,8 +40,10 @@ function isApiSuccess(result: unknown) {
 
 /** 统一顶栏 — 视觉对齐 Figma TopBar，钱包逻辑来自 xwallet TopBar */
 export default function AulongHeader() {
-  const { t, toggleLocale, locale } = useTranslation();
+  const { t, locale } = useTranslation();
+  const [showLanguageSheet, setShowLanguageSheet] = React.useState(false);
   const [showWalletModal, setShowWalletModal] = React.useState(false);
+  const alternateLangStyle = isAlternateLocaleHeaderStyle(locale);
   const [walletSheetEntered, setWalletSheetEntered] = React.useState(false);
   const [showInviteCodeModal, setShowInviteCodeModal] = React.useState(false);
   const [inviteSheetEntered, setInviteSheetEntered] = React.useState(false);
@@ -142,23 +146,25 @@ export default function AulongHeader() {
       await switchChainAsync({ chainId: bsc.id });
     } catch (error: unknown) {
       const e = error as { shortMessage?: string; message?: string };
-      toast.error(e?.shortMessage || e?.message || "切换到 BSC 网络失败");
+      toast.error(
+        e?.shortMessage || e?.message || t("header.switchBscFailed"),
+      );
     }
   }
 
   async function handleRegisterInvite() {
     const code = String(inviteCode).trim();
     if (!code) {
-      setInputError("邀请码不能为空");
+      setInputError(t("header.inviteCodeEmpty"));
       return;
     }
     if (!address) {
-      setInputError("请先连接钱包");
+      setInputError(t("header.connectWalletFirst"));
       return;
     }
     const { nonce, signature } = getLastLoginProof();
     if (!nonce || !signature) {
-      setInputError("登录凭证已失效，请重新连接钱包");
+      setInputError(t("header.loginProofExpired"));
       return;
     }
 
@@ -174,7 +180,7 @@ export default function AulongHeader() {
 
       if (!isApiSuccess(result)) {
         const r = result as { msg?: string; message?: string };
-        setInputError(r?.msg || r?.message || "注册失败");
+        setInputError(r?.msg || r?.message || t("header.registerFailed"));
         return;
       }
 
@@ -187,11 +193,11 @@ export default function AulongHeader() {
       setNeedsInviteRegister(false);
       markWalletAuthed(address);
 
-      toast.success("绑定成功");
+      toast.success(t("header.bindSuccess"));
       closeInviteSheet();
     } catch (error: unknown) {
       const e = error as { message?: string };
-      setInputError(e?.message || "注册失败");
+      setInputError(e?.message || t("header.registerFailed"));
     } finally {
       setRegisterPending(false);
     }
@@ -225,9 +231,9 @@ export default function AulongHeader() {
             <button
               type="button"
               aria-label={t("header.switchLanguage")}
-              onClick={toggleLocale}
+              onClick={() => setShowLanguageSheet(true)}
               className={`relative grid size-[30px] place-items-center overflow-hidden rounded-full transition-colors duration-200 ${
-                locale === "en" ? "bg-[#2e2e2e]" : "bg-transparent"
+                alternateLangStyle ? "bg-[#2e2e2e]" : "bg-transparent"
               }`}
             >
               <AppImage
@@ -236,7 +242,7 @@ export default function AulongHeader() {
                 width={30}
                 height={30}
                 className={`col-start-1 row-start-1 size-[30px] scale-[2.8] object-contain transition-opacity duration-200 ${
-                  locale === "en" ? "opacity-30" : "opacity-100"
+                  alternateLangStyle ? "opacity-30" : "opacity-100"
                 }`}
               />
               <AppImage
@@ -245,7 +251,7 @@ export default function AulongHeader() {
                 width={22}
                 height={22}
                 className={`col-start-1 row-start-1 ml-1 mt-1 transition-[filter] duration-200 ${
-                  locale === "en" ? "brightness-0 invert" : ""
+                  alternateLangStyle ? "brightness-0 invert" : ""
                 }`}
               />
             </button>
@@ -253,12 +259,8 @@ export default function AulongHeader() {
             <button
               type="button"
               onClick={() => void openWalletModal()}
-              className={`flex h-[30px] shrink-0 items-center justify-center gap-[5px] rounded-[7px] border border-black/20 px-2.5 py-2 ${
-                shortAddress
-                  ? "w-[108px]"
-                  : locale === "en"
-                    ? "min-w-[124px] w-max"
-                    : "w-[108px]"
+              className={`flex h-[30px] max-w-[min(148px,38vw)] shrink-0 items-center justify-center gap-[5px] rounded-[7px] border border-black/20 px-2 py-2 ${
+                shortAddress ? "w-[108px]" : "min-w-[4.75rem] w-auto"
               }`}
             >
               <AppImage
@@ -268,20 +270,31 @@ export default function AulongHeader() {
                 height={7}
                 className={`shrink-0 ${accessToken ? "opacity-100" : "opacity-40"}`}
               />
-              <span className="min-w-0 truncate whitespace-nowrap text-sm leading-none tracking-[0.1px] text-[#141414]">
-                {shortAddress || t("header.connectWallet")}
+              <span
+                className={`min-w-0 truncate text-center leading-none tracking-[0.1px] text-[#141414] ${
+                  shortAddress
+                    ? "text-sm"
+                    : "text-xs font-medium sm:text-sm"
+                }`}
+              >
+                {shortAddress || t("header.connectWalletBtn")}
               </span>
             </button>
           </div>
         </div>
       </header>
 
+      <LanguagePickerSheet
+        open={showLanguageSheet}
+        onClose={() => setShowLanguageSheet(false)}
+      />
+
       {showWalletModal && (
         <div className={`${bottomSheetOverlayRoot} z-60`}>
           <div className={bottomSheetOverlayFrame}>
             <button
               type="button"
-              aria-label="关闭"
+              aria-label={t("common.close")}
               className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
                 walletSheetEntered ? "opacity-100" : "opacity-0"
               }`}
@@ -305,14 +318,16 @@ export default function AulongHeader() {
                 id="wallet-sheet-title"
                 className="text-base font-semibold text-[#333]"
               >
-                {isConnected ? "钱包管理" : "选择钱包"}
+                {isConnected
+                  ? t("header.walletManageBtn")
+                  : t("header.selectWalletBtn")}
               </h3>
               <button
                 type="button"
                 onClick={closeWalletModal}
                 className="text-sm text-[#8b8b8b]"
               >
-                关闭
+                {t("common.close")}
               </button>
             </div>
             {isConnected ? (
@@ -321,7 +336,7 @@ export default function AulongHeader() {
                 onClick={() => void endWalletSession()}
                 className="h-11 w-full rounded-[10px] border border-[#f0e0e0] bg-white text-sm font-medium text-[#ea4747] transition-colors hover:bg-[#fff8f8]"
               >
-                断开连接
+                {t("header.disconnectBtn")}
               </button>
             ) : (
               <div className="flex flex-col gap-3">
@@ -346,7 +361,9 @@ export default function AulongHeader() {
             <button
               type="button"
               disabled={registerPending}
-              aria-label={registerPending ? "绑定进行中" : "关闭并断开钱包"}
+              aria-label={
+                registerPending ? t("header.bindPending") : t("common.close")
+              }
               className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out disabled:cursor-wait ${
                 inviteSheetEntered ? "opacity-100" : "opacity-0"
               }`}
@@ -367,7 +384,7 @@ export default function AulongHeader() {
                 id="invite-code-title"
                 className="text-base font-semibold text-[#333]"
               >
-                绑定<span className="text-[#f82a2a]">邀请码</span>
+                {t("header.bindInviteTitle")}
               </h3>
               <button
                 type="button"
@@ -375,12 +392,12 @@ export default function AulongHeader() {
                 onClick={() => void endWalletSession()}
                 className="text-sm text-[#8b8b8b] disabled:cursor-wait disabled:opacity-50"
               >
-                取消
+                {t("common.cancel")}
               </button>
             </div>
 
             <p className="text-xs leading-relaxed text-[#8b8b8b]">
-              当前账号尚未绑定邀请关系，请输入正确的邀请码后继续使用。
+              {t("header.bindInviteHint")}
             </p>
 
             <div className="mt-4 flex h-11 w-full items-center rounded-[10px] border border-[#f0e0e0] bg-white px-3 transition-colors focus-within:border-[#ff3033]/40 focus-within:ring-2 focus-within:ring-[#ff3033]/10">
@@ -392,7 +409,7 @@ export default function AulongHeader() {
                   setInviteCode(e.target.value);
                   if (inputError) setInputError("");
                 }}
-                placeholder="请输入邀请码"
+                placeholder={t("header.inviteCodePlaceholder")}
                 className="h-full w-full bg-transparent text-sm font-medium text-[#333] outline-none placeholder:font-normal placeholder:text-[#bbb] disabled:cursor-wait"
               />
             </div>
@@ -407,7 +424,9 @@ export default function AulongHeader() {
               className="mt-5 flex h-11 w-full items-center justify-center rounded-[10px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold text-white shadow-[0_4px_12px_rgba(213,0,0,0.2)] transition-opacity disabled:cursor-wait disabled:opacity-60"
               onClick={() => void handleRegisterInvite()}
             >
-              {registerPending ? "绑定中..." : "确认绑定"}
+              {registerPending
+                ? t("header.bindPendingBtn")
+                : t("header.confirmBindBtn")}
             </button>
 
             <div className="flex-1" aria-hidden />

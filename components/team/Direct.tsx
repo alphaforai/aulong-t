@@ -12,7 +12,8 @@ import {
   sidePanelOverlayRoot,
 } from "@/lib/mobileShell";
 import { teamAssets } from "./assets";
-import { formatAmount, TEAM_LOADING_LABEL } from "./format";
+import { useTranslation } from "@/lib/hooks/useTranslation";
+import { formatAmount } from "./format";
 
 const PAGE_SIZE = 5;
 
@@ -38,6 +39,7 @@ type DirectReferralPageData = {
 };
 
 export function DirectPanel({ open, onClose }: DirectPanelProps) {
+  const { t } = useTranslation();
   const [entered, setEntered] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const listScrollRef = React.useRef<HTMLDivElement>(null);
@@ -129,7 +131,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
         <header className="relative flex h-14 shrink-0 items-center justify-center border-b border-black/5 bg-[#f8f8f8] px-3">
           <button
             type="button"
-            aria-label="返回"
+            aria-label={t("common.back")}
             onClick={closePanel}
             className="absolute left-3 flex size-5 items-center justify-center"
           >
@@ -145,7 +147,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
             id="direct-panel-title"
             className="text-xl font-medium leading-7 text-[#272727]"
           >
-            直推详情
+            {t("team.directPanelTitle")}
           </h1>
         </header>
 
@@ -160,25 +162,25 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
           >
             {!walletAddress ? (
               <p className="py-12 text-center text-base text-[#8b8b8b]">
-                请先连接钱包
+                {t("common.connectWallet")}
               </p>
             ) : isPending ? (
               <p className="py-12 text-center text-base text-[#8b8b8b]">
-                {TEAM_LOADING_LABEL}
+                {t("common.loading")}
               </p>
             ) : isError ? (
               <p className="py-12 text-center text-base text-[#8b8b8b]">
-                加载失败，请稍后重试
+                {t("team.loadFailed")}
               </p>
             ) : list.length === 0 ? (
               <p className="py-12 text-center text-base text-[#8b8b8b]">
-                暂无直推记录
+                {t("team.noDirectRecords")}
               </p>
             ) : (
               <ul className="flex flex-col">
                 {list.map((row, index) => (
                   <li key={`${row.walletAddress ?? "row"}-${page}-${index}`}>
-                    <DirectReferralItem row={row} />
+                    <DirectReferralItem row={row} t={t} />
                     {index < list.length - 1 ? (
                       <div className="my-4 h-px w-full overflow-hidden">
                         <AppImage
@@ -206,6 +208,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
               onPrev={() => goToPage(Math.max(0, page - 1))}
               onNext={() => goToPage(page + 1)}
               onPageChange={goToPage}
+              t={t}
             />
           ) : null}
         </div>
@@ -250,6 +253,7 @@ function DirectPagination({
   onPrev,
   onNext,
   onPageChange,
+  t,
 }: {
   page: number;
   totalPages: number;
@@ -259,18 +263,19 @@ function DirectPagination({
   onPrev: () => void;
   onNext: () => void;
   onPageChange: (page: number) => void;
+  t: (key: string) => string;
 }) {
   const items = buildPageRange(page, totalPages);
 
   return (
     <nav
       className="flex items-center justify-center gap-[6px] py-2"
-      aria-label="直推详情分页"
+      aria-label={t("team.directPaginationAria")}
       aria-busy={loading}
     >
       <PaginationNavButton
         src={mineAssets.pageChevronLeft}
-        label="上一页"
+        label={t("mine.prevPage")}
         disabled={loading || !canPrev}
         onClick={onPrev}
       />
@@ -297,7 +302,7 @@ function DirectPagination({
 
       <PaginationNavButton
         src={mineAssets.pageChevronRight}
-        label="下一页"
+        label={t("mine.nextPage")}
         disabled={loading || !canNext}
         onClick={onNext}
       />
@@ -350,11 +355,18 @@ function PaginationNavButton({
   );
 }
 
-function DirectReferralItem({ row }: { row: DirectReferralRow }) {
+function DirectReferralItem({
+  row,
+  t,
+}: {
+  row: DirectReferralRow;
+  t: (key: string, params?: Record<string, string | number>) => string;
+}) {
   const personalStake = row.totalStakeAmount ?? 0;
   const teamStake = row.teamTotalStakeAmount ?? 0;
   const amountText = formatAmount(personalStake);
   const teamStakeText = formatAmount(teamStake);
+  const registerTime = formatRegisterTime(row.registerTime);
 
   return (
     <div className="flex items-start justify-between gap-3">
@@ -372,15 +384,17 @@ function DirectReferralItem({ row }: { row: DirectReferralRow }) {
           {shortWallet(row.walletAddress)}
         </p>
         <p className="text-sm leading-5 text-[#424242]">
-          注册时间：{formatRegisterTime(row.registerTime)}
+          {t("team.registerTimeValue", { time: registerTime })}
         </p>
         <p className="text-sm leading-5 text-[#424242]">
-          团队委托总额USDT：{teamStakeText}
+          {t("team.teamStakeValue", { amount: teamStakeText })}
         </p>
       </div>
 
       <div className="flex w-[72px] shrink-0 flex-col items-end gap-1">
-        <p className="text-sm leading-normal text-[#333]">个人委托金额</p>
+        <p className="text-sm leading-normal text-[#333]">
+          {t("team.personalStake")}
+        </p>
         <div className="text-right">
           <p className="font-[family-name:var(--font-mulish)] text-lg font-semibold leading-5 text-[#ea4747]">
             {amountText}

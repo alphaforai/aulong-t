@@ -1,12 +1,10 @@
+"use client";
+
 import { Fragment } from "react";
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
-import {
-  displayTeamValue,
-  formatAmount,
-  formatCount,
-  TEAM_LOADING_LABEL,
-} from "./format";
+import { displayTeamValue, formatAmount, formatCount } from "./format";
 
 type TopStat = {
   icon: string;
@@ -25,23 +23,30 @@ export function TeamTopStatsCard({
   isPending,
   smallAreaStake,
 }: TeamTopStatsCardProps) {
+  const { t } = useTranslation();
+  const loadingLabel = t("common.loadingDots");
+
   const topStats: TopStat[] = [
     {
       icon: teamAssets.statIconCommunity,
-      label: "小区业绩",
-      value: displayTeamValue(isPending, formatAmount(smallAreaStake)),
+      label: t("team.smallAreaPerformanceCard"),
+      value: displayTeamValue(
+        isPending,
+        formatAmount(smallAreaStake),
+        loadingLabel,
+      ),
       unit: "USDT",
     },
     {
       icon: teamAssets.statIconReferral,
-      label: "直推委托",
-      value: displayTeamValue(isPending, formatCount(0)),
-      unit: "人数",
+      label: t("team.directReferralCard"),
+      value: displayTeamValue(isPending, formatCount(0), loadingLabel),
+      unit: t("team.peopleCount"),
     },
     {
       icon: teamAssets.statIconPersonal,
-      label: "个人委托数量",
-      value: displayTeamValue(isPending, formatAmount(0)),
+      label: t("team.personalEntrustCountCard"),
+      value: displayTeamValue(isPending, formatAmount(0), loadingLabel),
       unit: "USDT",
     },
   ];
@@ -52,7 +57,7 @@ export function TeamTopStatsCard({
         {topStats.map((stat, index) => (
           <Fragment key={stat.label}>
             {index > 0 ? <StatDivider /> : null}
-            <StatColumn {...stat} />
+            <StatColumn {...stat} loadingLabel={loadingLabel} />
           </Fragment>
         ))}
       </div>
@@ -62,21 +67,27 @@ export function TeamTopStatsCard({
 
 function StatDivider() {
   return (
-    <div className="relative h-[73px] w-px shrink-0 self-center" aria-hidden>
+    <div className="relative w-px shrink-0 self-center py-2" aria-hidden>
       <AppImage
         src={teamAssets.statDivider}
         alt=""
         width={1}
         height={73}
-        className="size-full"
+        className="h-[73px] w-px"
       />
     </div>
   );
 }
 
-function StatColumn({ icon, label, value, unit }: TopStat) {
+function StatColumn({
+  icon,
+  label,
+  value,
+  unit,
+  loadingLabel,
+}: TopStat & { loadingLabel: string }) {
   return (
-    <div className="flex w-[90px] shrink-0 flex-col items-center gap-[9px]">
+    <div className="flex min-w-0 flex-1 basis-0 flex-col items-center gap-1.5 px-0.5">
       <div className="relative size-[42px] shrink-0">
         <div className="absolute inset-[0_-9.52%_-19.05%_-9.52%]">
           <AppImage
@@ -98,10 +109,10 @@ function StatColumn({ icon, label, value, unit }: TopStat) {
         </div>
       </div>
 
-      <div className="flex w-full flex-col items-center gap-[3px] text-center">
+      <div className="flex w-full min-w-0 flex-col items-center gap-0.5 text-center">
         <p
-          className={`w-full font-[family-name:var(--font-mulish)] text-lg font-medium leading-6 tracking-[-0.32px] ${
-            value === TEAM_LOADING_LABEL ? "text-[#8b8b8b]" : "text-[#d50000]"
+          className={`w-full font-[family-name:var(--font-mulish)] text-base font-medium leading-tight tracking-[-0.32px] sm:text-lg sm:leading-6 ${
+            value === loadingLabel ? "text-[#8b8b8b]" : "text-[#d50000]"
           }`}
         >
           {value}

@@ -1,5 +1,8 @@
+"use client";
+
 import { Fragment } from "react";
 import { AppImage } from "@/components/AppImage";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { earningsAssets } from "./assets";
 
 type Transaction = {
@@ -9,16 +12,10 @@ type Transaction = {
   time: string;
 };
 
-/** 接入 API 后赋值；当前保持空列表 */
 const TRANSACTIONS: Transaction[] = [];
-//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-//   { address: "0x715523...e605", amount: "+8,858.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-//   { address: "0x715523...e605", amount: "+588.65", currency: "USDT", time: "2025.5.6 12:22:53" },
-//   { address: "0x715523...e605", amount: "+588.65", currency: "USDT", time: "2025.5.6 12:22:53" },
 
 export function TransactionRecordCard() {
+  const { t } = useTranslation();
   const hasRecords = TRANSACTIONS.length > 0;
 
   return (
@@ -34,7 +31,7 @@ export function TransactionRecordCard() {
           />
         </div>
         <h2 className="text-base font-semibold leading-[22px] text-black/80">
-          交易记录
+          {t("earnings.transactionRecord")}
         </h2>
       </div>
 
@@ -43,12 +40,12 @@ export function TransactionRecordCard() {
       <div className="flex min-h-0 flex-1 flex-col gap-[10px] overflow-y-auto">
         {!hasRecords ? (
           <div className="flex flex-1 items-center justify-center text-sm text-black/50">
-            暂无交易记录
+            {t("earnings.noTransactions")}
           </div>
         ) : (
           TRANSACTIONS.map((tx, index) => (
             <Fragment key={index}>
-              <TransactionRow {...tx} />
+              <TransactionRow tradeTimeLabel={t("earnings.tradeTime")} {...tx} />
               {index < TRANSACTIONS.length - 1 ? <RecordDivider /> : null}
             </Fragment>
           ))
@@ -72,7 +69,13 @@ function RecordDivider() {
   );
 }
 
-function TransactionRow({ address, amount, currency, time }: Transaction) {
+function TransactionRow({
+  address,
+  amount,
+  currency,
+  time,
+  tradeTimeLabel,
+}: Transaction & { tradeTimeLabel: string }) {
   return (
     <div className="flex w-full shrink-0 items-center justify-between">
       <div className="flex flex-col gap-px">
@@ -85,7 +88,7 @@ function TransactionRow({ address, amount, currency, time }: Transaction) {
         </div>
       </div>
       <div className="flex flex-col items-end gap-0.5 text-xs leading-normal">
-        <span className="text-black">交易时间</span>
+        <span className="text-black">{tradeTimeLabel}</span>
         <span className="text-black/70">{time}</span>
       </div>
     </div>
