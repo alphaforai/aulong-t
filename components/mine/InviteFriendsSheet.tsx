@@ -164,12 +164,12 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
           <div className="flex flex-col items-center text-center">
             <h2
               id="invite-friends-sheet-title"
-              className="-skew-x-[10.65deg] scale-y-[0.98] font-[family-name:var(--font-noto-sc-black)] text-[42px] font-black leading-none text-black"
+              className="-skew-x-[10.65deg] scale-y-[0.98] flex items-center justify-center gap-1 font-[family-name:var(--font-noto-sc-black)] text-[clamp(28px,10vw,42px)] font-black leading-none text-black"
             >
               <span>{t("mine.invitePart1")}</span>
               <span className="text-[#f82a2a]">{t("mine.invitePart2")}</span>
             </h2>
-            <p className="mt-2 text-xs tracking-[0.6px] text-[#8b8b8b]">
+            <p className="mt-2 max-w-full px-4 text-xs leading-relaxed tracking-[0.6px] text-[#8b8b8b]">
               {t("mine.inviteSubtitle")}
             </p>
           </div>
