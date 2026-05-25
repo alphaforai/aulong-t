@@ -6,7 +6,7 @@ export const shellMdPaddingY = "md:py-8";
 
 /** 底部抽屉根节点（钱包、邀请码、邀请好友等） */
 export const bottomSheetOverlayRoot = [
-  "fixed inset-0 flex flex-col justify-end",
+  "fixed inset-0 z-65 flex flex-col justify-end",
   shellMdPaddingY,
   "md:items-center",
 ].join(" ");
