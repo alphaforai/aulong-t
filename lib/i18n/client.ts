@@ -21,7 +21,7 @@ if (!i18n.isInitialized) {
     lng: DEFAULT_LOCALE,
     fallbackLng: DEFAULT_LOCALE,
     supportedLngs: Object.keys(LOCALE_CONFIG),
-    interpolation: { escapeValue: false },
+    interpolation: { escapeValue: false, prefix: "{", suffix: "}" },
     react: { useSuspense: false },
   });
 }
