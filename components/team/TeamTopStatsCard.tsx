@@ -52,8 +52,8 @@ export function TeamTopStatsCard({
   ];
 
   return (
-    <section className="relative min-h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white py-2 shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
-      <div className="relative flex h-full items-stretch justify-between gap-1 px-2">
+    <section className="relative h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+      <div className="relative flex h-full items-center justify-between px-3">
         {topStats.map((stat, index) => (
           <Fragment key={stat.label}>
             {index > 0 ? <StatDivider /> : null}
@@ -117,10 +117,10 @@ function StatColumn({
         >
           {value}
         </p>
-        <p className="line-clamp-2 w-full text-[10px] font-medium leading-snug tracking-[0.2px] text-[#292929] sm:text-xs sm:leading-normal">
+        <p className="w-full text-sm font-medium leading-normal tracking-[0.24px] text-[#292929]">
           {label}
         </p>
-        <p className="w-full text-[10px] leading-snug tracking-[0.2px] text-[rgba(0,0,0,0.6)] sm:text-xs sm:leading-normal">
+        <p className="w-full text-sm leading-normal tracking-[0.24px] text-[rgba(0,0,0,0.6)]">
           {unit}
         </p>
       </div>

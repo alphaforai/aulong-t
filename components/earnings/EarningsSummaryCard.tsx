@@ -172,17 +172,9 @@ function StatBlock({
   compact?: boolean;
 }) {
   return (
-    <div className="min-w-0 flex-1 basis-0">
-      <p
-        className={`leading-normal text-black/70 ${
-          compact
-            ? "line-clamp-2 text-[10px] leading-snug"
-            : "text-sm"
-        }`}
-      >
-        {label}
-      </p>
-      <p className="mt-1 text-black leading-none">
+    <div className="flex flex-col gap-1">
+      <p className="text-sm leading-normal text-black/70">{label}</p>
+      <p className="text-black leading-none">
         <span className="font-[family-name:var(--font-mulish)] text-base font-bold leading-normal">
           0.00
         </span>

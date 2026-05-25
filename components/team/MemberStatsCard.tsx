@@ -140,7 +140,7 @@ function MemberStatTile({
     iconCrop ?? "left-[-24.07%] top-[-24.07%] size-[148.15%]";
 
   return (
-    <div className="relative h-[70px] overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+    <div className="relative h-[80px] overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2.5 top-4 flex flex-col gap-0.5">
         <p className="line-clamp-2 text-xs leading-snug text-[rgba(51,51,51,0.8)]">
           {label}
