@@ -81,7 +81,8 @@
     "copiedInviteLink": "Invite link copied",
     "copiedAllInvite": "All invite info copied",
     "teamOverviewFailed": "Failed to load team data",
-    "updateUserFailed": "Failed to update profile"
+    "updateUserFailed": "Failed to update profile",
+    "willdo" : "Coming to you soon"
   },
   "locale": {
     "zhCN": "简体中文",

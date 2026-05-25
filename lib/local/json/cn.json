@@ -81,7 +81,8 @@
     "copiedInviteLink": "已复制邀请链接",
     "copiedAllInvite": "已复制全部邀请信息",
     "teamOverviewFailed": "获取团队数据失败",
-    "updateUserFailed": "更新用户信息失败"
+    "updateUserFailed": "更新用户信息失败",
+    "willdo" : "即将为你呈现"
   },
   "locale": {
     "zhCN": "简体中文",

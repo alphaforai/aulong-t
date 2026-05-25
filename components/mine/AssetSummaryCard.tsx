@@ -5,10 +5,12 @@ import { AppImage } from "@/components/AppImage";
 import { useUserInfoStore } from "@/lib/store";
 import { mineAssets } from "./assets";
 import { toast } from "sonner";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 /** 总资产卡片 — 背景 Figma 550:7512，内容 Figma 514:6035 */
 export function AssetSummaryCard() {
   const userInfo = useUserInfoStore((state) => state.userInfo);
+  const { t } = useTranslation();
 
   return (
     <section className="relative h-[258px] w-full shrink-0">
@@ -37,7 +39,7 @@ export function AssetSummaryCard() {
             />
           </div>
         </div>
-        <StatColumn label="总释放(X)" value="0.00" trailingSpace />
+        <StatColumn label="总释放(AUL)" value="0.00" trailingSpace />
       </div>
 
       <div className="absolute left-2 top-[177px] z-10 flex w-[335px] items-center justify-center gap-3">
@@ -46,21 +48,21 @@ export function AssetSummaryCard() {
           iconClassName="left-[-8.14%] top-[-8.14%] size-[116.28%]"
           label="USDT提取"
           variant="light"
-          onClick={() => {toast.info("暂未开放")}}
+          onClick={() => {toast.success(t("toast.willdo"))}}
         />
         <ActionButton
           icon={mineAssets.actionX}
           iconClassName="left-[-27.37%] top-[-27.37%] size-[154.74%]"
-          label="X提取"
+          label="AUL提取"
           variant="light"
-          onClick={() => {toast.info("暂未开放")}}
+          onClick={() => {toast.success(t("toast.willdo"))}}
         />
         <ActionButton
           icon={mineAssets.actionInvest}
           iconClassName="left-[-17.6%] top-[-17.6%] size-[135.21%]"
           label="领取"
           variant="primary"
-          onClick={() => {toast.info("暂未开放")}}
+          onClick={() => {toast.success(t("toast.willdo"))}}
         />
       </div>
     </section>
@@ -109,7 +111,7 @@ function WhitelistBadge({ hasTicket }: { hasTicket: number }) {
 
   return (
     <span className="inline-flex h-5 shrink-0 items-center justify-center whitespace-nowrap rounded-[36px] bg-black px-2 text-[12px] font-medium leading-none text-white">
-      未激活
+      非白名单
     </span>
   );
 }

@@ -4,6 +4,7 @@ import { entrustAssets } from "./assets";
 import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
 import { toast } from "sonner";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 type StrategyCardProps = {
   iconSrc: string;
@@ -22,6 +23,7 @@ export function StrategyCard({
   apr = "45.23",
   period = "30",
 }: StrategyCardProps) {
+  const { t } = useTranslation();
   return (
     <article className="relative min-h-[132px] w-full overflow-hidden rounded-[12px] border border-white bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex w-full min-w-0 flex-col gap-[10px]">
@@ -72,7 +74,7 @@ export function StrategyCard({
       </div>
 
       <div className="absolute right-3 top-[84px]">
-        <ImageButton variant="start" onClick={() => {toast.info("暂未开放")}}>启动</ImageButton>
+        <ImageButton variant="start" onClick={() => {toast.success(t("toast.willdo"))}}>启动</ImageButton>
       </div>
     </article>
   );

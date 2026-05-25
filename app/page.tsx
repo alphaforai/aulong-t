@@ -10,6 +10,7 @@ import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { useUserInfoStore } from "@/lib/store";
 import { toast } from "sonner";
 import { useReadContract } from "wagmi";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 const STRATEGIES = [
   {
@@ -37,6 +38,7 @@ const STRATEGIES = [
 ] as const;
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -62,7 +64,7 @@ export default function HomePage() {
         imageSrc={entrustAssets.projectBanner}
         variant="project"
         onClick={() => {
-          toast.info("暂未开放");
+          toast.success(t("toast.willdo"));
         }}
         title={
           <>
@@ -79,7 +81,7 @@ export default function HomePage() {
         imageSrc={entrustAssets.startAiBanner}
         variant="startAi"
         onClick={() => {
-          toast.info("暂未开放");
+          toast.success(t("toast.willdo"));
         }}
         title={
           <>
