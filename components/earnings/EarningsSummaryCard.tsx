@@ -24,7 +24,7 @@ export function EarningsSummaryCard() {
       <button
         type="button"
         className="absolute right-[15px] top-3 z-10 flex items-center gap-1"
-        onClick={() => {toast.info("暂未开放")}}
+        onClick={() => {toast.success(t("toast.willdo"))}}
       >
         <span className="text-xs leading-normal text-black/70">收益记录</span>
         <AppImage
