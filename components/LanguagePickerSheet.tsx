@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { LOCALE_OPTIONS } from "@/lib/local/locale-meta";
+import { AppImage } from "@/components/AppImage";
+import {
+  LOCALE_PICKER_OPTIONS,
+  localePickerCheckIcon,
+} from "@/lib/local/locale-meta";
 import type { Locale } from "@/lib/local";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 
@@ -10,94 +14,103 @@ type LanguagePickerSheetProps = {
   onClose: () => void;
 };
 
+/** 顶栏语言按钮下方下拉 — Figma 806:573 */
 export function LanguagePickerSheet({ open, onClose }: LanguagePickerSheetProps) {
   const { t, locale, setLocale } = useTranslation();
   const [entered, setEntered] = React.useState(false);
+  const [mounted, setMounted] = React.useState(open);
 
   React.useEffect(() => {
-    if (!open) {
-      setEntered(false);
-      return;
+    if (open) {
+      setMounted(true);
+      const frame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setEntered(true));
+      });
+      return () => cancelAnimationFrame(frame);
     }
-    const frame = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setEntered(true));
-    });
-    return () => cancelAnimationFrame(frame);
+    setEntered(false);
+    const timer = window.setTimeout(() => setMounted(false), 200);
+    return () => window.clearTimeout(timer);
   }, [open]);
 
-  const closeSheet = React.useCallback(() => {
-    setEntered(false);
-    window.setTimeout(onClose, 300);
-  }, [onClose]);
+  React.useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
 
   const handleSelect = (code: Locale) => {
     setLocale(code);
-    closeSheet();
+    onClose();
   };
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   return (
-    <div className="fixed inset-0 z-65 flex flex-col justify-end">
+    <>
       <button
         type="button"
         aria-label={t("common.close")}
-        className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ease-out ${
+        tabIndex={-1}
+        className={`fixed inset-0 z-40 bg-transparent transition-opacity duration-200 ${
           entered ? "opacity-100" : "opacity-0"
         }`}
-        onClick={closeSheet}
+        onClick={onClose}
       />
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="language-sheet-title"
-        className={`relative flex max-h-[70dvh] w-full flex-col rounded-t-2xl bg-white px-4 pt-3 pb-[max(env(safe-area-inset-bottom),20px)] shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
-          entered ? "translate-y-0" : "translate-y-full"
+        role="listbox"
+        aria-label={t("header.languageTitle")}
+        className={`absolute right-0 top-[calc(100%+6px)] z-50 w-[114px] origin-top overflow-hidden rounded-[12px] border border-white bg-white/80 py-1 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[4.3px] transition-[transform,opacity] duration-200 ease-out ${
+          entered
+            ? "pointer-events-auto scale-y-100 opacity-100"
+            : "pointer-events-none scale-y-0 opacity-0"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#e5e5e5]"
-          aria-hidden
-        />
-        <div className="mb-3 flex items-center justify-between">
-          <h3
-            id="language-sheet-title"
-            className="text-base font-semibold text-[#333]"
-          >
-            {t("header.languageTitle")}
-          </h3>
-          <button
-            type="button"
-            onClick={closeSheet}
-            className="text-sm text-[#8b8b8b]"
-          >
-            {t("common.close")}
-          </button>
-        </div>
-
-        <ul className="flex flex-col gap-1 overflow-y-auto">
-          {LOCALE_OPTIONS.map((option) => {
+        <ul className="flex flex-col">
+          {LOCALE_PICKER_OPTIONS.map((option) => {
             const selected = locale === option.code;
             return (
               <li key={option.code}>
                 <button
                   type="button"
+                  role="option"
+                  aria-selected={selected}
                   onClick={() => handleSelect(option.code)}
-                  className={`flex w-full items-center justify-between rounded-[10px] px-3 py-3 text-left transition-colors ${
-                    selected
-                      ? "bg-[#fff5f5] text-[#f82a2a]"
-                      : "text-[#333] hover:bg-[#f8f8f8]"
-                  }`}
+                  className="flex h-8 w-full items-center gap-[7px] pl-[13px] pr-2 text-left"
                 >
-                  <span className="text-sm font-medium">{option.nativeLabel}</span>
-                  <span className="text-xs text-[#8b8b8b]">{option.englishLabel}</span>
+                  <AppImage
+                    src={option.flagIcon}
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="size-[18px] shrink-0 rounded-full object-cover"
+                  />
+                  <span
+                    className={`min-w-0 flex-1 text-[14px] leading-normal ${
+                      selected ? "text-[#f82a2a]" : "text-black"
+                    }`}
+                  >
+                    {option.pickerLabel}
+                  </span>
+                  {selected ? (
+                    <AppImage
+                      src={localePickerCheckIcon}
+                      alt=""
+                      width={16}
+                      height={16}
+                      className="size-4 shrink-0"
+                    />
+                  ) : null}
                 </button>
               </li>
             );
           })}
         </ul>
       </div>
-    </div>
+    </>
   );
 }

@@ -16,12 +16,16 @@ const resources = Object.fromEntries(
 );
 
 if (!i18n.isInitialized) {
-  void i18n.use(initReactI18next).init({
+  i18n.use(initReactI18next).init({
     resources,
     lng: DEFAULT_LOCALE,
     fallbackLng: DEFAULT_LOCALE,
     supportedLngs: Object.keys(LOCALE_CONFIG),
-    interpolation: { escapeValue: false, prefix: "{", suffix: "}" },
+    interpolation: {
+      escapeValue: false,
+      prefix: "{",
+      suffix: "}",
+    },
     react: { useSuspense: false },
   });
 }

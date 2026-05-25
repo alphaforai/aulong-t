@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation as useI18nextTranslation } from "react-i18next";
 import {
   DEFAULT_LOCALE,
   formatDateTime,
   formatNumber,
   formatPercent,
   formatRelativeTime,
+  translate,
   type Locale,
 } from "@/lib/local";
 import { useLocaleStore } from "@/lib/store/locale";
@@ -30,12 +30,12 @@ export function useTranslation() {
   const locale = useHydratedLocale();
   const setLocale = useLocaleStore((state) => state.setLocale);
   const toggleLocale = useLocaleStore((state) => state.toggleLocale);
-  const { t: i18nT } = useI18nextTranslation();
 
+  /** 与 SSR 一致：走 translate，避免 i18next 异步 init 导致插值/语言首屏不一致 */
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) =>
-      i18nT(key, params),
-    [i18nT],
+      translate(locale, key, params),
+    [locale],
   );
 
   const l10n = useMemo(

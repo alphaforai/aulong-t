@@ -8,14 +8,19 @@ import { TeamPerformanceCard } from "@/components/team/TeamPerformanceCard";
 import { TeamTopStatsCard } from "@/components/team/TeamTopStatsCard";
 import { getTeamOverview } from "@/lib/api/users";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export default function TeamPage() {
   const { t } = useTranslation();
+  const walletAddress = useUserInfoStore(
+    (state) => state.userInfo.walletAddress,
+  );
   const { data: teamOverviewResponse, isPending, isError } = useQuery({
-    queryKey: ["teamOverview"],
+    queryKey: ["teamOverview", walletAddress],
     queryFn: () => getTeamOverview(),
+    enabled: Boolean(walletAddress),
   });
 
   useEffect(() => {

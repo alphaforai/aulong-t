@@ -51,25 +51,25 @@ export function AssetSummaryCard() {
           label={t("mine.usdtBtn")}
           variant="light"
           onClick={() => {
-            toast.info(t("common.notOpen"));
+            toast.success(t("common.notOpen"));
           }}
         />
         <ActionButton
           icon={mineAssets.actionX}
-          iconClassName="left-[-27.37%] top-[-27.37%] size-[154.74%]"
+          iconClassName="left-[-25.68%] top-[-25.68%] size-[151.37%]"
           label={t("mine.xBtn")}
           variant="light"
           onClick={() => {
-            toast.info(t("common.notOpen"));
+            toast.success(t("common.notOpen"));
           }}
         />
         <ActionButton
           icon={mineAssets.actionInvest}
           iconClassName="left-[-17.6%] top-[-17.6%] size-[135.21%]"
-          label={t("mine.claimBtn")}
+          label={t("mine.goInvest")}
           variant="primary"
           onClick={() => {
-            toast.info(t("common.notOpen"));
+            toast.success(t("common.notOpen"));
           }}
         />
       </div>

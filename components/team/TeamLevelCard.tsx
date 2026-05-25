@@ -2,8 +2,8 @@
 
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import { teamAssets } from "./assets";
 import { displayTeamValue, formatAmount } from "./format";
+import { getTeamVipAvatarSrc, getTeamVipBadgeSrc } from "./assets";
 
 export type TeamLevelCardProps = {
   isPending?: boolean;
@@ -32,7 +32,9 @@ export function TeamLevelCard({
     : progressMax > 0
       ? Math.min(100, (progress / progressMax) * 100)
       : 0;
-  const displayVip = Math.max(0, vipLevel);
+  const displayVip = Math.max(0, Math.floor(Number(vipLevel) || 0));
+  const avatarSrc = getTeamVipAvatarSrc(displayVip);
+  const badgeSrc = getTeamVipBadgeSrc(displayVip);
   const progressText = isPending
     ? loadingLabel
     : `${formatAmount(progress, 0)}/${formatAmount(progressMax, 0)}`;
@@ -41,7 +43,7 @@ export function TeamLevelCard({
     <section className="relative -mb-1 flex w-full min-w-0 gap-3">
       <div className="relative h-[83px] w-[78px] shrink-0">
         <AppImage
-          src={teamAssets.levelAvatar}
+          src={avatarSrc}
           alt=""
           width={78}
           height={83}
@@ -57,7 +59,7 @@ export function TeamLevelCard({
             </p>
             <div className="relative mt-0.5 h-10 w-32">
               <AppImage
-                src={teamAssets.vipBadge}
+                src={badgeSrc}
                 alt={`VIP${displayVip}`}
                 width={128}
                 height={40}

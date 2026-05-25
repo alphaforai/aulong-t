@@ -26,7 +26,6 @@ import {
   bottomSheetOverlayFrame,
   bottomSheetOverlayRoot,
 } from "@/lib/mobileShell";
-import { isAlternateLocaleHeaderStyle } from "@/lib/local/locale-meta";
 import { LanguagePickerSheet } from "@/components/LanguagePickerSheet";
 import { toast } from "sonner";
 
@@ -40,10 +39,9 @@ function isApiSuccess(result: unknown) {
 
 /** 统一顶栏 — 视觉对齐 Figma TopBar，钱包逻辑来自 xwallet TopBar */
 export default function AulongHeader() {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const [showLanguageSheet, setShowLanguageSheet] = React.useState(false);
   const [showWalletModal, setShowWalletModal] = React.useState(false);
-  const alternateLangStyle = isAlternateLocaleHeaderStyle(locale);
   const [walletSheetEntered, setWalletSheetEntered] = React.useState(false);
   const [showInviteCodeModal, setShowInviteCodeModal] = React.useState(false);
   const [inviteSheetEntered, setInviteSheetEntered] = React.useState(false);
@@ -228,33 +226,28 @@ export default function AulongHeader() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label={t("header.switchLanguage")}
-              onClick={() => setShowLanguageSheet(true)}
-              className={`relative grid size-[30px] place-items-center overflow-hidden rounded-full transition-colors duration-200 ${
-                alternateLangStyle ? "bg-[#2e2e2e]" : "bg-transparent"
-              }`}
-            >
-              <AppImage
-                src={entrustAssets.langGlow}
-                alt=""
-                width={30}
-                height={30}
-                className={`col-start-1 row-start-1 size-[30px] scale-[2.8] object-contain transition-opacity duration-200 ${
-                  alternateLangStyle ? "opacity-30" : "opacity-100"
-                }`}
+            <div className="relative">
+              <button
+                type="button"
+                aria-label={t("header.switchLanguage")}
+                aria-expanded={showLanguageSheet}
+                aria-haspopup="listbox"
+                onClick={() => setShowLanguageSheet((open) => !open)}
+                className="relative grid size-[30px] place-items-center overflow-hidden rounded-full"
+              >
+                <AppImage
+                  src={entrustAssets.langIcon}
+                  alt=""
+                  width={30}
+                  height={30}
+                  className="size-[30px] object-contain"
+                />
+              </button>
+              <LanguagePickerSheet
+                open={showLanguageSheet}
+                onClose={() => setShowLanguageSheet(false)}
               />
-              <AppImage
-                src={entrustAssets.langIcon}
-                alt=""
-                width={22}
-                height={22}
-                className={`col-start-1 row-start-1 ml-1 mt-1 transition-[filter] duration-200 ${
-                  alternateLangStyle ? "brightness-0 invert" : ""
-                }`}
-              />
-            </button>
+            </div>
 
             <button
               type="button"
@@ -283,11 +276,6 @@ export default function AulongHeader() {
           </div>
         </div>
       </header>
-
-      <LanguagePickerSheet
-        open={showLanguageSheet}
-        onClose={() => setShowLanguageSheet(false)}
-      />
 
       {showWalletModal && (
         <div className={`${bottomSheetOverlayRoot} z-60`}>
