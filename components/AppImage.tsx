@@ -25,8 +25,12 @@ function shouldUseNativeImg(style?: CSSProperties, className?: string) {
   ) {
     return true;
   }
-  if (className && /\b[hw]-\[[^\]]+%\]/.test(className)) {
-    return true;
+  if (className) {
+    if (/\b[hw]-\[[^\]]+%\]/.test(className)) return true;
+    // Figma 裁切：size / inset 百分比定位
+    if (/\b(size|left|top|right|bottom)-\[[^\]]*%\]/.test(className)) {
+      return true;
+    }
   }
   return false;
 }

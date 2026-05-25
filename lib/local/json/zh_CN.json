@@ -61,7 +61,7 @@
   "entrust": {
     "buyTicket": "购买门票",
     "buyWhitelist": "购买白名单",
-    "ticketAirdropDesc": "花费 {bnbAmount} BNB，可获取 {usdtAmount} USDT 的空投",
+    "ticketAirdropDesc": "花费 {bnbAmount} BNB，获取 {usdtAmount} USDT 空投",
     "projectPart1": "项目",
     "projectPart2": "资料",
     "projectBannerDesc": "了解Aulong 项目愿景、经济模型与AI 智能交易机制",
@@ -153,7 +153,7 @@
     "nextPage": "下一页",
     "morePagesAria": "更多页码",
     "usdtBtn": "USDT",
-    "xBtn": "X",
+    "xBtn": "AUL",
     "claimBtn": "领取",
     "copyAllInviteBtn": "复制全部"
   },

@@ -11,7 +11,7 @@ import {
   sidePanelOverlayFrame,
   sidePanelOverlayRoot,
 } from "@/lib/mobileShell";
-import { teamAssets } from "./assets";
+import { getTeamVipBadgeSrc, teamAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { formatAmount } from "./format";
 
@@ -145,7 +145,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
           </button>
           <h1
             id="direct-panel-title"
-            className="text-xl font-medium leading-7 text-[#272727]"
+            className="text-lg font-medium leading-6 text-[#272727]"
           >
             {t("team.directPanelTitle")}
           </h1>
@@ -161,19 +161,19 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
             }`}
           >
             {!walletAddress ? (
-              <p className="py-12 text-center text-base text-[#8b8b8b]">
+              <p className="py-12 text-center text-sm text-[#8b8b8b]">
                 {t("common.connectWallet")}
               </p>
             ) : isPending ? (
-              <p className="py-12 text-center text-base text-[#8b8b8b]">
+              <p className="py-12 text-center text-sm text-[#8b8b8b]">
                 {t("common.loading")}
               </p>
             ) : isError ? (
-              <p className="py-12 text-center text-base text-[#8b8b8b]">
+              <p className="py-12 text-center text-sm text-[#8b8b8b]">
                 {t("team.loadFailed")}
               </p>
             ) : list.length === 0 ? (
-              <p className="py-12 text-center text-base text-[#8b8b8b]">
+              <p className="py-12 text-center text-sm text-[#8b8b8b]">
                 {t("team.noDirectRecords")}
               </p>
             ) : (
@@ -289,7 +289,7 @@ function DirectPagination({
             type="button"
             disabled={loading}
             onClick={() => onPageChange(item)}
-            className={`flex h-5 min-w-5 items-center justify-center rounded-[2px] text-sm leading-normal disabled:opacity-50 ${
+            className={`flex h-5 min-w-5 items-center justify-center rounded-[2px] text-xs leading-normal disabled:opacity-50 ${
               item === page
                 ? "w-5 bg-[#ff4646] px-[9px] py-0.5 text-white/90"
                 : "w-5 border-[0.5px] border-white bg-white px-2 py-0.5 text-black/90"
@@ -380,26 +380,26 @@ function DirectReferralItem({
             className="h-[25px] w-20 object-contain object-left"
           />
         </div>
-        <p className="text-base font-medium leading-normal text-black">
+        <p className="text-sm font-medium leading-normal text-black">
           {shortWallet(row.walletAddress)}
         </p>
-        <p className="text-sm leading-5 text-[#424242]">
+        <p className="text-xs leading-5 text-[#424242]">
           {t("team.registerTimeValue", { time: registerTime })}
         </p>
-        <p className="text-sm leading-5 text-[#424242]">
+        <p className="text-xs leading-5 text-[#424242]">
           {t("team.teamStakeValue", { amount: teamStakeText })}
         </p>
       </div>
 
       <div className="flex w-[72px] shrink-0 flex-col items-end gap-1">
-        <p className="text-sm leading-normal text-[#333]">
+        <p className="text-xs leading-normal text-[#333]">
           {t("team.personalStake")}
         </p>
         <div className="text-right">
-          <p className="font-[family-name:var(--font-mulish)] text-lg font-semibold leading-5 text-[#ea4747]">
+          <p className="font-[family-name:var(--font-mulish)] text-base font-semibold leading-5 text-[#ea4747]">
             {amountText}
           </p>
-          <p className="font-[family-name:var(--font-mulish)] text-sm font-medium leading-5 text-[#989898]">
+          <p className="font-[family-name:var(--font-mulish)] text-xs font-medium leading-5 text-[#989898]">
             USDT
           </p>
         </div>
@@ -424,6 +424,5 @@ function formatRegisterTime(value?: string | null) {
 }
 
 function getVipBadgeSrc(vipLevel?: number) {
-  const level = Math.max(0, Math.floor(Number(vipLevel) || 0));
-  return level >= 2 ? teamAssets.directVip2 : teamAssets.directVip1;
+  return getTeamVipBadgeSrc(vipLevel);
 }

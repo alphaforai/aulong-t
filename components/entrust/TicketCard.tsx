@@ -202,7 +202,7 @@ export function TicketCard() {
           disabled={isButtonDisabled}
         >
           {readEnabled
-            ? t("entrust.buyWhitelistBtn")
+            ? t("entrust.buyWhitelist")
             : t("common.connectFirstBtn")}
         </ImageButton>
       </div>

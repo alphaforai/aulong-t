@@ -2,7 +2,7 @@
 export const mineAssets = {
   assetCardBg: "/assets/mine/asset-card-bg.png",
   actionUsdt: "/assets/mine/action-usdt.png",
-  actionX: "/assets/mine/action-x.png",
+  actionX: "/assets/mine/action-x-icon.png",
   actionInvest: "/assets/mine/action-invest.png",
   inviteBannerBg: "/assets/mine/invite-banner-bg.png",
   inviteSheetIllustration: "/assets/mine/invite-sheet-illustration.png",

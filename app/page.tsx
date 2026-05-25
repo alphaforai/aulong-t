@@ -36,14 +36,14 @@ export default function HomePage() {
       iconSrc: entrustAssets.strategyTrend,
       title: t("entrust.strategyTrendTitle"),
       description: t("entrust.strategyTrendDesc"),
-      apr: "320",
-      period: "30",
+      apr: "238",
+      period: "7",
     },
     {
       iconSrc: entrustAssets.strategyArbitrage,
       title: t("entrust.strategyArbitrageTitle"),
       description: t("entrust.strategyArbitrageDesc"),
-      apr: "480",
+      apr: "310",
       period: "90",
     },
     {
@@ -51,7 +51,7 @@ export default function HomePage() {
       iconSize: 34,
       title: t("entrust.strategyHedgeTitle"),
       description: t("entrust.strategyHedgeDesc"),
-      apr: "600",
+      apr: "384",
       period: "360",
     },
   ] as const;

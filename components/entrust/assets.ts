@@ -1,7 +1,6 @@
 /** 委托页静态资源路径（public/assets/entrust） */
 export const entrustAssets = {
   logo: "/assets/entrust/logo.png",
-  langGlow: "/assets/entrust/lang-glow.svg",
   langIcon: "/assets/entrust/lang-icon.svg",
   walletDot: "/assets/entrust/wallet-dot.svg",
   ticketIcon: "/assets/entrust/ticket-small.png",
