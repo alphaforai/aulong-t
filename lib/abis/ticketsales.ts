@@ -1,5 +1,8 @@
+const ticketSalesAddress = process.env
+  .NEXT_PUBLIC_TICKET_SALES_CONTRACT_ADDRESS as `0x${string}`;
+
 export const TicketSalesContract = {
-    "address": "0x286b1535d62dd993866499e3c9cd2177d7d09cfd",
+    address: ticketSalesAddress,
     "abi": [
         {
           "type": "constructor",
