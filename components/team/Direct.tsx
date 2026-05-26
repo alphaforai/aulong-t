@@ -119,7 +119,7 @@ export function DirectPanel({ open, onClose }: DirectPanelProps) {
       aria-modal="true"
       aria-labelledby="direct-panel-title"
     >
-      <div>
+      <div className={sidePanelOverlayFrame}>
         <div
           className={`absolute inset-0 flex w-full flex-col bg-white transition-transform duration-300 ease-out ${
             entered ? "translate-x-0" : "translate-x-full"

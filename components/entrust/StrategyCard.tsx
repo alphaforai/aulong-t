@@ -84,7 +84,7 @@ export function StrategyCard({
         <ImageButton
           variant="start"
           onClick={() => {
-            toast.info(t("common.notOpen"));
+            toast.success(t("common.notOpen"));
           }}
         >
           {t("entrust.start")}

@@ -27,6 +27,15 @@ body {
   max-width: 100%;
 }
 
+/* 移动端：禁用双指捏合缩放、双击放大（配合 layout viewport） */
+@media (max-width: 768px) {
+  html {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+
 body {
   background: #ffffff;
   color: var(--foreground);
