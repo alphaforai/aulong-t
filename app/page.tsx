@@ -64,7 +64,7 @@ export default function HomePage() {
         imageSrc={entrustAssets.projectBanner}
         variant="project"
         onClick={() => {
-          toast.info(t("common.notOpen"));
+          toast.success(t("common.notOpen"));
         }}
         title={
           <>
@@ -81,7 +81,7 @@ export default function HomePage() {
         imageSrc={entrustAssets.startAiBanner}
         variant="startAi"
         onClick={() => {
-          toast.info(t("common.notOpen"));
+          toast.success(t("common.notOpen"));
         }}
         title={
           <>

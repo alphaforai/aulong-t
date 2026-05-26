@@ -30,13 +30,13 @@ export const metadata: Metadata = {
     metadataBase: new URL("https://aulong.australianlobster.xyz"),
     title: "Aulong",
     description:
-      "Aulong website",
+      "Aulong Official website",
     openGraph: {
-      title: "Aulong title",
+      title: "Aulong Official website",
       description:
         "Aulong description",
       images: ["/assets/entrust/logo.png"],
-      siteName: "Aulong site",
+      siteName: "Aulong Official website",
       type: "website",
     },
     icons: {
@@ -47,6 +47,8 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
 };
 
