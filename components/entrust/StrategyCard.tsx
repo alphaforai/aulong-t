@@ -56,12 +56,12 @@ export function StrategyCard({
 
         <div className="flex gap-[45px]">
           <div>
-            <p className="text-xs leading-normal text-black/50">
+            <p className="text-xs  text-black/70 font-semibold leading-normal">
               {t("entrust.apr")}
             </p>
             <p className="font-[family-name:var(--font-mulish)] leading-none text-black">
-              <span className="text-2xl leading-normal">{apr}</span>
-              <span className="text-xs leading-normal">%</span>
+              <span className="text-2xl text-green-600 font-bold leading-normal">{apr}</span>
+              <span className="text-xs text-green-600 font-bold leading-normal">%</span>
             </p>
           </div>
           <div>

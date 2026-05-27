@@ -35,7 +35,7 @@ export function EarningsSummaryCard() {
 
       {/* 总收益 — 稿 left 9px, top 9px */}
       <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-120px)] flex-col gap-2">
-        <p className="text-sm leading-normal text-black/70">{copy.totalEarnings}</p>
+        <p className="text-sm font-extrabold leading-normal text-black/70">{copy.totalEarnings}</p>
         <p className="font-[family-name:var(--font-mulish)] text-[32px] font-bold leading-none text-black">
           0.00
         </p>

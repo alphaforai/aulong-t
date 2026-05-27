@@ -26,6 +26,9 @@ type DirectReferralRow = {
   lineStake?: number;
   largeRegionVirtual?: boolean;
   manualBigBranchLine?: boolean;
+  teamTotalRegisterCount?: number;
+  teamWhiteListCount?: number;
+  teamWhitelistCount?: number;
 };
 
 export type DirectPanelProps = {
@@ -367,6 +370,9 @@ function DirectReferralItem({
   const amountText = formatAmount(personalStake);
   const teamStakeText = formatAmount(teamStake);
   const registerTime = formatRegisterTime(row.registerTime);
+  // 新增来两项
+  const teamTotalRegisterCount = row.teamTotalRegisterCount ?? 0;
+  const teamWhiteListCount = row.teamWhiteListCount ?? 0;
 
   return (
     <div className="flex items-start justify-between gap-3">
@@ -388,6 +394,12 @@ function DirectReferralItem({
         </p>
         <p className="text-xs leading-5 text-[#424242]">
           {t("team.teamStakeValue", { amount: teamStakeText })}
+        </p>
+        <p className="text-xs leading-5 text-[#424242]">
+          {t("team.teamTotalRegisterCount", { count: teamTotalRegisterCount })}
+        </p>
+        <p className="text-xs leading-5 text-[#424242]">
+          {t("team.teamWhiteListCount", { count: teamWhiteListCount })}
         </p>
       </div>
 
