@@ -389,22 +389,22 @@ function DirectReferralItem({
         <p className="text-sm font-medium leading-normal text-black">
           {shortWallet(row.walletAddress)}
         </p>
-        <p className="text-xs leading-5 text-[#424242]">
+        <p className="text-xs font-bold leading-5 text-[#424242]">
           {t("team.registerTimeValue", { time: registerTime })}
         </p>
-        <p className="text-xs leading-5 text-[#424242]">
+        <p className="text-xs font-bold leading-5 text-[#424242]">
           {t("team.teamStakeValue", { amount: teamStakeText })}
         </p>
-        <p className="text-xs leading-5 text-[#424242]">
+        <p className="text-xs font-bold leading-5 text-[#424242]">
           {t("team.teamTotalRegisterCount", { count: teamTotalRegisterCount })}
         </p>
-        <p className="text-xs leading-5 text-[#424242]">
+        <p className="text-xs font-bold leading-5 text-[#424242]">
           {t("team.teamWhiteListCount", { count: teamWhiteListCount })}
         </p>
       </div>
 
       <div className="flex w-[72px] shrink-0 flex-col items-end gap-1">
-        <p className="text-xs leading-normal text-[#333]">
+        <p className="text-xs font-bold leading-normal text-[#333]">
           {t("team.personalStake")}
         </p>
         <div className="text-right">
