@@ -51,7 +51,7 @@ export default function HomePage() {
       iconSize: 34,
       title: t("entrust.strategyHedgeTitle"),
       description: t("entrust.strategyHedgeDesc"),
-      apr: "384",
+      apr: "388",
       period: "360",
     },
   ] as const;

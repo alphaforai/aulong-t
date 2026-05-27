@@ -18,7 +18,7 @@ export function AssetSummaryCard() {
 
       <div className="absolute inset-x-10 top-[27px] z-10 flex flex-col items-center gap-1.5">
         <div className="flex items-center justify-center gap-1">
-          <p className="max-w-[180px] truncate text-sm leading-normal text-black/70">
+          <p className="max-w-[180px] truncate text-sm font-extrabold leading-normal text-black/70">
             {t("mine.totalAssets")}
           </p>
           <WhitelistBadge hasTicket={userInfo.hasTicket} />
@@ -28,7 +28,7 @@ export function AssetSummaryCard() {
         </p>
       </div>
 
-      <div className="absolute inset-x-4 top-[120px] z-10 flex items-center gap-2">
+      <div className="absolute inset-x-4 top-[120px] z-10 flex items-center gap-2 text-sm">
         <StatColumn label={t("mine.totalEarnings")} value="0.00" trailingSpace />
         <div className="flex h-7 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">

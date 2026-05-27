@@ -174,7 +174,7 @@ export default function AulongFooterNav() {
           aria-current="page"
         >
           <NavIcon tab={activeTab.id} active />
-          <span className="text-xs leading-[18px] text-white">
+          <span className="text-xs font-extrabold leading-[18px] text-white">
             {t(activeTab.labelKey)}
           </span>
         </Link>
@@ -187,7 +187,7 @@ export default function AulongFooterNav() {
             style={{ left: tab.inactiveLeft }}
           >
             <NavIcon tab={tab.id} />
-            <span className="text-xs leading-[18px] text-[#9c8787]">
+            <span className="text-xs font-extrabold leading-[18px] text-[#9c8787]">
               {t(tab.labelKey)}
             </span>
           </Link>
