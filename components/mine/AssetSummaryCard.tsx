@@ -135,7 +135,7 @@ function StatColumn({
 }) {
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
-      <p className="text-center text-xs leading-normal text-black/70">{label}</p>
+      <p className="text-center text-xs font-bold leading-normal text-black/70">{label}</p>
       <p className="text-center leading-none text-black">
         <span className="font-[family-name:var(--font-mulish)] text-base font-semibold leading-normal">
           {value}
