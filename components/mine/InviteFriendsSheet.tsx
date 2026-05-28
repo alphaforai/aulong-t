@@ -80,13 +80,52 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closeSheet]);
 
+  const copyText = React.useCallback(async (value: string) => {
+    const text = value.trim();
+    if (!text) return false;
+
+    // 优先使用 Clipboard API（部分华为 WebView 上可能不可用或被拦截）
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // ignore and fallback
+    }
+
+    // 退化到 document.execCommand("copy")
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "true");
+      textarea.style.position = "fixed";
+      textarea.style.top = "-9999px";
+      textarea.style.left = "-9999px";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+
+      const copied = document.execCommand("copy");
+      document.body.removeChild(textarea);
+      if (copied) return true;
+    } catch {
+      // ignore and fallback
+    }
+
+    return false;
+  }, []);
+
   const copyInviteCode = async () => {
     if (needsConnectWallet) {
       toast.info(t("common.connectWallet"));
       return;
     }
     try {
-      await navigator.clipboard.writeText(inviteCode);
+      const copied = await copyText(inviteCode);
+      if (!copied) throw new Error("copy failed");
       toast.success(t("toast.copiedInviteCode"));
     } catch {
       toast.error(t("common.copyFailed"));
@@ -99,7 +138,8 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
       return;
     }
     try {
-      await navigator.clipboard.writeText(fullInviteLink);
+      const copied = await copyText(fullInviteLink);
+      if (!copied) throw new Error("copy failed");
       toast.success(t("toast.copiedInviteLink"));
     } catch {
       toast.error(t("common.copyFailed"));
@@ -112,9 +152,10 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
       return;
     }
     try {
-      await navigator.clipboard.writeText(
+      const copied = await copyText(
         buildInviteInfoText(inviteCode, fullInviteLink),
       );
+      if (!copied) throw new Error("copy failed");
       toast.success(t("toast.copiedAllInvite"));
     } catch {
       toast.error(t("common.copyFailed"));
