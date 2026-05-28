@@ -28,8 +28,8 @@ export const LOCALE_PICKER_OPTIONS = [
   { code: "en_US" as const, pickerLabel: "English", flagIcon: "/assets/locale/flag-en_US.svg" },
   { code: "ja_JP" as const, pickerLabel: "日本語", flagIcon: "/assets/locale/flag-ja_JP.svg" },
   { code: "ko_KR" as const, pickerLabel: "한국어", flagIcon: "/assets/locale/flag-ko_KR.svg" },
-  // { code: "vi_VN" as const, pickerLabel: "越南语", flagIcon: "/assets/locale/flag-vi_VN.svg" },
-  // { code: "ms_MY" as const, pickerLabel: "马来语", flagIcon: "/assets/locale/flag-ms_MY.svg" },
+  { code: "vi_VN" as const, pickerLabel: "Việt", flagIcon: "/assets/locale/flag-vi_VN.svg" },
+  { code: "ms_MY" as const, pickerLabel: "Melayu", flagIcon: "/assets/locale/flag-ms_MY.svg" },
 ] satisfies ReadonlyArray<{
   code: Locale;
   pickerLabel: string;
