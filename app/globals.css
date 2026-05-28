@@ -12,6 +12,7 @@
   --font-mono: var(--font-geist-mono);
   --font-mulish: var(--font-mulish);
   --font-noto-sc-black: var(--font-noto-sc-black);
+  --font-noto-sans: var(--font-noto-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -46,4 +47,17 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+}
+
+/* vi_VN / ms_MY：LocaleSync 会设置 html lang=vi-VN|ms-MY，专用字体避免缺字回退导致局部加粗 */
+html[lang="vi-VN"] body,
+html[lang="ms-MY"] body {
+  font-family: var(--font-noto-sans), "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+html[lang="vi-VN"] [class*="font-noto-sc-black"],
+html[lang="ms-MY"] [class*="font-noto-sc-black"] {
+  font-family: var(--font-noto-sans), "Segoe UI", sans-serif;
+  font-synthesis: none;
 }

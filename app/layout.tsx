@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Mulish, Noto_Sans_SC } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Mulish,
+  Noto_Sans,
+  Noto_Sans_SC,
+} from "next/font/google";
 import { Provider } from "@/components/Provider";
 import "./globals.css";
 
@@ -24,6 +30,14 @@ const notoSansScBlack = Noto_Sans_SC({
   variable: "--font-noto-sc-black",
   subsets: ["latin"],
   weight: "900",
+});
+
+/** 越南语 / 马来语正文与标题（拉丁 + 越南文声调） */
+const notoSans = Noto_Sans({
+  variable: "--font-noto-sans",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -61,7 +75,7 @@ export default function RootLayout({
     <html
       lang="zh-CN"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} ${notoSansScBlack.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} ${notoSansScBlack.variable} ${notoSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-white md:bg-[#f5f5f5]">
         <Provider>{children}</Provider>
