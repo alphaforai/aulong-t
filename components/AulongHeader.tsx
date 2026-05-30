@@ -409,7 +409,7 @@ export default function AulongHeader() {
             <button
               type="button"
               disabled={registerPending}
-              className="mt-5 flex h-11 w-full items-center justify-center rounded-[10px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold text-white shadow-[0_4px_12px_rgba(213,0,0,0.2)] transition-opacity disabled:cursor-wait disabled:opacity-60"
+              className="mt-5 flex h-11 w-full items-center justify-center rounded-[10px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold text-white shadow-[0_4px_12px_rgba(213,0,0,0.2)] transition-opacity disabled:cursor-wait disabled:opacity-60"
               onClick={() => void handleRegisterInvite()}
             >
               {registerPending

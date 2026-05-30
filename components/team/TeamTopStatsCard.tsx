@@ -111,7 +111,7 @@ function StatColumn({
 
       <div className="flex w-full min-w-0 flex-col items-center gap-0.5 text-center">
         <p
-          className={`w-full font-[family-name:var(--font-mulish)] text-base font-medium leading-tight tracking-[-0.32px] sm:text-lg sm:leading-6 ${
+          className={`w-full font-mulish text-base font-medium leading-tight tracking-[-0.32px] sm:text-lg sm:leading-6 ${
             value === loadingLabel ? "text-[#8b8b8b]" : "text-[#d50000]"
           }`}
         >

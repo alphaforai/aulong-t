@@ -23,7 +23,7 @@ export function AssetSummaryCard() {
           </p>
           <WhitelistBadge hasTicket={userInfo.hasTicket} />
         </div>
-        <p className="font-[family-name:var(--font-mulish)] text-[32px] font-bold leading-normal text-black">
+        <p className="font-mulish text-[32px] font-bold leading-normal text-black">
           0.00
         </p>
       </div>
@@ -99,7 +99,7 @@ function AssetCardBackground() {
             }}
           />
         </div>
-        <div className="absolute inset-0 rounded-[12px] bg-linear-to-b from-[rgba(255,255,255,0.35)] from-[34.924%] to-white" />
+        <div className="absolute inset-0 rounded-[12px] bg-gradient-to-b from-[rgba(255,255,255,0.35)] from-[34.924%] to-white" />
       </div>
     </div>
   );
@@ -137,11 +137,11 @@ function StatColumn({
     <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
       <p className="text-center text-xs font-bold leading-normal text-black/70">{label}</p>
       <p className="text-center leading-none text-black">
-        <span className="font-[family-name:var(--font-mulish)] text-base font-semibold leading-normal">
+        <span className="font-mulish text-base font-semibold leading-normal">
           {value}
         </span>
         {trailingSpace ? (
-          <span className="font-[family-name:var(--font-mulish)] text-sm font-semibold leading-normal">
+          <span className="font-mulish text-sm font-semibold leading-normal">
             {" "}
           </span>
         ) : null}
@@ -177,7 +177,7 @@ function ActionButton({
     >
       {isPrimary ? (
         <>
-          <span className="pointer-events-none absolute inset-0 rounded-[12px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
+          <span className="pointer-events-none absolute inset-0 rounded-[12px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
           <span className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]" />
         </>
       ) : null}

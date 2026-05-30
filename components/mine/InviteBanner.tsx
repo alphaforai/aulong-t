@@ -35,7 +35,7 @@ export function InviteBanner() {
         </div>
 
         <div className="relative z-10 ml-[120px] mt-[17px] pr-3">
-          <h2 className="-skew-x-[10deg] flex items-center gap-1 font-[family-name:var(--font-noto-sc-black)] text-[28px] font-black leading-normal text-black">
+          <h2 className="-skew-x-[10deg] flex items-center gap-1 font-noto-sc-black text-[28px] font-black leading-normal text-black">
             <span>{t("mine.invitePart1")}</span>
             <span className="text-[#f82a2a]">{t("mine.invitePart2")}</span>
           </h2>

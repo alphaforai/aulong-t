@@ -92,7 +92,7 @@ export function TeamLevelCard({
         <div className="mt-1 flex flex-col gap-1">
           <div className="relative h-2 w-full overflow-hidden rounded-[34px] bg-[#e5e5e5]">
             <div
-              className="absolute inset-y-0 left-0 rounded-[34px] bg-linear-to-r from-[#c60303] to-[#f33]"
+              className="absolute inset-y-0 left-0 rounded-[34px] bg-gradient-to-r from-[#c60303] to-[#f33]"
               style={{ width: `${progressPct}%` }}
             />
           </div>

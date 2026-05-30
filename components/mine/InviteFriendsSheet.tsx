@@ -205,7 +205,7 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
           <div className="flex flex-col items-center text-center">
             <h2
               id="invite-friends-sheet-title"
-              className="-skew-x-[10.65deg] scale-y-[0.98] flex items-center justify-center gap-1 font-[family-name:var(--font-noto-sc-black)] text-[clamp(28px,10vw,42px)] font-black leading-none text-black"
+              className="-skew-x-[10.65deg] scale-y-[0.98] flex items-center justify-center gap-1 font-noto-sc-black text-[clamp(28px,10vw,42px)] font-black leading-none text-black"
             >
               <span>{t("mine.invitePart1")}</span>
               <span className="text-[#f82a2a]">{t("mine.invitePart2")}</span>
@@ -316,13 +316,13 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-[33px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]"
+              className="pointer-events-none absolute inset-0 rounded-[33px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]"
             />
             <span
               aria-hidden
               className="pointer-events-none absolute inset-0 rounded-[33px] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]"
             />
-            <span className="relative text-shadow-[0_1px_3px_rgba(94,44,44,0.25)]">
+            <span className="relative [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]">
               {needsConnectWallet
                 ? t("common.connectWalletBtn")
                 : t("mine.copyAllInviteBtn")}

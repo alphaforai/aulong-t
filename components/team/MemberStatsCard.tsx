@@ -146,7 +146,7 @@ function MemberStatTile({
           {label}
         </p>
         <p
-          className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
+          className={`font-mulish text-lg font-medium leading-normal ${
             isPending || value === loadingLabel
               ? "text-[#8b8b8b]"
               : "text-[#333]"

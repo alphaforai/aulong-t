@@ -139,7 +139,7 @@ export function TicketCard() {
       : "—";
 
   return (
-    <section className="relative h-[180px] w-full overflow-hidden rounded-[12px] border border-white bg-linear-to-b from-white/45 to-white/90 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+    <section className="relative h-[180px] w-full overflow-hidden rounded-[12px] border border-white bg-gradient-to-b from-white/45 to-white/90 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="relative z-10 flex w-full min-w-0 flex-col gap-[10px]">
         <div className="relative flex w-full min-w-0 flex-col gap-[5px]">
           <div className="flex h-[27px] items-center gap-[3px] overflow-hidden">
@@ -182,7 +182,7 @@ export function TicketCard() {
 
           <div className="flex flex-col gap-[3px]">
             <p className="text-black">
-              <span className="font-[family-name:var(--font-mulish)] text-[38px] font-bold leading-[19px]">
+              <span className="font-mulish text-[38px] font-bold leading-[19px]">
                 {ticketPriceWei != null
                   ? formatEther(ticketPriceWei) + " "
                   : "—"}
