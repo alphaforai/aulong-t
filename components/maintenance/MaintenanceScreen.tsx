@@ -46,7 +46,7 @@ export function MaintenanceScreen() {
           />
         </div>
 
-        <h1 className="mt-[53px] text-center font-[family-name:var(--font-noto-sc-black)] text-2xl font-black leading-normal text-black">
+        <h1 className="mt-[53px] text-center font-noto-sc-black text-2xl font-black leading-normal text-black">
           <span className="block">Sorry! We&apos;re under</span>
           <span className="block">maintenance!</span>
         </h1>

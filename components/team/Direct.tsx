@@ -408,10 +408,10 @@ function DirectReferralItem({
           {t("team.personalStake")}
         </p>
         <div className="text-right">
-          <p className="font-[family-name:var(--font-mulish)] text-base font-semibold leading-5 text-[#ea4747]">
+          <p className="font-mulish text-base font-semibold leading-5 text-[#ea4747]">
             {amountText}
           </p>
-          <p className="font-[family-name:var(--font-mulish)] text-xs font-medium leading-5 text-[#989898]">
+          <p className="font-mulish text-xs font-medium leading-5 text-[#989898]">
             USDT
           </p>
         </div>

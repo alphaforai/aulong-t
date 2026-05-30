@@ -123,7 +123,7 @@ function FundRecordRow({
       </div>
       <div className="flex min-w-0 flex-1 flex-col items-end gap-3 text-right">
         <p
-          className={`font-[family-name:var(--font-mulish)] text-base font-semibold leading-normal whitespace-nowrap ${
+          className={`font-mulish text-base font-semibold leading-normal whitespace-nowrap ${
             amountTone === "positive" ? "text-[#ea4747]" : "text-[#129a48]"
           }`}
         >

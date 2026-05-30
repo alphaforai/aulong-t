@@ -59,7 +59,7 @@ export function StrategyCard({
             <p className="text-xs  text-black/70 font-semibold leading-normal">
               {t("entrust.apr")}
             </p>
-            <p className="font-[family-name:var(--font-mulish)] leading-none text-black">
+            <p className="font-mulish leading-none text-black">
               <span className="text-2xl text-green-600 font-bold leading-normal">{apr}</span>
               <span className="text-xs text-green-600 font-bold leading-normal">%</span>
             </p>
@@ -69,7 +69,7 @@ export function StrategyCard({
               {t("entrust.period")}
             </p>
             <p className="leading-none text-black">
-              <span className="font-[family-name:var(--font-mulish)] text-2xl leading-normal">
+              <span className="font-mulish text-2xl leading-normal">
                 {period}
               </span>
               <span className="text-xs leading-normal">

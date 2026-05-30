@@ -36,7 +36,7 @@ export function EarningsSummaryCard() {
       {/* 总收益 — 稿 left 9px, top 9px */}
       <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-120px)] flex-col gap-2">
         <p className="text-sm font-extrabold leading-normal text-black/70">{copy.totalEarnings}</p>
-        <p className="font-[family-name:var(--font-mulish)] text-[32px] font-bold leading-none text-black">
+        <p className="font-mulish text-[32px] font-bold leading-none text-black">
           0.00
         </p>
       </div>
@@ -64,7 +64,7 @@ export function EarningsSummaryCard() {
       {/* 去理财 — 稿 right 7px, top 43px，与大号金额同一行 */}
       <button
         type="button"
-        className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] select-none items-center justify-center rounded-[33px] border border-white bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92]"
+        className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] select-none items-center justify-center rounded-[33px] border border-white bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92]"
         onClick={() => {
           toast.success(t("common.notOpen"));
         }}
@@ -175,11 +175,11 @@ function StatBlock({
     <div className="flex flex-col gap-1">
       <p className="text-sm leading-normal text-black/70">{label}</p>
       <p className="text-black leading-none">
-        <span className="font-[family-name:var(--font-mulish)] text-base font-bold leading-normal">
+        <span className="font-mulish text-base font-bold leading-normal">
           0.00
         </span>
         {withTrailingSpace ? (
-          <span className="font-[family-name:var(--font-mulish)] text-sm font-bold leading-normal">
+          <span className="font-mulish text-sm font-bold leading-normal">
             {" "}
           </span>
         ) : null}

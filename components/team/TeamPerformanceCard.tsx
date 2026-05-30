@@ -36,7 +36,7 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
           </p>
           <div className="mt-0.5 flex flex-wrap items-end gap-1.5 whitespace-nowrap">
             <p
-              className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
+              className={`font-mulish text-lg font-medium leading-normal ${
                 isPending ? "text-[#8b8b8b]" : "text-[#db0000]"
               }`}
             >
@@ -49,7 +49,7 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
               ) : null}
             </p>
             <span
-              className={`font-[family-name:var(--font-mulish)] text-sm leading-normal ${
+              className={`font-mulish text-sm leading-normal ${
                 isPending ? "text-[#8b8b8b]" : "text-[#db0000]"
               }`}
             >
@@ -112,7 +112,7 @@ function PerformanceSubCard({
           {label}
         </p>
         <p
-          className={`font-[family-name:var(--font-mulish)] text-lg font-medium leading-normal ${
+          className={`font-mulish text-lg font-medium leading-normal ${
             isPending || value === loadingLabel
               ? "text-[#8b8b8b]"
               : "text-[#333]"

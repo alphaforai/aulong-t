@@ -11,7 +11,7 @@ export function TeamSectionTitle({ title, action }: TeamSectionTitleProps) {
     <div className="flex w-full items-center justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
         <div
-          className="h-[15px] w-[5px] shrink-0 rounded-[1px] bg-linear-to-b from-[#ff3033] to-[#c60303]"
+          className="h-[15px] w-[5px] shrink-0 rounded-[1px] bg-gradient-to-b from-[#ff3033] to-[#c60303]"
           aria-hidden
         />
         <h2 className="text-lg font-medium leading-normal text-[#333]">

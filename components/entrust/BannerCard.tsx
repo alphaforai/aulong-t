@@ -70,7 +70,7 @@ export function BannerCard({
       )}
 
       <div
-        className={`absolute z-20 -skew-x-10 scale-y-[0.98] font-[family-name:var(--font-noto-sc-black)] text-[32px] font-black leading-none tracking-[-0.02em] text-black ${
+        className={`absolute z-20 -skew-x-10 scale-y-[0.98] font-noto-sc-black text-[32px] font-black leading-none tracking-[-0.02em] text-black ${
           isStartAi ? "left-[133px] top-4" : "left-[116px] top-1"
         }`}
       >
