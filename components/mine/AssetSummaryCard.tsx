@@ -99,7 +99,7 @@ function AssetCardBackground() {
             }}
           />
         </div>
-        <div className="absolute inset-0 rounded-[12px] bg-linear-to-b from-[rgba(255,255,255,0.35)] from-[34.924%] to-white" />
+        <div className="absolute inset-0 rounded-[12px] bg-gradient-to-b from-[rgba(255,255,255,0.35)] from-[34.924%] to-white" />
       </div>
     </div>
   );
@@ -177,11 +177,11 @@ function ActionButton({
     >
       {isPrimary ? (
         <>
-          <span className="pointer-events-none absolute inset-0 rounded-[12px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
+          <span className="pointer-events-none absolute inset-0 rounded-[12px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
           <span className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]" />
         </>
       ) : null}
-      <div className="relative z-10 size-8.5 shrink-0 overflow-hidden">
+      <div className="relative z-10 size-[34px] shrink-0 overflow-hidden">
         <AppImage
           src={icon}
           alt=""

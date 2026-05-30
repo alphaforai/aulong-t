@@ -166,7 +166,7 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
 
   return (
     <div
-      className={`${bottomSheetOverlayRoot} z-70`}
+      className={`${bottomSheetOverlayRoot} z-[70]`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="invite-friends-sheet-title"
@@ -181,7 +181,7 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
           onClick={closeSheet}
         />
         <div
-          className={`relative flex max-h-[min(640px,92dvh)] w-full flex-col overflow-hidden rounded-t-[12px] bg-white shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
+          className={`relative flex max-h-[min(640px,92vh)] w-full flex-col overflow-hidden rounded-t-[12px] bg-white shadow-[0_-12px_40px_rgba(0,0,0,0.15)] transition-transform duration-300 ease-out ${
             entered ? "translate-y-0" : "translate-y-full"
           }`}
           onClick={(e) => e.stopPropagation()}
@@ -316,7 +316,7 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
           >
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-[33px] bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]"
+              className="pointer-events-none absolute inset-0 rounded-[33px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]"
             />
             <span
               aria-hidden

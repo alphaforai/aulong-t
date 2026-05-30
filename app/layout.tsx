@@ -77,7 +77,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${mulish.variable} ${notoSansScBlack.variable} ${notoSans.variable} h-full antialiased`}
     >
-      <body className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-white md:bg-[#f5f5f5]">
+      <body className="flex min-h-screen w-full flex-col overflow-x-hidden bg-white md:bg-[#f5f5f5]">
         <Provider>{children}</Provider>
       </body>
     </html>

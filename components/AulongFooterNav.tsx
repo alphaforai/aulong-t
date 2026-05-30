@@ -75,7 +75,7 @@ function resolveActiveTab(pathname: string): NavTabId {
 }
 
 const ACTIVE_PILL_CLASS =
-  "absolute top-2 flex h-[60px] w-[92px] flex-col items-center justify-center gap-0.5 overflow-hidden rounded-full border border-white bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#ff2d2d] p-2.5 shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]";
+  "absolute top-2 flex h-[60px] w-[92px] flex-col items-center justify-center gap-0.5 overflow-hidden rounded-full border border-white bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#ff2d2d] p-2.5 shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]";
 
 const INACTIVE_ITEM_CLASS =
   "absolute top-2 flex size-[60px] flex-col items-center justify-center gap-0.5 p-3";

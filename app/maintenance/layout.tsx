@@ -13,7 +13,7 @@ export default function MaintenanceLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-dvh min-h-dvh w-full bg-white md:flex md:justify-center md:bg-[#f5f5f5]">
+    <div className="h-screen min-h-screen w-full bg-white md:flex md:justify-center md:bg-[#f5f5f5]">
       {children}
     </div>
   );

@@ -8,6 +8,19 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "browserslist": {
+    "production": [
+      "Android >= 9",
+      "Chrome >= 80",
+      "iOS >= 13",
+      "Safari >= 13.1"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@tanstack/react-query": "^5.100.14",
     "@walletconnect/ethereum-provider": "^2.23.9",
@@ -24,14 +37,15 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
-    "tailwindcss": "^4",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }

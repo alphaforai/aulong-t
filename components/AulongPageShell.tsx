@@ -16,9 +16,9 @@ export function AulongPageShell({
   mainClassName = "",
 }: AulongPageShellProps) {
   return (
-    <div className="min-h-dvh w-full md:py-8">
+    <div className="min-h-screen w-full md:py-8">
       <div
-        className={`relative mx-auto flex min-h-dvh w-full max-w-[430px] flex-col overflow-x-hidden md:min-h-[calc(100dvh-4rem)] md:overflow-hidden md:rounded-2xl md:shadow-[0_4px_32px_rgba(0,0,0,0.08)] ${panelClassName}`}
+        className={`relative mx-auto flex min-h-screen w-full max-w-[430px] flex-col overflow-x-hidden md:min-h-[calc(100vh-4rem)] md:overflow-hidden md:rounded-2xl md:shadow-[0_4px_32px_rgba(0,0,0,0.08)] ${panelClassName}`}
       >
         <div className="h-11 shrink-0" aria-hidden />
         <AulongHeader />

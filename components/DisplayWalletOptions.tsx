@@ -87,13 +87,13 @@ function WalletOption({
         aria-hidden
         className={`absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2 rounded-full transition-colors ${
           ready
-            ? "bg-linear-to-b from-[#ff4d00] to-[#e90000]"
+            ? "bg-gradient-to-b from-[#ff4d00] to-[#e90000]"
             : "bg-[#e5e5e5] group-disabled:bg-[#eee]"
         }`}
       />
       <span className="pl-2">{displayName}</span>
       {ready ? (
-        <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-linear-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] px-2 text-[10px] font-medium leading-none text-white shadow-[inset_0_-2px_2px_rgba(255,254,227,0.5)] sm:px-2.5 sm:text-xs">
+        <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] px-2 text-[10px] font-medium leading-none text-white shadow-[inset_0_-2px_2px_rgba(255,254,227,0.5)] sm:px-2.5 sm:text-xs">
           {t("common.available")}
         </span>
       ) : (
