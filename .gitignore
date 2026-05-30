@@ -3,6 +3,8 @@
 .*
 !.gitignore
 
+Dockerfile
+
 # dependencies
 /node_modules
 /.pnp
