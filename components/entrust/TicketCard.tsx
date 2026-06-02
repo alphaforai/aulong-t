@@ -29,6 +29,10 @@ function getErrorMessage(error: unknown, fallback: string) {
 
 export function TicketCard() {
   const { t } = useTranslation();
+  const lastReadErrorRef = React.useRef<unknown>(null);
+  const lastTicketPriceErrorRef = React.useRef<unknown>(null);
+  const lastWriteErrorRef = React.useRef<unknown>(null);
+  const lastReceiptErrorRef = React.useRef<unknown>(null);
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -51,7 +55,12 @@ export function TicketCard() {
   const opFailed = t("common.operationFailed");
 
   React.useEffect(() => {
-    if (readError) {
+    if (!readError) {
+      lastReadErrorRef.current = null;
+      return;
+    }
+    if (lastReadErrorRef.current !== readError) {
+      lastReadErrorRef.current = readError;
       toast.error(getErrorMessage(readError, opFailed));
     }
   }, [readError, opFailed]);
@@ -68,7 +77,12 @@ export function TicketCard() {
   });
 
   React.useEffect(() => {
-    if (readTicketPriceError) {
+    if (!readTicketPriceError) {
+      lastTicketPriceErrorRef.current = null;
+      return;
+    }
+    if (lastTicketPriceErrorRef.current !== readTicketPriceError) {
+      lastTicketPriceErrorRef.current = readTicketPriceError;
       toast.error(getErrorMessage(readTicketPriceError, opFailed));
     }
   }, [readTicketPriceError, opFailed]);
@@ -108,11 +122,19 @@ export function TicketCard() {
   }, [isSuccess, refetch]);
 
   React.useEffect(() => {
-    if (writeError) {
+    if (!writeError) {
+      lastWriteErrorRef.current = null;
+    } else if (lastWriteErrorRef.current !== writeError) {
+      lastWriteErrorRef.current = writeError;
       toast.error(getErrorMessage(writeError, opFailed));
+    }
+
+    if (!receiptError) {
+      lastReceiptErrorRef.current = null;
       return;
     }
-    if (receiptError) {
+    if (lastReceiptErrorRef.current !== receiptError) {
+      lastReceiptErrorRef.current = receiptError;
       toast.error(getErrorMessage(receiptError, opFailed));
     }
   }, [receiptError, writeError, opFailed]);
