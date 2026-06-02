@@ -36,7 +36,7 @@ export const entrustAssets = {
   projectsRoleBrain: "/assets/entrust/projects/projects-role-brain.png",
   projectsRoleOs: "/assets/entrust/projects/projects-role-os.png",
   projectsSocialYoutube: "/assets/entrust/projects/projects-social-youtube.png",
-  projectsSocialX: "/assets/entrust/projects/projects-social-x.svg",
+  projectsSocialX: "/assets/entrust/projects/projects-social-x.png",
   projectsSocialParagraph: "/assets/entrust/projects/projects-social-paragraph.png",
   projectsSocialLinktree: "/assets/entrust/projects/projects-social-linktree.png",
   projectsAboutDrive: "/assets/entrust/projects/projects-about-drive.png",
