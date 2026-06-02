@@ -23,4 +23,22 @@ export const entrustAssets = {
   navEarnings: "/assets/entrust/nav-earnings.svg",
   navMine: "/assets/entrust/nav-mine.svg",
   navTeam: "/assets/entrust/nav-team.svg",
+  projectsHeroBg: "/assets/entrust/projects/projects-hero-bg.png",
+  projectsFeatureAgentIcon:
+    "/assets/entrust/projects/projects-feature-agent-icon.png",
+  projectsFeatureAgentCircle:
+    "/assets/entrust/projects/projects-feature-agent-circle.svg",
+  projectsFeatureAgentCube:
+    "/assets/entrust/projects/projects-feature-agent-cube.png",
+  projectsFeatureAgent: "/assets/entrust/projects/projects-feature-agent.png",
+  projectsFeatureValue: "/assets/entrust/projects/projects-feature-value.png",
+  projectsRoleUser: "/assets/entrust/projects/projects-role-user.png",
+  projectsRoleBrain: "/assets/entrust/projects/projects-role-brain.png",
+  projectsRoleOs: "/assets/entrust/projects/projects-role-os.png",
+  projectsSocialYoutube: "/assets/entrust/projects/projects-social-youtube.png",
+  projectsSocialX: "/assets/entrust/projects/projects-social-x.svg",
+  projectsSocialParagraph: "/assets/entrust/projects/projects-social-paragraph.png",
+  projectsSocialLinktree: "/assets/entrust/projects/projects-social-linktree.png",
+  projectsAboutDrive: "/assets/entrust/projects/projects-about-drive.png",
+  projectsAboutNotion: "/assets/entrust/projects/projects-about-notion.png",
 } as const;

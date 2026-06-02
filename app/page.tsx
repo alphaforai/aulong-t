@@ -5,15 +5,18 @@ import { BannerCard } from "@/components/entrust/BannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
 import { TicketCard } from "@/components/entrust/TicketCard";
+import { ProjectsInfo } from "@/components/entrust/ProjectsInfo";
 import { AulongPageShell } from "@/components/AulongPageShell";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { useUserInfoStore } from "@/lib/store";
 import { toast } from "sonner";
 import { useReadContract } from "wagmi";
+import { useState } from "react";
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const [showProjectsInfo, setShowProjectsInfo] = useState(false);
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -64,7 +67,7 @@ export default function HomePage() {
         imageSrc={entrustAssets.projectBanner}
         variant="project"
         onClick={() => {
-          toast.success(t("common.notOpen"));
+          setShowProjectsInfo(true);
         }}
         title={
           <>
@@ -97,6 +100,11 @@ export default function HomePage() {
           <StrategyCard key={index} {...strategy} />
         ))}
       </div>
+
+      <ProjectsInfo
+        open={showProjectsInfo}
+        onClose={() => setShowProjectsInfo(false)}
+      />
     </AulongPageShell>
   );
 }
