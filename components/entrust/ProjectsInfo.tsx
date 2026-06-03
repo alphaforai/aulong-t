@@ -19,19 +19,24 @@ export type ProjectsInfoProps = {
 
 type InfoRow = {
   title: string;
-  iconSrc: string;
   href: string;
+  iconSrc?: string;
+  iconBgSrc?: string;
+  iconOverlaySrc?: string;
+  iconOverlayClassName?: string;
   iconWrapperClassName?: string;
 };
 
 const SECTION_UNDERLINE =
   "mt-1 h-[5px] w-[44px] rounded-[21px] bg-gradient-to-b from-[#ff3636] to-[#c80000]";
 
-const socialURLs = {
+const projectLinks = {
   youtube: "https://www.youtube.com/@AULONG_AU",
   x: "https://x.com/AUlong_",
+  telegram: "https://t.me/AUlong_agent",
   paragraph:
     "https://paragraph.com/@reploglejasline@gmail.com?modal=subscribe",
+  dapp: "https://www.aulong.pro/",
   linktree: "https://linktr.ee/AULONG_AU",
   driveZh:
     "https://drive.google.com/drive/folders/1QXVv1aM8AKSVbvqQG2YJTGzp4LCp4PG5?usp=drive_link",
@@ -39,10 +44,16 @@ const socialURLs = {
     "https://drive.google.com/drive/folders/1IIcgz5QXd1xxFyGL6VZZ4feeMoiAISko?usp=drive_link",
   driveVi:
     "https://drive.google.com/drive/folders/1NfWXqByj6LQ5qgGDaOqGv4Kyvkiqs4xI?usp=drive_link",
+  driveKo:
+    "https://drive.google.com/drive/folders/1Bg9_CDTjtPbFLus9WGRJzbip3EEnK8AH?usp=drive_link",
   notionZh:
     "https://www.notion.so/AULONG-36e682ba8895807087ecf0d277871463?source=copy_link",
   notionEn:
     "https://www.notion.so/AULONG-English-PACT-Database-36e682ba88958050893ee289a6453f1c?source=copy_link",
+  notionKo:
+    "https://app.notion.com/p/AULONG-36e682ba889580c88f84df889be19fa4?source=copy_link",
+  notionVi:
+    "https://app.notion.com/p/AULONG-C-s-d-li-u-ti-ng-Vi-t-36e682ba8895802a967edf3a0dd2e1a0?source=copy_link",
 } as const;
 
 export function ProjectsInfo({ open, onClose }: ProjectsInfoProps) {
@@ -80,22 +91,32 @@ export function ProjectsInfo({ open, onClose }: ProjectsInfoProps) {
     {
       title: t("entrust.projectsInfo.socialYoutube"),
       iconSrc: entrustAssets.projectsSocialYoutube,
-      href: socialURLs.youtube,
+      href: projectLinks.youtube,
     },
     {
       title: t("entrust.projectsInfo.socialX"),
       iconSrc: entrustAssets.projectsSocialX,
-      href: socialURLs.x,
+      href: projectLinks.x,
+    },
+    {
+      title: t("entrust.projectsInfo.socialTelegram"),
+      iconSrc: entrustAssets.projectsSocialTelegram,
+      href: projectLinks.telegram,
     },
     {
       title: t("entrust.projectsInfo.socialParagraph"),
       iconSrc: entrustAssets.projectsSocialParagraph,
-      href: socialURLs.paragraph,
+      href: projectLinks.paragraph,
+    },
+    {
+      title: t("entrust.projectsInfo.socialDapp"),
+      iconSrc: entrustAssets.projectsSocialDapp,
+      href: projectLinks.dapp,
     },
     {
       title: t("entrust.projectsInfo.socialLinktree"),
       iconSrc: entrustAssets.projectsSocialLinktree,
-      href: socialURLs.linktree,
+      href: projectLinks.linktree,
     },
   ];
 
@@ -103,28 +124,45 @@ export function ProjectsInfo({ open, onClose }: ProjectsInfoProps) {
     {
       title: t("entrust.projectsInfo.aboutDriveZh"),
       iconSrc: entrustAssets.projectsAboutDrive,
-      href: socialURLs.driveZh,
+      href: projectLinks.driveZh,
     },
     {
       title: t("entrust.projectsInfo.aboutDriveEn"),
       iconSrc: entrustAssets.projectsAboutDrive,
-      href: socialURLs.driveEn,
+      href: projectLinks.driveEn,
+    },
+    {
+      title: t("entrust.projectsInfo.aboutDriveKo"),
+      iconSrc: entrustAssets.projectsAboutDrive,
+      href: projectLinks.driveKo,
     },
     {
       title: t("entrust.projectsInfo.aboutDriveVi"),
       iconSrc: entrustAssets.projectsAboutDrive,
-      href: socialURLs.driveVi,
+      href: projectLinks.driveVi,
     },
     {
       title: t("entrust.projectsInfo.aboutNotionZh"),
       iconSrc: entrustAssets.projectsAboutNotion,
-      href: socialURLs.notionZh,
+      href: projectLinks.notionZh,
       iconWrapperClassName: "rounded-full",
     },
     {
       title: t("entrust.projectsInfo.aboutNotionEn"),
       iconSrc: entrustAssets.projectsAboutNotion,
-      href: socialURLs.notionEn,
+      href: projectLinks.notionEn,
+      iconWrapperClassName: "rounded-full",
+    },
+    {
+      title: t("entrust.projectsInfo.aboutNotionKo"),
+      iconSrc: entrustAssets.projectsAboutNotion,
+      href: projectLinks.notionKo,
+      iconWrapperClassName: "rounded-full",
+    },
+    {
+      title: t("entrust.projectsInfo.aboutNotionVi"),
+      iconSrc: entrustAssets.projectsAboutNotion,
+      href: projectLinks.notionVi,
       iconWrapperClassName: "rounded-full",
     },
   ];
@@ -265,14 +303,16 @@ export function ProjectsInfo({ open, onClose }: ProjectsInfoProps) {
               </p>
             </section>
 
-            <InfoListCard
-              title={t("entrust.projectsInfo.socialSectionTitle")}
-              rows={socialRows}
-            />
-            <InfoListCard
-              title={t("entrust.projectsInfo.aboutSectionTitle")}
-              rows={aboutRows}
-            />
+            <div className="mt-3 flex flex-col gap-4">
+              <InfoListCard
+                title={t("entrust.projectsInfo.socialSectionTitle")}
+                rows={socialRows}
+              />
+              <InfoListCard
+                title={t("entrust.projectsInfo.aboutSectionTitle")}
+                rows={aboutRows}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -308,24 +348,21 @@ function MiniRoleCard({
 
 function InfoListCard({ title, rows }: { title: string; rows: InfoRow[] }) {
   return (
-    <section className="mt-3 rounded-[12px] border border-white bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+    <section className="rounded-[12px] border border-white bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="mb-2">
         <h3 className="text-[18px] font-semibold leading-tight text-[#333]">{title}</h3>
         <div className={SECTION_UNDERLINE} />
       </div>
       <ul>
         {rows.map((row, index) => (
-          <li key={row.title}>
+          <li key={`${row.title}-${index}`}>
             <button
               type="button"
               onClick={() => window.open(row.href, "_blank", "noopener,noreferrer")}
               className="flex w-full items-center justify-between py-[10px] text-left"
             >
               <div className="flex items-center gap-4">
-                <span className={`inline-flex size-[43px] items-center justify-center overflow-hidden rounded-full ${row.iconWrapperClassName ?? ""}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={row.iconSrc} alt="" className="size-full object-cover" />
-                </span>
+                <InfoRowIcon row={row} />
                 <span className="text-[14px] text-black">{row.title}</span>
               </div>
               <AppImage
@@ -343,6 +380,35 @@ function InfoListCard({ title, rows }: { title: string; rows: InfoRow[] }) {
         ))}
       </ul>
     </section>
+  );
+}
+
+function InfoRowIcon({ row }: { row: InfoRow }) {
+  return (
+    <span
+      className={`relative inline-flex size-[43px] shrink-0 items-center justify-center overflow-hidden rounded-full ${row.iconWrapperClassName ?? ""}`}
+    >
+      {row.iconBgSrc ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={row.iconBgSrc}
+          alt=""
+          className="absolute inset-0 size-full object-cover"
+        />
+      ) : null}
+      {row.iconOverlaySrc ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={row.iconOverlaySrc}
+          alt=""
+          className={row.iconOverlayClassName ?? "absolute inset-0 size-full object-contain"}
+        />
+      ) : null}
+      {row.iconSrc ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={row.iconSrc} alt="" className="size-full object-contain" />
+      ) : null}
+    </span>
   );
 }
 

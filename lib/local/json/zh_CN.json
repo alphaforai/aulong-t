@@ -79,7 +79,7 @@
     "periodUnit": "天",
     "start": "启动",
     "aulPrice": "AUL 币价格",
-    "holdAul": "持有 AUL 币",
+    "holdAul": "持有 AUL 价值",
     "chartLoading": "加载中…",
     "chartLoadFailed": "数据加载失败，请稍后重试",
     "chartNoData": "暂无{range}数据",
@@ -122,13 +122,18 @@
       "aboutSectionTitle": "关于AuLong",
       "socialYoutube": "YouTube",
       "socialX": "X",
+      "socialTelegram": "Telegram",
       "socialParagraph": "Paragraph",
+      "socialDapp": "Dapp",
       "socialLinktree": "Linktree",
       "aboutDriveZh": "中文网盘",
       "aboutDriveEn": "英文网盘",
+      "aboutDriveKo": "韩语网盘",
       "aboutDriveVi": "越南语网盘",
       "aboutNotionZh": "中文资料库",
-      "aboutNotionEn": "英文资料库"
+      "aboutNotionEn": "英文资料库",
+      "aboutNotionKo": "韩文资料库",
+      "aboutNotionVi": "越南文资料库"
     }
   },
   "team": {

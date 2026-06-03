@@ -79,7 +79,7 @@
     "periodUnit": "ngày",
     "start": "Bắt đầu",
     "aulPrice": "Giá coin AUL",
-    "holdAul": "Nắm giữ coin AUL",
+    "holdAul": "Giá trị AUL nắm giữ",
     "chartLoading": "Đang tải…",
     "chartLoadFailed": "Tải dữ liệu thất bại, vui lòng thử lại sau",
     "chartNoData": "Chưa có dữ liệu {range}",
@@ -122,13 +122,18 @@
       "aboutSectionTitle": "Về AuLong",
       "socialYoutube": "YouTube",
       "socialX": "X",
+      "socialTelegram": "Telegram",
       "socialParagraph": "Paragraph",
+      "socialDapp": "Dapp",
       "socialLinktree": "Linktree",
       "aboutDriveZh": "Drive tiếng Trung",
       "aboutDriveEn": "Drive tiếng Anh",
+      "aboutDriveKo": "Drive tiếng Hàn",
       "aboutDriveVi": "Drive tiếng Việt",
       "aboutNotionZh": "Kho tiếng Trung",
-      "aboutNotionEn": "Kho tiếng Anh"
+      "aboutNotionEn": "Kho tiếng Anh",
+      "aboutNotionKo": "Kho tiếng Hàn",
+      "aboutNotionVi": "Kho tiếng Việt"
     }
   },
   "team": {

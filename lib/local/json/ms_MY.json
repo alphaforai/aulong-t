@@ -79,7 +79,7 @@
     "periodUnit": "hari",
     "start": "Mula",
     "aulPrice": "Harga syiling AUL",
-    "holdAul": "Pegang syiling AUL",
+    "holdAul": "Nilai pegangan AUL",
     "chartLoading": "Memuatkan…",
     "chartLoadFailed": "Gagal memuatkan data, sila cuba lagi kemudian",
     "chartNoData": "Tiada data {range}",
@@ -122,13 +122,18 @@
       "aboutSectionTitle": "Tentang AuLong",
       "socialYoutube": "YouTube",
       "socialX": "X",
+      "socialTelegram": "Telegram",
       "socialParagraph": "Paragraph",
+      "socialDapp": "Dapp",
       "socialLinktree": "Linktree",
       "aboutDriveZh": "Drive Cina",
       "aboutDriveEn": "Drive Inggeris",
+      "aboutDriveKo": "Drive Korea",
       "aboutDriveVi": "Drive Vietnam",
       "aboutNotionZh": "Pangkalan Cina",
-      "aboutNotionEn": "Pangkalan Inggeris"
+      "aboutNotionEn": "Pangkalan Inggeris",
+      "aboutNotionKo": "Pangkalan Korea",
+      "aboutNotionVi": "Pangkalan Vietnam"
     }
   },
   "team": {
