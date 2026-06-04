@@ -4,19 +4,28 @@ import { entrustAssets } from "@/components/entrust/assets";
 import { BannerCard } from "@/components/entrust/BannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
+import {
+  DeployAgent,
+  DEPLOY_STRATEGIES,
+  type DeployStrategy,
+} from "@/components/entrust/DeployAgent";
 import { TicketCard } from "@/components/entrust/TicketCard";
 import { ProjectsInfo } from "@/components/entrust/ProjectsInfo";
+import { AIStrategy } from "@/components/entrust/AIStrategy";
 import { AulongPageShell } from "@/components/AulongPageShell";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { useUserInfoStore } from "@/lib/store";
-import { toast } from "sonner";
 import { useReadContract } from "wagmi";
 import { useState } from "react";
 
 export default function HomePage() {
   const { t } = useTranslation();
   const [showProjectsInfo, setShowProjectsInfo] = useState(false);
+  const [showAIStrategy, setShowAIStrategy] = useState(false);
+  const [deployStrategy, setDeployStrategy] = useState<DeployStrategy | null>(
+    null,
+  );
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -34,30 +43,29 @@ export default function HomePage() {
   const hasPurchased = Boolean(purchasesData?.[0]);
   const showTicketCard = !hasPurchased;
 
-  const strategies = [
-    {
-      iconSrc: entrustAssets.strategyTrend,
-      title: t("entrust.strategyTrendTitle"),
-      description: t("entrust.strategyTrendDesc"),
-      apr: "238",
-      period: "7",
-    },
-    {
-      iconSrc: entrustAssets.strategyArbitrage,
-      title: t("entrust.strategyArbitrageTitle"),
-      description: t("entrust.strategyArbitrageDesc"),
-      apr: "310",
-      period: "90",
-    },
-    {
-      iconSrc: entrustAssets.strategyHedge,
-      iconSize: 34,
-      title: t("entrust.strategyHedgeTitle"),
-      description: t("entrust.strategyHedgeDesc"),
-      apr: "388",
-      period: "360",
-    },
-  ] as const;
+  const strategies: DeployStrategy[] = (
+    [
+      {
+        id: "trend" as const,
+        iconSrc: entrustAssets.strategyTrend,
+        title: t("entrust.strategyTrendTitle"),
+        description: t("entrust.strategyTrendDesc"),
+      },
+      {
+        id: "arbitrage" as const,
+        iconSrc: entrustAssets.strategyArbitrage,
+        title: t("entrust.strategyArbitrageTitle"),
+        description: t("entrust.strategyArbitrageDesc"),
+      },
+      {
+        id: "hedge" as const,
+        iconSrc: entrustAssets.strategyHedge,
+        iconSize: 34,
+        title: t("entrust.strategyHedgeTitle"),
+        description: t("entrust.strategyHedgeDesc"),
+      },
+    ] satisfies Omit<DeployStrategy, keyof (typeof DEPLOY_STRATEGIES)["trend"]>[]
+  ).map((def) => ({ ...def, ...DEPLOY_STRATEGIES[def.id] }));
 
   return (
     <AulongPageShell panelClassName="bg-white">
@@ -83,9 +91,7 @@ export default function HomePage() {
       <BannerCard
         imageSrc={entrustAssets.startAiBanner}
         variant="startAi"
-        onClick={() => {
-          toast.success(t("common.notOpen"));
-        }}
+        onClick={() => setShowAIStrategy(true)}
         title={
           <>
             <span>{t("entrust.startAiPart1")}</span>
@@ -96,10 +102,31 @@ export default function HomePage() {
       />
 
       <div className="flex flex-col gap-3">
-        {strategies.map((strategy, index) => (
-          <StrategyCard key={index} {...strategy} />
+        {strategies.map((strategy) => (
+          <StrategyCard
+            key={strategy.id}
+            iconSrc={strategy.iconSrc}
+            iconSize={strategy.iconSize}
+            title={strategy.title}
+            description={strategy.description}
+            apr={strategy.apr}
+            period={strategy.period}
+            onStart={() => setDeployStrategy(strategy)}
+          />
         ))}
       </div>
+
+      <DeployAgent
+        open={deployStrategy !== null}
+        strategy={deployStrategy}
+        strategies={strategies}
+        onClose={() => setDeployStrategy(null)}
+      />
+
+      <AIStrategy
+        open={showAIStrategy}
+        onClose={() => setShowAIStrategy(false)}
+      />
 
       <ProjectsInfo
         open={showProjectsInfo}
