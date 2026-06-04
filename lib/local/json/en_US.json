@@ -79,7 +79,7 @@
     "periodUnit": "days",
     "start": "Start",
     "aulPrice": "AUL price",
-    "holdAul": "Hold AUL",
+    "holdAul": "Held AUL value",
     "chartLoading": "Loading…",
     "chartLoadFailed": "Failed to load data, please try again later",
     "chartNoData": "No {range} data available",
@@ -122,13 +122,18 @@
       "aboutSectionTitle": "About AuLong",
       "socialYoutube": "YouTube",
       "socialX": "X",
+      "socialTelegram": "Telegram",
       "socialParagraph": "Paragraph",
+      "socialDapp": "Dapp",
       "socialLinktree": "Linktree",
       "aboutDriveZh": "CN Drive",
       "aboutDriveEn": "EN Drive",
+      "aboutDriveKo": "KO Drive",
       "aboutDriveVi": "VI Drive",
       "aboutNotionZh": "CN Docs",
-      "aboutNotionEn": "EN Docs"
+      "aboutNotionEn": "EN Docs",
+      "aboutNotionKo": "KO Docs",
+      "aboutNotionVi": "VI Docs"
     }
   },
   "team": {

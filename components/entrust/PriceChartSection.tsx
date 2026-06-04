@@ -118,9 +118,9 @@ export function PriceChartSection() {
 
           <div className="flex min-w-0 flex-1 flex-col px-[18px] pt-2">
             <p className="text-sm text-[#5c5c5c]">{t("entrust.holdAul")}</p>
-            <AmountWithUnit amount={formatAmount(xcoinBalance)} unit="AUL" />
+            <AmountWithUnit amount={formatAmount(holdingsUsd)} unit="USDT" />
             <p className="mt-1 text-sm leading-normal text-[#5c5c5c]">
-              ≈ ${formatAmount(holdingsUsd)}
+              ≈ {formatAmount(xcoinBalance)} AUL
             </p>
           </div>
         </div>

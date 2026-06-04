@@ -79,7 +79,7 @@
     "periodUnit": "일",
     "start": "시작",
     "aulPrice": "AUL 코인 가격",
-    "holdAul": "AUL 코인 보유",
+    "holdAul": "보유 AUL 가치",
     "chartLoading": "로딩 중…",
     "chartLoadFailed": "데이터 로드 실패, 나중에 다시 시도해 주세요",
     "chartNoData": "{range} 데이터 없음",
@@ -122,13 +122,18 @@
       "aboutSectionTitle": "AuLong 소개",
       "socialYoutube": "YouTube",
       "socialX": "X",
+      "socialTelegram": "Telegram",
       "socialParagraph": "Paragraph",
+      "socialDapp": "Dapp",
       "socialLinktree": "Linktree",
       "aboutDriveZh": "중문 드라이브",
       "aboutDriveEn": "영문 드라이브",
+      "aboutDriveKo": "한국어 드라이브",
       "aboutDriveVi": "베트남어 드라이브",
       "aboutNotionZh": "중문 자료库",
-      "aboutNotionEn": "영문 자료库"
+      "aboutNotionEn": "영문 자료库",
+      "aboutNotionKo": "한국어 자료库",
+      "aboutNotionVi": "베트남어 자료库"
     }
   },
   "team": {
