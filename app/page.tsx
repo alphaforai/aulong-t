@@ -1,7 +1,8 @@
 "use client";
 
 import { entrustAssets } from "@/components/entrust/assets";
-import { BannerCard } from "@/components/entrust/BannerCard";
+import { ProjectBannerCard } from "@/components/entrust/ProjectBannerCard";
+import { StartAiBannerCard } from "@/components/entrust/StartAiBannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
 import {
@@ -71,35 +72,15 @@ export default function HomePage() {
     <AulongPageShell panelClassName="bg-white">
       {showTicketCard && <TicketCard />}
 
-      <BannerCard
-        imageSrc={entrustAssets.projectBanner}
-        variant="project"
+      <ProjectBannerCard
         onClick={() => {
           setShowProjectsInfo(true);
         }}
-        title={
-          <>
-            <span>{t("entrust.projectPart1")}</span>
-            <span className="text-[#ec0000]">{t("entrust.projectPart2")}</span>
-          </>
-        }
-        description={t("entrust.projectBannerDescCard")}
       />
 
       <PriceChartSection />
 
-      <BannerCard
-        imageSrc={entrustAssets.startAiBanner}
-        variant="startAi"
-        onClick={() => setShowAIStrategy(true)}
-        title={
-          <>
-            <span>{t("entrust.startAiPart1")}</span>
-            <span className="text-[#ec0000]">{t("entrust.startAiPart2")}</span>
-          </>
-        }
-        description={t("entrust.startAiDescCard")}
-      />
+      <StartAiBannerCard onClick={() => setShowAIStrategy(true)} />
 
       <div className="flex flex-col gap-3">
         {strategies.map((strategy) => (

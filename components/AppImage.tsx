@@ -19,7 +19,12 @@ function isSvg(src: string) {
 
 /** 本地 entrust 图标等：跳过 next/image 缓存，避免替换资源后仍显示旧图 */
 function shouldUnoptimize(src: string) {
-  return src.includes("logo") || src.includes("/assets/entrust/");
+  return (
+    src.includes("logo") ||
+    src.includes("/assets/entrust/") ||
+    src.includes("/assets/mine/") ||
+    src.includes("/assets/team/")
+  );
 }
 
 /** CSS 改尺寸时不用 next/image，避免宽高比警告 */

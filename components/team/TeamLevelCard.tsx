@@ -57,13 +57,19 @@ export function TeamLevelCard({
             <p className="text-base leading-tight text-[#4b4b4b]">
               {t("team.currentLevel")}
             </p>
-            <div className="relative mt-0.5 h-10 w-32">
+            <div className="relative mt-0.5 h-10 w-32 -ml-2 overflow-hidden">
               <AppImage
                 src={badgeSrc}
                 alt={`VIP${displayVip}`}
                 width={128}
                 height={40}
-                className="size-full object-contain object-left"
+                className="absolute max-w-none"
+                style={{
+                  height: "85.03%",
+                  width: "132.95%",
+                  left: "-16.47%",
+                  top: "4.98%",
+                }}
               />
             </div>
           </div>

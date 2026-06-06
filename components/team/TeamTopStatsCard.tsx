@@ -52,7 +52,23 @@ export function TeamTopStatsCard({
   ];
 
   return (
-    <section className="relative h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+    <section className="relative h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
+        <AppImage
+          src={teamAssets.statsPanelBg}
+          alt=""
+          width={371}
+          height={154}
+          className="absolute max-w-none"
+          style={{
+            height: "114.93%",
+            width: "105.7%",
+            left: "-2.85%",
+            top: "-3.73%",
+          }}
+        />
+      </div>
+
       <div className="relative flex h-full items-center justify-between px-3">
         {topStats.map((stat, index) => (
           <Fragment key={stat.label}>
