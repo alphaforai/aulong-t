@@ -43,8 +43,12 @@ function shouldUseNativeImg(style?: CSSProperties, className?: string) {
     if (/\b(size|left|top|right|bottom)-\[[^\]]*%\]/.test(className)) {
       return true;
     }
-    // Tailwind 固定尺寸（size-8 / size-[22px] / w-8 / h-8 等）
-    if (/\b(size-\d+|size-\[|w-\d+|w-\[|h-\d+|h-\[)/.test(className)) {
+    // Tailwind 固定尺寸（size-8 / size-[22px] / w-8 / h-8 等）及撑满容器（h-full / w-full）
+    if (
+      /\b(size-\d+|size-\[|w-\d+|w-\[|h-\d+|h-\[|h-full|w-full|size-full|max-h-full|max-w-full)\b/.test(
+        className,
+      )
+    ) {
       return true;
     }
   }

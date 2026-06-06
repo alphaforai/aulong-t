@@ -219,9 +219,8 @@ export function InviteFriendsSheet({ open, onClose }: InviteFriendsSheetProps) {
             <AppImage
               src={mineAssets.inviteSheetIllustration}
               alt=""
-              width={270}
-              height={227}
-              className="h-full w-full object-contain"
+              fill
+              className="object-contain"
             />
           </div>
 

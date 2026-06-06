@@ -217,6 +217,7 @@
     "swapInputPlaceholder": "Enter amount",
     "swapFillMaxAria": "Fill max balance",
     "swapToggleAria": "Switch swap direction",
+    "swapSuccess": "Swap completed",
     "claim": "Claim",
     "inviteFriends": "Invite friends",
     "inviteSubtitle": "Exclusive invite rewards — share your link for benefits",
