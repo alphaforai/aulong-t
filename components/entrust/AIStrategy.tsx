@@ -6,10 +6,13 @@ import { AppImage } from "@/components/AppImage";
 import { entrustAssets } from "./assets";
 import { teamAssets } from "@/components/team/assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { applyRedeem, getStakeList } from "@/lib/api/users";
+import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
   sidePanelOverlayRoot,
 } from "@/lib/mobileShell";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export type AIStrategyProps = {
@@ -19,16 +22,37 @@ export type AIStrategyProps = {
 
 type TabId = "deploying" | "history";
 
-type StrategyRunStatus = "deployed" | "ended";
+/** 1质押中 2已解押 3解押中 */
+type StakeStatus = 1 | 2 | 3;
 
-type AIStrategyRecord = {
+type StakeItem = {
+  id: number;
+  planName?: string;
+  planImageUrl?: string;
+  planIntro?: string;
+  amount?: number;
+  accumulatedEarnings?: number;
+  status?: number;
+  statusLabel?: string;
+  startedAt?: string;
+  endAt?: string;
+  runDays?: number;
+  remainDays?: number;
+  progressPercent?: number;
+  canRedeem?: boolean;
+  redeemCountdownSeconds?: number;
+};
+
+type StrategyCardModel = {
   id: string;
+  stakeId: number;
   iconSrc: string;
   title: string;
   description: string;
   depositedAmount: string;
   cumulativeEarnings: string;
-  status: StrategyRunStatus;
+  statusLabel: string;
+  isActive: boolean;
   strategyName: string;
   startTime: string;
   endTime: string;
@@ -36,9 +60,9 @@ type AIStrategyRecord = {
   progressTrack?: "light" | "dark";
   daysElapsed?: number;
   daysRemaining?: number;
+  showRedeemButton: boolean;
+  redeemReady: boolean;
   redeemCountdown?: string;
-  showRedeemButton?: boolean;
-  redeemReady?: boolean;
 };
 
 const GRADIENT_BTN =
@@ -47,6 +71,72 @@ const GRADIENT_FILL =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]";
 const GRADIENT_INSET =
   "pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0px_-4px_4px_0px_rgba(255,254,227,0.7),inset_0px_8px_17px_0px_#ffe5e5]";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    const e = error as Error & { shortMessage?: string };
+    return e.shortMessage || e.message || fallback;
+  }
+  return fallback;
+}
+
+function formatAmount(value: number | undefined) {
+  return (value ?? 0).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+  });
+}
+
+function formatCountdown(totalSeconds: number) {
+  const sec = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function mapStakeToCard(
+  stake: StakeItem,
+  fallbackTitle: string,
+  fallbackDesc: string,
+  fallbackStatusActive: string,
+  fallbackStatusEnded: string,
+): StrategyCardModel {
+  const status = (stake.status ?? 0) as StakeStatus;
+  const isActive = status === 1 || status === 3;
+  const progressPercent = stake.progressPercent;
+  const countdownSec = stake.redeemCountdownSeconds ?? 0;
+
+  return {
+    id: String(stake.id),
+    stakeId: stake.id,
+    iconSrc: stake.planImageUrl || entrustAssets.strategyTrend,
+    title: stake.planName || fallbackTitle,
+    description: stake.planIntro || fallbackDesc,
+    depositedAmount: formatAmount(stake.amount),
+    cumulativeEarnings: formatAmount(stake.accumulatedEarnings),
+    statusLabel:
+      stake.statusLabel ||
+      (isActive ? fallbackStatusActive : fallbackStatusEnded),
+    isActive,
+    strategyName: stake.planName || fallbackTitle,
+    startTime: stake.startedAt || "—",
+    endTime: stake.endAt || "—",
+    progressPercent: isActive ? progressPercent : undefined,
+    progressTrack:
+      progressPercent != null && progressPercent >= 90 ? "dark" : "light",
+    daysElapsed: isActive ? stake.runDays : undefined,
+    daysRemaining: isActive ? stake.remainDays : undefined,
+    showRedeemButton:
+      isActive &&
+      (status === 3 ||
+        Boolean(stake.canRedeem) ||
+        countdownSec > 0),
+    redeemReady: status === 3,
+    redeemCountdown:
+      countdownSec > 0 ? formatCountdown(countdownSec) : undefined,
+  };
+}
 
 function AmountValue({ amount }: { amount: string }) {
   return (
@@ -59,7 +149,13 @@ function AmountValue({ amount }: { amount: string }) {
   );
 }
 
-function DetailCell({ label, children }: { label: string; children: React.ReactNode }) {
+function DetailCell({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-1">
       <p className="text-xs text-black/70">{label}</p>
@@ -68,39 +164,18 @@ function DetailCell({ label, children }: { label: string; children: React.ReactN
   );
 }
 
-function RunProgressText({
-  elapsed,
-  remaining,
-}: {
-  elapsed: number;
-  remaining: number;
-}) {
-  const { t } = useTranslation();
-  return (
-    <p className="text-center text-xs text-black/70">
-      {t("entrust.aiStrategy.runProgressPrefix")}
-      <span className="text-[rgba(255,0,0,0.7)]">{elapsed} </span>
-      {t("entrust.aiStrategy.runProgressMiddle")}
-      <span className="text-[rgba(255,0,0,0.7)]">{remaining} </span>
-      {t("entrust.aiStrategy.runProgressSuffix")}
-    </p>
-  );
-}
-
 function StrategyRecordCard({
   record,
+  redeeming,
   onRedeem,
 }: {
-  record: AIStrategyRecord;
-  onRedeem: () => void;
+  record: StrategyCardModel;
+  redeeming: boolean;
+  onRedeem: (stakeId: number) => void;
 }) {
   const { t } = useTranslation();
-  const statusColor =
-    record.status === "deployed" ? "bg-[#2cb360]" : "bg-[#d76464]";
-  const statusLabel =
-    record.status === "deployed"
-      ? t("entrust.aiStrategy.statusDeployed")
-      : t("entrust.aiStrategy.statusEnded");
+  const statusColor = record.isActive ? "bg-[#2cb360]" : "bg-[#d76464]";
+  const statusTextColor = record.isActive ? "text-[#2cb360]" : "text-[#d76464]";
 
   return (
     <article className="w-full rounded-[12px] border border-white bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
@@ -156,13 +231,7 @@ function StrategyRecordCard({
           <DetailCell label={t("entrust.aiStrategy.runStatus")}>
             <span className="flex items-center gap-1 text-xs font-medium">
               <span className={`size-1.5 shrink-0 rounded-full ${statusColor}`} />
-              <span
-                className={
-                  record.status === "deployed" ? "text-[#2cb360]" : "text-[#d76464]"
-                }
-              >
-                {statusLabel}
-              </span>
+              <span className={statusTextColor}>{record.statusLabel}</span>
             </span>
           </DetailCell>
           <DetailCell label={t("entrust.aiStrategy.strategyName")}>
@@ -216,25 +285,35 @@ function StrategyRecordCard({
                 }}
               />
             </div>
-            <RunProgressText
-              elapsed={record.daysElapsed}
-              remaining={record.daysRemaining}
-            />
+            <p className="text-center text-xs text-black/70">
+              {t("entrust.aiStrategy.runProgressPrefix")}
+              <span className="text-[rgba(255,0,0,0.7)]">
+                {record.daysElapsed}{" "}
+              </span>
+              {t("entrust.aiStrategy.runProgressMiddle")}
+              <span className="text-[rgba(255,0,0,0.7)]">
+                {record.daysRemaining}{" "}
+              </span>
+              {t("entrust.aiStrategy.runProgressSuffix")}
+            </p>
           </>
         ) : null}
 
         {record.showRedeemButton ? (
           <button
             type="button"
-            onClick={onRedeem}
-            className={`mx-auto flex h-[58px] w-full max-w-[308px] flex-col items-center justify-center px-2.5 ${GRADIENT_BTN}`}
+            disabled={!record.redeemReady || redeeming}
+            onClick={() => onRedeem(record.stakeId)}
+            className={`mx-auto flex h-[58px] w-full max-w-[308px] flex-col items-center justify-center px-2.5 disabled:cursor-not-allowed ${GRADIENT_BTN}`}
           >
             {record.redeemReady ? (
               <>
                 <span className={GRADIENT_FILL} aria-hidden />
                 <span className={GRADIENT_INSET} aria-hidden />
                 <span className="relative text-base font-semibold text-white [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]">
-                  {t("entrust.aiStrategy.redeemable")}
+                  {redeeming
+                    ? t("common.loadingDots")
+                    : t("entrust.aiStrategy.redeemable")}
                 </span>
               </>
             ) : (
@@ -269,8 +348,39 @@ function StrategyRecordCard({
 
 export function AIStrategy({ open, onClose }: AIStrategyProps) {
   const { t } = useTranslation();
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const [entered, setEntered] = React.useState(false);
   const [tab, setTab] = React.useState<TabId>("deploying");
+  const [redeemingId, setRedeemingId] = React.useState<number | null>(null);
+  const opFailed = t("common.operationFailed");
+
+  const userId = Number(userInfo.id) || 0;
+  const walletAddress = userInfo.walletAddress;
+
+  const {
+    data: stakeListResponse,
+    isPending: stakeListPending,
+    refetch: refetchStakeList,
+  } = useQuery({
+    queryKey: ["stakeList", userId, walletAddress],
+    queryFn: () =>
+      getStakeList({
+        page: undefined,
+        limit: undefined,
+        searchCount: true,
+        lastId: undefined,
+        userId,
+        planId: undefined,
+        status: undefined,
+        walletAddress,
+        txHash: undefined,
+        statuses: undefined,
+        minEndTime: undefined,
+        maxEndTime: undefined,
+        maxStartTime: undefined,
+      }),
+    enabled: open && Boolean(walletAddress),
+  });
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -298,80 +408,60 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closePanel]);
 
-  const strategyTitle = t("entrust.strategyTrendTitle");
-  const strategyDesc = t("entrust.strategyTrendDesc");
+  React.useEffect(() => {
+    if (!open || !walletAddress) return;
+    void refetchStakeList();
+  }, [open, walletAddress, refetchStakeList]);
 
-  const deployingRecords: AIStrategyRecord[] = [
-    {
-      id: "deploy-1",
-      iconSrc: entrustAssets.strategyTrend,
-      title: strategyTitle,
-      description: strategyDesc,
-      depositedAmount: "5,000",
-      cumulativeEarnings: "5,000,000",
-      status: "deployed",
-      strategyName: strategyTitle,
-      startTime: "2026-05-12 10:21",
-      endTime: "2026-05-17 10:21",
-      progressPercent: 53.52,
-      progressTrack: "light",
-      daysElapsed: 5,
-      daysRemaining: 2,
-      redeemCountdown: "52:52:16",
-      showRedeemButton: true,
-      redeemReady: false,
-    },
-    {
-      id: "deploy-2",
-      iconSrc: entrustAssets.strategyTrend,
-      title: strategyTitle,
-      description: strategyDesc,
-      depositedAmount: "5,000",
-      cumulativeEarnings: "5,000,000",
-      status: "deployed",
-      strategyName: strategyTitle,
-      startTime: "2026-05-17 10:21",
-      endTime: "2026-05-17 10:21",
-      progressPercent: 97.86,
-      progressTrack: "dark",
-      daysElapsed: 5,
-      daysRemaining: 0,
-      showRedeemButton: true,
-      redeemReady: true,
-    },
-  ];
+  const fallbackTitle = t("entrust.strategyTrendTitle");
+  const fallbackDesc = t("entrust.strategyTrendDesc");
+  const fallbackActive = t("entrust.aiStrategy.statusDeployed");
+  const fallbackEnded = t("entrust.aiStrategy.statusEnded");
 
-  const historyRecords: AIStrategyRecord[] = [
-    {
-      id: "history-1",
-      iconSrc: entrustAssets.strategyTrend,
-      title: strategyTitle,
-      description: strategyDesc,
-      depositedAmount: "5,000",
-      cumulativeEarnings: "5,000,000",
-      status: "ended",
-      strategyName: strategyTitle,
-      startTime: "2026-05-12 10:21",
-      endTime: "2026-05-17 10:21",
-    },
-    {
-      id: "history-2",
-      iconSrc: entrustAssets.strategyTrend,
-      title: strategyTitle,
-      description: strategyDesc,
-      depositedAmount: "5,000",
-      cumulativeEarnings: "5,000,000",
-      status: "ended",
-      strategyName: strategyTitle,
-      startTime: "2026-05-12 10:21",
-      endTime: "2026-05-17 10:21",
-    },
-  ];
+  const { deployingRecords, historyRecords } = React.useMemo(() => {
+    const list = (stakeListResponse?.data ?? []) as StakeItem[];
+    const deploying: StrategyCardModel[] = [];
+    const history: StrategyCardModel[] = [];
+
+    for (const stake of list) {
+      const card = mapStakeToCard(
+        stake,
+        fallbackTitle,
+        fallbackDesc,
+        fallbackActive,
+        fallbackEnded,
+      );
+      const status = stake.status as StakeStatus;
+      if (status === 1 || status === 3) {
+        deploying.push(card);
+      } else if (status === 2) {
+        history.push(card);
+      }
+    }
+
+    return { deployingRecords: deploying, historyRecords: history };
+  }, [
+    stakeListResponse,
+    fallbackTitle,
+    fallbackDesc,
+    fallbackActive,
+    fallbackEnded,
+  ]);
 
   const records = tab === "deploying" ? deployingRecords : historyRecords;
 
-  const handleRedeem = () => {
-    toast.success(t("common.notOpen"));
+  const handleRedeem = async (stakeId: number) => {
+    if (redeemingId != null) return;
+    setRedeemingId(stakeId);
+    try {
+      await applyRedeem({ stakeId });
+      toast.success(t("entrust.aiStrategy.redeemSuccess"));
+      await refetchStakeList();
+    } catch (error) {
+      toast.error(getErrorMessage(error, opFailed));
+    } finally {
+      setRedeemingId(null);
+    }
   };
 
   if (!open) return null;
@@ -457,13 +547,20 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
 
           <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-[max(env(safe-area-inset-bottom),16px)] pt-4">
             <div className="flex flex-col gap-4">
-              {records.map((record) => (
-                <StrategyRecordCard
-                  key={record.id}
-                  record={record}
-                  onRedeem={handleRedeem}
-                />
-              ))}
+              {stakeListPending ? (
+                <p className="py-8 text-center text-sm text-black/50">
+                  {t("common.loadingDots")}
+                </p>
+              ) : (
+                records.map((record) => (
+                  <StrategyRecordCard
+                    key={record.id}
+                    record={record}
+                    redeeming={redeemingId === record.stakeId}
+                    onRedeem={(stakeId) => void handleRedeem(stakeId)}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>

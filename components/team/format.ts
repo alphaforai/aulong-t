@@ -29,3 +29,15 @@ export function formatCount(value: number | undefined | null): string {
   if (value == null || Number.isNaN(Number(value))) return "0";
   return Number(value).toLocaleString("en-US");
 }
+
+export function formatSignedAmount(value: number | undefined | null): string {
+  const n = value == null || Number.isNaN(Number(value)) ? 0 : Number(value);
+  const sign = n >= 0 ? "+" : "";
+  return `${sign}${formatAmount(n)}`;
+}
+
+export function formatSignedPercent(value: number | undefined | null): string {
+  const n = value == null || Number.isNaN(Number(value)) ? 0 : Number(value);
+  const sign = n >= 0 ? "+" : "";
+  return `${sign}${formatAmount(n)}%`;
+}

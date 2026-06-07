@@ -4,24 +4,34 @@ import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
 import { TeamSectionTitle } from "./TeamSectionTitle";
-import { displayTeamValue, formatAmount } from "./format";
+import { displayTeamValue, formatAmount, formatSignedAmount, formatSignedPercent } from "./format";
 
 export type TeamPerformanceCardProps = {
   isPending?: boolean;
+  smallAreaStakeYesterdayDelta?: number;
+  smallAreaStakeChangeRate?: number;
+  todayTotalStake?: number;
+  teamTotalStake?: number;
 };
 
-/** 团队业绩数据 — Figma 535:6355（接口暂无对应字段，先展示占位 0） */
-export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
+/** 团队业绩数据 — Figma 535:6355 */
+export function TeamPerformanceCard({
+  isPending,
+  smallAreaStakeYesterdayDelta,
+  smallAreaStakeChangeRate,
+  todayTotalStake,
+  teamTotalStake,
+}: TeamPerformanceCardProps) {
   const { t } = useTranslation();
   const loadingLabel = t("common.loadingDots");
   const deltaValue = displayTeamValue(
     isPending,
-    `+${formatAmount(0)}`,
+    formatSignedAmount(smallAreaStakeYesterdayDelta),
     loadingLabel,
   );
   const deltaPctValue = displayTeamValue(
     isPending,
-    `+${formatAmount(0)}%`,
+    formatSignedPercent(smallAreaStakeChangeRate),
     loadingLabel,
   );
 
@@ -81,7 +91,11 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
           <PerformanceSubCard
             icon={teamAssets.perfIconToday}
             label={t("team.todayStakeTotal")}
-            value={displayTeamValue(isPending, formatAmount(0), loadingLabel)}
+            value={displayTeamValue(
+              isPending,
+              formatAmount(todayTotalStake),
+              loadingLabel,
+            )}
             unit="USDT"
             isPending={isPending}
             loadingLabel={loadingLabel}
@@ -89,7 +103,11 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
           <PerformanceSubCard
             icon={teamAssets.perfIconTeam}
             label={t("team.teamStakeTotal")}
-            value={displayTeamValue(isPending, formatAmount(0), loadingLabel)}
+            value={displayTeamValue(
+              isPending,
+              formatAmount(teamTotalStake),
+              loadingLabel,
+            )}
             unit="USDT"
             isPending={isPending}
             loadingLabel={loadingLabel}

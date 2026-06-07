@@ -16,12 +16,16 @@ type TopStat = {
 export type TeamTopStatsCardProps = {
   isPending?: boolean;
   smallAreaStake?: number;
+  directValidUserCount?: number;
+  personalStake?: number;
 };
 
 /** 顶部三列统计 — Figma 535:6506 */
 export function TeamTopStatsCard({
   isPending,
   smallAreaStake,
+  directValidUserCount,
+  personalStake,
 }: TeamTopStatsCardProps) {
   const { t } = useTranslation();
   const loadingLabel = t("common.loadingDots");
@@ -40,13 +44,17 @@ export function TeamTopStatsCard({
     {
       icon: teamAssets.statIconReferral,
       label: t("team.directReferralCard"),
-      value: displayTeamValue(isPending, formatCount(0), loadingLabel),
+      value: displayTeamValue(
+        isPending,
+        formatCount(directValidUserCount),
+        loadingLabel,
+      ),
       unit: t("team.peopleCount"),
     },
     {
       icon: teamAssets.statIconPersonal,
       label: t("team.personalEntrustCountCard"),
-      value: displayTeamValue(isPending, formatAmount(0), loadingLabel),
+      value: displayTeamValue(isPending, formatAmount(personalStake), loadingLabel),
       unit: "USDT",
     },
   ];

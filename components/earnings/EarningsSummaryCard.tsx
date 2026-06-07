@@ -3,6 +3,9 @@
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import type { Locale } from "@/lib/local";
+import { getUserAssets } from "@/lib/api/users";
+import { useUserInfoStore } from "@/lib/store";
+import { useQuery } from "@tanstack/react-query";
 import { earningsAssets } from "./assets";
 import { toast } from "sonner";
 
@@ -24,10 +27,29 @@ function useEarningsSummaryCopy(locale: Locale, t: (key: string) => string) {
   };
 }
 
+function formatIncome(value: number) {
+  return value.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+  });
+}
+
 /** 收益摘要卡 — 对齐 Figma 439:331 / 438:5985 */
 export function EarningsSummaryCard() {
   const { t, locale } = useTranslation();
   const copy = useEarningsSummaryCopy(locale, t);
+  const walletAddress = useUserInfoStore((state) => state.userInfo.walletAddress);
+
+  const { data: userAssetsResponse, isPending: userAssetsPending } = useQuery({
+    queryKey: ["userAssets", walletAddress],
+    queryFn: () => getUserAssets(),
+    enabled: Boolean(walletAddress),
+  });
+
+  const totalIncomeUsdt = userAssetsResponse?.data?.totalIncomeUsdt ?? 0;
+  const totalIncomeLabel = userAssetsPending
+    ? t("common.loadingDots")
+    : formatIncome(totalIncomeUsdt);
 
   return (
     <section className="relative h-[148px] w-full shrink-0 overflow-hidden rounded-[12px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
@@ -37,7 +59,7 @@ export function EarningsSummaryCard() {
       <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-120px)] flex-col gap-2">
         <p className="text-sm font-extrabold leading-normal text-black/70">{copy.totalEarnings}</p>
         <p className="font-mulish text-[32px] font-bold leading-none text-black">
-          0.00
+          {totalIncomeLabel}
         </p>
       </div>
 

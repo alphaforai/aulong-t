@@ -245,6 +245,7 @@ export function DeployAgent({
   const isWalletConnected = Boolean(userInfo.walletAddress);
   const [entered, setEntered] = React.useState(false);
   const [amount, setAmount] = React.useState("");
+  const [isDeployTxActive, setIsDeployTxActive] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<DeployStrategy | null>(null);
   const txStepRef = React.useRef<EntrustTxStep>("idle");
@@ -258,20 +259,6 @@ export function DeployAgent({
     setEntered(false);
     window.setTimeout(() => onClose(), 300);
   }, [onClose]);
-
-  React.useEffect(() => {
-    if (!open) {
-      setEntered(false);
-      setAmount("");
-      setSelectedStrategy(null);
-      return;
-    }
-    if (strategy) setSelectedStrategy(strategy);
-    const frame = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setEntered(true));
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [open, strategy]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -317,15 +304,51 @@ export function DeployAgent({
   const {
     data: txHash,
     error: writeError,
-    isPending: writeIsPending,
     writeContract,
+    reset: resetWrite,
   } = useWriteContract();
 
   const {
-    isLoading: writeIsConfirming,
     isSuccess: txConfirmed,
     error: receiptError,
-  } = useWaitForTransactionReceipt({ hash: txHash });
+  } = useWaitForTransactionReceipt({
+    hash: txHash,
+    query: { enabled: Boolean(txHash && isDeployTxActive) },
+  });
+
+  const finishDeployTx = React.useCallback(() => {
+    setIsDeployTxActive(false);
+    txStepRef.current = "idle";
+    resetWrite();
+  }, [resetWrite]);
+
+  const sendContractTx = React.useCallback(
+    (variables: Parameters<typeof writeContract>[0]) => {
+      writeContract(variables, {
+        onError: () => {
+          finishDeployTx();
+          closeSheet();
+        },
+      });
+    },
+    [writeContract, finishDeployTx, closeSheet],
+  );
+
+  React.useEffect(() => {
+    if (!open) {
+      setEntered(false);
+      setAmount("");
+      setSelectedStrategy(null);
+      finishDeployTx();
+      processedTxHashRef.current = undefined;
+      return;
+    }
+    if (strategy) setSelectedStrategy(strategy);
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setEntered(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [open, strategy, finishDeployTx]);
 
   const availableBalance =
     usdtBalanceData != null ? formatEther(usdtBalanceData) : "0.00";
@@ -337,10 +360,11 @@ export function DeployAgent({
     }
     if (lastWriteErrorRef.current !== writeError) {
       lastWriteErrorRef.current = writeError;
-      txStepRef.current = "idle";
+      finishDeployTx();
       toast.error(getErrorMessage(writeError, opFailed));
+      closeSheet();
     }
-  }, [writeError, opFailed]);
+  }, [writeError, opFailed, finishDeployTx, closeSheet]);
 
   React.useEffect(() => {
     if (!receiptError) {
@@ -349,10 +373,11 @@ export function DeployAgent({
     }
     if (lastReceiptErrorRef.current !== receiptError) {
       lastReceiptErrorRef.current = receiptError;
-      txStepRef.current = "idle";
+      finishDeployTx();
       toast.error(getErrorMessage(receiptError, opFailed));
+      closeSheet();
     }
-  }, [receiptError, opFailed]);
+  }, [receiptError, opFailed, finishDeployTx, closeSheet]);
 
   React.useEffect(() => {
     if (!txConfirmed || !txHash || processedTxHashRef.current === txHash) {
@@ -362,7 +387,7 @@ export function DeployAgent({
 
     if (txStepRef.current === "approve") {
       txStepRef.current = "entrust";
-      writeContract({
+      sendContractTx({
         ...entrustContract,
         functionName: "entrustUSDT",
         args: [pendingAmountWeiRef.current, BigInt(pendingPeriodDaysRef.current)],
@@ -371,19 +396,20 @@ export function DeployAgent({
     }
 
     if (txStepRef.current === "entrust") {
-      txStepRef.current = "idle";
+      finishDeployTx();
       toast.success(t("entrust.deploySuccess"));
       void refetchUsdtBalance();
-    //   void refetchUsdtAllowance();
       setAmount("");
+      closeSheet();
     }
   }, [
     txConfirmed,
     txHash,
-    writeContract,
+    sendContractTx,
+    finishDeployTx,
+    closeSheet,
     t,
     refetchUsdtBalance,
-    // refetchUsdtAllowance,
   ]);
 
   if (!open || !strategy || !selectedStrategy) return null;
@@ -394,7 +420,7 @@ export function DeployAgent({
     ? t("common.loadingDots")
     : availableBalance;
 
-  const isTxBusy = writeIsPending || writeIsConfirming;
+  const isTxBusy = isDeployTxActive;
 
   const handleMax = () => {
     if (usdtBalancePending || isTxBusy || availableBalance === "0.00") return;
@@ -449,6 +475,7 @@ export function DeployAgent({
     pendingAmountWeiRef.current = amountWei;
     pendingPeriodDaysRef.current = selectedStrategy.periodDays;
     processedTxHashRef.current = undefined;
+    setIsDeployTxActive(true);
 
     const allowance =
       typeof usdtAllowanceData === "bigint"
@@ -456,7 +483,7 @@ export function DeployAgent({
         : parseEther("0");
     if (allowance < amountWei) {
       txStepRef.current = "approve";
-      writeContract({
+      sendContractTx({
         ...UsdtContract,
         functionName: "approve",
         args: [entrustContract.address, maxUint256],
@@ -465,7 +492,7 @@ export function DeployAgent({
     }
 
     txStepRef.current = "entrust";
-    writeContract({
+    sendContractTx({
       ...entrustContract,
       functionName: "entrustUSDT",
       args: [amountWei, BigInt(selectedStrategy.periodDays)],
