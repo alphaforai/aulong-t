@@ -6,11 +6,22 @@ import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { applyWithdrawal, getUserAssets } from "@/lib/api/users";
+import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
   sidePanelOverlayRoot,
 } from "@/lib/mobileShell";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    const e = error as Error & { shortMessage?: string };
+    return e.shortMessage || e.message || fallback;
+  }
+  return fallback;
+}
 
 export type WithdrawAULProps = {
   open: boolean;
@@ -27,10 +38,7 @@ const DISABLED_OVERLAY =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-[rgba(241,241,241,0.57)]";
 
 const MIN_WITHDRAW = 1;
-
-/** TODO: 接入提现接口后替换为真实余额 */
-const MOCK_WITHDRAWABLE_AUL = 888_888;
-const MOCK_FEE_AUL = 12;
+const WITHDRAW_AUL_FEE_RATE = 0.15;
 
 function formatBalance(value: number): string {
   return value.toLocaleString("en-US", {
@@ -55,8 +63,23 @@ function sanitizeAmountInput(raw: string): string {
 
 export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
   const { t } = useTranslation();
+  const walletAddress = useUserInfoStore((state) => state.userInfo.walletAddress);
   const [entered, setEntered] = React.useState(false);
   const [amount, setAmount] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const opFailed = t("common.operationFailed");
+
+  const {
+    data: userAssetsResponse,
+    isPending: userAssetsPending,
+    refetch: refetchUserAssets,
+  } = useQuery({
+    queryKey: ["userAssets", walletAddress],
+    queryFn: () => getUserAssets(),
+    enabled: Boolean(walletAddress),
+  });
+
+  const withdrawableAul = userAssetsResponse?.data?.xCoinBalance ?? 0;
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -67,6 +90,7 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
     if (!open) {
       setEntered(false);
       setAmount("");
+      setIsSubmitting(false);
       return;
     }
     const frame = requestAnimationFrame(() => {
@@ -84,21 +108,58 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closePanel]);
 
+  React.useEffect(() => {
+    if (!open || !walletAddress) return;
+    void refetchUserAssets();
+  }, [open, walletAddress, refetchUserAssets]);
+
   const parsedAmount = parseAmountInput(amount);
   const exceedsLimit =
-    parsedAmount != null && parsedAmount > MOCK_WITHDRAWABLE_AUL;
+    !userAssetsPending &&
+    parsedAmount != null &&
+    parsedAmount > withdrawableAul;
   const belowMin =
     parsedAmount != null && parsedAmount > 0 && parsedAmount < MIN_WITHDRAW;
   const hasAmount = parsedAmount != null && parsedAmount > 0;
-  const canSubmit = hasAmount && !exceedsLimit && !belowMin;
+  const canSubmit =
+    !userAssetsPending &&
+    !isSubmitting &&
+    hasAmount &&
+    !exceedsLimit &&
+    !belowMin;
 
-  const handleSubmit = () => {
-    if (!canSubmit) return;
-    toast.success(t("common.notOpen"));
+  const withdrawableAulLabel = userAssetsPending
+    ? t("common.loadingDots")
+    : formatBalance(withdrawableAul);
+
+  const feeAul =
+    parsedAmount != null && parsedAmount > 0
+      ? parsedAmount * WITHDRAW_AUL_FEE_RATE
+      : 0;
+
+  const handleSubmit = async () => {
+    if (!canSubmit || parsedAmount == null) return;
+
+    setIsSubmitting(true);
+    try {
+      await applyWithdrawal({
+        currency: "AUL",
+        amount: parsedAmount,
+        txHash: "",
+      });
+      toast.success(t("mine.withdrawSuccess"));
+      setAmount("");
+      void refetchUserAssets();
+    } catch (error) {
+      toast.error(getErrorMessage(error, opFailed));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFillAll = () => {
-    setAmount(String(MOCK_WITHDRAWABLE_AUL));
+    if (userAssetsPending) return;
+    setAmount(String(withdrawableAul));
   };
 
   if (!open) return null;
@@ -223,11 +284,11 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
                           ? t("mine.availableAul")
                           : t("mine.withdrawableAul")
                       }
-                      value={`${formatBalance(MOCK_WITHDRAWABLE_AUL)} AUL`}
+                      value={`${withdrawableAulLabel} AUL`}
                     />
                     <InfoRow
                       label={t("mine.withdrawFee")}
-                      value={`${MOCK_FEE_AUL} AUL`}
+                      value={`${formatBalance(feeAul)} AUL`}
                     />
                   </div>
                 </div>
@@ -236,15 +297,19 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
 
             <button
               type="button"
-              disabled={!canSubmit}
-              onClick={handleSubmit}
+              disabled={!canSubmit || isSubmitting}
+              onClick={() => void handleSubmit()}
               className={`mx-auto mt-10 flex h-[58px] w-full max-w-[308px] flex-col items-center justify-center px-2.5 ${GRADIENT_BTN} disabled:cursor-not-allowed`}
             >
               <span className={GRADIENT_FILL} aria-hidden />
-              {!canSubmit ? <span className={DISABLED_OVERLAY} aria-hidden /> : null}
+              {!canSubmit || isSubmitting ? (
+                <span className={DISABLED_OVERLAY} aria-hidden />
+              ) : null}
               <span className={GRADIENT_INSET} aria-hidden />
               <span className="relative text-base font-semibold text-white [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]">
-                {t("mine.withdrawSubmit")}
+                {isSubmitting
+                  ? t("common.loadingDots")
+                  : t("mine.withdrawSubmit")}
               </span>
             </button>
           </div>

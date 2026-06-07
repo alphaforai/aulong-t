@@ -259,7 +259,8 @@
     "availableAul": "利用可能残高 AUL",
     "withdrawFee": "手数料",
     "withdrawExceedLimit": "出金可能額を超えています",
-    "withdrawSubmit": "今すぐ出金"
+    "withdrawSubmit": "今すぐ出金",
+    "withdrawSuccess": "出金申請が完了しました"
   },
   "earnings": {
     "totalEarnings": "総収益(USDT)",

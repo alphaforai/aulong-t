@@ -9,6 +9,8 @@ import { mineAssets } from "./assets";
 import { WithdrawAUL } from "./WithdrawAUL";
 import { WithdrawUSDT } from "./WithdrawUSDT";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { getUserAssets } from "@/lib/api/users";
 
 /** 总资产卡片 — 背景 Figma 550:7512，内容 Figma 514:6035 */
 export function AssetSummaryCard() {
@@ -16,6 +18,20 @@ export function AssetSummaryCard() {
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const [showWithdrawUsdt, setShowWithdrawUsdt] = React.useState(false);
   const [showWithdrawAul, setShowWithdrawAul] = React.useState(false);
+
+
+  // getUserAssets
+  const { data: userAssetsResponse } = useQuery({
+    queryKey: ["userAssets", userInfo.walletAddress],
+    queryFn: () => getUserAssets(),
+    enabled: Boolean(userInfo.walletAddress),
+  });
+
+  const userAssets = userAssetsResponse?.data;
+  console.log("userAssets", userAssets);
+  const totalAssets = userAssets?.totalBalance ?? 0;
+  const usdtBalance = userAssets?.usdtBalance ?? 0;
+  const xcoinBalance = userAssets?.xCoinBalance ?? 0;
 
   return (
     <section className="relative h-[258px] w-full shrink-0">
@@ -29,12 +45,12 @@ export function AssetSummaryCard() {
           <WhitelistBadge hasTicket={userInfo.hasTicket} />
         </div>
         <p className="font-mulish text-[32px] font-bold leading-normal text-black">
-          0.00
+          {totalAssets}
         </p>
       </div>
 
       <div className="absolute inset-x-4 top-[120px] z-10 flex items-center gap-2 text-sm">
-        <StatColumn label={t("mine.totalEarnings")} value="0.00" trailingSpace />
+        <StatColumn label={t("mine.totalEarnings")} value={usdtBalance} trailingSpace />
         <div className="flex h-7 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">
             <AppImage
@@ -46,7 +62,7 @@ export function AssetSummaryCard() {
             />
           </div>
         </div>
-        <StatColumn label={t("mine.totalRelease")} value="0.00" trailingSpace />
+        <StatColumn label={t("mine.totalRelease")} value={xcoinBalance} trailingSpace />
       </div>
 
       <div className="absolute inset-x-0 top-[177px] z-10 flex items-center justify-center gap-3">

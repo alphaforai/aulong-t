@@ -259,7 +259,8 @@
     "availableAul": "Số dư khả dụng AUL",
     "withdrawFee": "Phí",
     "withdrawExceedLimit": "Vượt quá hạn mức rút",
-    "withdrawSubmit": "Rút ngay"
+    "withdrawSubmit": "Rút ngay",
+    "withdrawSuccess": "Yêu cầu rút tiền đã được gửi"
   },
   "earnings": {
     "totalEarnings": "Tổng thu nhập (USDT)",

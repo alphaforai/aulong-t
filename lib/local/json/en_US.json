@@ -259,7 +259,8 @@
     "availableAul": "Available balance AUL",
     "withdrawFee": "Fee",
     "withdrawExceedLimit": "Exceeds withdrawable limit",
-    "withdrawSubmit": "Withdraw now"
+    "withdrawSubmit": "Withdraw now",
+    "withdrawSuccess": "Withdrawal submitted"
   },
   "earnings": {
     "totalEarnings": "Total earnings (USDT)",

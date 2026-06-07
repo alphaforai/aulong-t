@@ -259,7 +259,8 @@
     "availableAul": "可用余额 AUL",
     "withdrawFee": "手续费",
     "withdrawExceedLimit": "超过可提现额度",
-    "withdrawSubmit": "立即提取"
+    "withdrawSubmit": "立即提取",
+    "withdrawSuccess": "提现申请成功"
   },
   "earnings": {
     "totalEarnings": "总收益(USDT)",

@@ -259,7 +259,8 @@
     "availableAul": "Baki tersedia AUL",
     "withdrawFee": "Yuran",
     "withdrawExceedLimit": "Melebihi had pengeluaran",
-    "withdrawSubmit": "Keluarkan sekarang"
+    "withdrawSubmit": "Keluarkan sekarang",
+    "withdrawSuccess": "Permohonan pengeluaran berjaya"
   },
   "earnings": {
     "totalEarnings": "Jumlah pendapatan (USDT)",

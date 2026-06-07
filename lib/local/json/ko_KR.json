@@ -259,7 +259,8 @@
     "availableAul": "사용 가능 잔액 AUL",
     "withdrawFee": "수수료",
     "withdrawExceedLimit": "출금 한도 초과",
-    "withdrawSubmit": "지금 출금"
+    "withdrawSubmit": "지금 출금",
+    "withdrawSuccess": "출금 신청이 완료되었습니다"
   },
   "earnings": {
     "totalEarnings": "총 수익(USDT)",
