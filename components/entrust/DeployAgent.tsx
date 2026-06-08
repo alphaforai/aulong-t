@@ -240,7 +240,9 @@ export function DeployAgent({
   strategies,
   onClose,
 }: DeployAgentProps) {
-  const { t } = useTranslation();
+  const { t: rawT } = useTranslation();
+  const t: (key: string, params?: Record<string, string | number>) => string =
+    rawT;
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const isWalletConnected = Boolean(userInfo.walletAddress);
   const [entered, setEntered] = React.useState(false);
@@ -269,7 +271,7 @@ export function DeployAgent({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closeSheet]);
 
-  const opFailed = t("common.operationFailed");
+  const opFailed: string = t("common.operationFailed");
   const walletAddress = userInfo.walletAddress as `0x${string}` | undefined;
   const readEnabled = open && Boolean(walletAddress);
 

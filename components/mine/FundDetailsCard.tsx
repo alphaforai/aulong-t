@@ -13,7 +13,7 @@ import {
   bottomSheetOverlayRoot,
 } from "@/lib/mobileShell";
 import { mineAssets } from "./assets";
-import { getAssetLedgerPage } from "@/lib/api/users";
+import { getAssetLedgerPage, getAssetLedgerChangeTypes } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { formatAmount, formatSignedAmount } from "@/components/team/format";
@@ -33,20 +33,12 @@ type AssetLedgerItem = {
 
 type FilterSheetId = "billType" | "currency" | "time";
 
-type BillTypeId =
-  | "all"
-  | "startAi"
-  | "usdtYield"
-  | "redeem"
-  | "redeemFee"
-  | "xUnlock"
-  | "xWithdraw"
-  | "usdtWithdraw"
-  | "usdtWithdrawFee"
-  | "shareholder"
-  | "teamLevel"
-  | "teamGen"
-  | "teamContrib";
+type BillTypeOption = {
+  code: string;
+  name: string;
+};
+
+const ALL_BILL_TYPE = "all";
 
 const DATE_FNS_LOCALE: Record<Locale, typeof zhCN> = {
   zh_CN: zhCN,
@@ -57,26 +49,6 @@ const DATE_FNS_LOCALE: Record<Locale, typeof zhCN> = {
   ms_MY: ms,
 };
 
-
-const BILL_TYPES: {
-  id: BillTypeId;
-  labelKey: string;
-  changeType?: string;
-}[] = [
-  { id: "all", labelKey: "mine.fundFilter.billAll" },
-  { id: "startAi", labelKey: "mine.fundFilter.billStartAi", changeType: "STAKE_APPLY" },
-  { id: "usdtYield", labelKey: "mine.fundFilter.billUsdtYield", changeType: "USDT_YIELD" },
-  { id: "redeem", labelKey: "mine.fundFilter.billRedeem", changeType: "REDEEM_APPLY" },
-  { id: "redeemFee", labelKey: "mine.fundFilter.billRedeemFee", changeType: "REDEEM_FEE" },
-  { id: "xUnlock", labelKey: "mine.fundFilter.billXUnlock", changeType: "X_UNLOCK" },
-  { id: "xWithdraw", labelKey: "mine.fundFilter.billXWithdraw", changeType: "X_WITHDRAW" },
-  { id: "usdtWithdraw", labelKey: "mine.fundFilter.billUsdtWithdraw", changeType: "WITHDRAW_APPLY" },
-  { id: "usdtWithdrawFee", labelKey: "mine.fundFilter.billUsdtWithdrawFee", changeType: "WITHDRAW_FEE" },
-  { id: "shareholder", labelKey: "mine.fundFilter.billShareholder", changeType: "SHAREHOLDER_DIVIDEND" },
-  { id: "teamLevel", labelKey: "mine.fundFilter.billTeamLevel", changeType: "TEAM_LEVEL_REWARD" },
-  { id: "teamGen", labelKey: "mine.fundFilter.billTeamGen", changeType: "TEAM_GEN_REWARD" },
-  { id: "teamContrib", labelKey: "mine.fundFilter.billTeamContrib", changeType: "TEAM_CONTRIBUTION_REWARD" },
-];
 
 const CURRENCY_OPTIONS = [
   "all",
@@ -110,10 +82,6 @@ function formatLedgerTime(value?: string) {
   return format(date, "yyyy-MM-dd HH:mm");
 }
 
-function getBillChangeType(id: BillTypeId) {
-  return BILL_TYPES.find((item) => item.id === id)?.changeType;
-}
-
 const FILTER_SHEETS: { id: FilterSheetId; labelKey: string }[] = [
   { id: "billType", labelKey: "mine.filterBillType" },
   { id: "currency", labelKey: "mine.filterCurrency" },
@@ -131,7 +99,7 @@ export function FundDetailsCard() {
     null,
   );
   const [selectedBillType, setSelectedBillType] =
-    React.useState<BillTypeId>("all");
+    React.useState<string>(ALL_BILL_TYPE);
   const [selectedCurrency, setSelectedCurrency] =
     React.useState<CurrencyOption>("all");
   const [timeFilterMode, setTimeFilterMode] =
@@ -139,7 +107,48 @@ export function FundDetailsCard() {
   const [startDate, setStartDate] = React.useState(() => new Date());
   const [endDate, setEndDate] = React.useState(() => new Date());
 
-  const changeType = getBillChangeType(selectedBillType);
+  const { data: changeTypesResponse, isPending: billTypesPending } = useQuery({
+    queryKey: ["assetLedgerChangeTypes", locale],
+    queryFn: getAssetLedgerChangeTypes,
+  });
+
+  const apiBillTypes = React.useMemo(() => {
+    const raw = changeTypesResponse?.data;
+    console.log(raw);
+    
+    if (!Array.isArray(raw)) return [];
+    return raw.flatMap((item) => {
+      if (
+        !item ||
+        typeof item !== "object" ||
+        typeof (item as BillTypeOption).code !== "string" ||
+        typeof (item as BillTypeOption).name !== "string"
+      ) {
+        return [];
+      }
+      const { code, name } = item as BillTypeOption;
+      return code ? [{ code, name }] : [];
+    });
+  }, [changeTypesResponse]);
+
+  const billTypeOptions = React.useMemo<BillTypeOption[]>(
+    () => [
+      { code: ALL_BILL_TYPE, name: t("mine.fundFilter.billAll") },
+      ...apiBillTypes,
+    ],
+    [apiBillTypes, t],
+  );
+
+  React.useEffect(() => {
+    if (selectedBillType === ALL_BILL_TYPE) return;
+    if (apiBillTypes.length === 0) return;
+    if (!apiBillTypes.some((item) => item.code === selectedBillType)) {
+      setSelectedBillType(ALL_BILL_TYPE);
+    }
+  }, [apiBillTypes, selectedBillType]);
+
+  const changeType =
+    selectedBillType === ALL_BILL_TYPE ? undefined : selectedBillType;
   const currencyFilter =
     selectedCurrency === "all" ? undefined : selectedCurrency;
   const createdAtStart =
@@ -216,13 +225,15 @@ export function FundDetailsCard() {
   }, []);
 
   const billTypeLabel =
-    BILL_TYPES.find((item) => item.id === selectedBillType)?.labelKey ??
-    "mine.fundFilter.billAll";
+    billTypeOptions.find((item) => item.code === selectedBillType)?.name ??
+    t("mine.fundFilter.billAll");
   const timeLabel = `${formatDateYmd(startDate, locale)} ~ ${formatDateYmd(endDate, locale)}`;
 
   const filterButtonLabel = (sheetId: FilterSheetId) => {
     if (sheetId === "billType") {
-      return selectedBillType === "all" ? t("mine.filterBillType") : t(billTypeLabel);
+      return selectedBillType === ALL_BILL_TYPE
+        ? t("mine.filterBillType")
+        : billTypeLabel;
     }
     if (sheetId === "currency") {
       return selectedCurrency === "all"
@@ -345,9 +356,11 @@ export function FundDetailsCard() {
       <BillTypeFilterSheet
         open={activeSheet === "billType"}
         title={t("mine.filterBillType")}
+        options={billTypeOptions}
+        loading={billTypesPending}
         selected={selectedBillType}
-        onSelect={(id) => {
-          setSelectedBillType(id);
+        onSelect={(code) => {
+          setSelectedBillType(code);
           setActiveSheet(null);
         }}
         onClose={() => setActiveSheet(null)}
@@ -489,39 +502,49 @@ function FilterBottomSheet({
 function BillTypeFilterSheet({
   open,
   title,
+  options,
+  loading,
   selected,
   onSelect,
   onClose,
 }: {
   open: boolean;
   title: string;
-  selected: BillTypeId;
-  onSelect: (id: BillTypeId) => void;
+  options: BillTypeOption[];
+  loading?: boolean;
+  selected: string;
+  onSelect: (code: string) => void;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
 
   return (
     <FilterBottomSheet open={open} title={title} onClose={onClose}>
-      <div className="grid grid-cols-2 gap-[11px] pb-4">
-        {BILL_TYPES.map((item) => {
-          const isSelected = item.id === selected;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onSelect(item.id)}
-              className={`flex min-h-[46px] items-center justify-center rounded-[7px] p-3 text-sm font-medium text-[#333] ${
-                isSelected
-                  ? "bg-[#ffe8e8] ring-1 ring-[#fd4140]/40"
-                  : "bg-[#f6f6f6]"
-              }`}
-            >
-              {t(item.labelKey)}
-            </button>
-          );
-        })}
-      </div>
+      {loading && options.length <= 1 ? (
+        <div className="flex items-center justify-center py-12 text-sm text-black/50">
+          {t("common.loading")}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-[11px] pb-4">
+          {options.map((item) => {
+            const isSelected = item.code === selected;
+            return (
+              <button
+                key={item.code}
+                type="button"
+                onClick={() => onSelect(item.code)}
+                className={`flex min-h-[46px] items-center justify-center rounded-[7px] p-3 text-sm font-medium text-[#333] ${
+                  isSelected
+                    ? "bg-[#ffe8e8] ring-1 ring-[#fd4140]/40"
+                    : "bg-[#f6f6f6]"
+                }`}
+              >
+                {item.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </FilterBottomSheet>
   );
 }
