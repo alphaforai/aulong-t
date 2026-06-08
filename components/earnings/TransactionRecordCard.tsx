@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { formatAmount } from "@/components/team/format";
 
 const PAGE_SIZE = 7;
-const TX_CURRENCY = "USDT";
+const TX_CURRENCY = "SOL";
 
 type SolanaBlockItem = {
   id?: number;
