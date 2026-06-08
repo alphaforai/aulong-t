@@ -114,7 +114,7 @@ export function TransactionRecordCard() {
 
       <div
         ref={listScrollRef}
-        className={`flex min-h-0 flex-1 flex-col gap-[10px] overflow-y-auto transition-opacity ${
+        className={`flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity ${
           listPending && !isPending ? "opacity-70" : "opacity-100"
         }`}
       >
@@ -191,19 +191,23 @@ function TransactionRow({
   tradeTimeLabel: string;
 }) {
   return (
-    <div className="flex w-full shrink-0 items-center justify-between">
-      <div className="flex flex-col gap-px">
-        <p className="text-xs leading-5 tracking-[0.1px] text-black">{address}</p>
-        <div className="flex items-end gap-1.5 leading-normal">
-          <span className="font-mulish text-lg font-semibold text-[#138144]">
+    <div className="flex w-full shrink-0 flex-col gap-2 py-3">
+      <div className="flex items-start justify-between">
+        <p className="text-xs leading-5 tracking-[0.1px] text-black">
+          {address}
+        </p>
+        <span className="text-xs leading-5 text-black">{tradeTimeLabel}</span>
+      </div>
+      <div className="flex items-end justify-between">
+        <div className="flex items-end gap-1.5">
+          <span className="font-mulish text-lg font-semibold leading-none text-[#138144]">
             {amount}
           </span>
-          <span className="text-xs text-black/70">{currency}</span>
+          <span className="pb-px text-xs leading-none text-black/70">
+            {currency}
+          </span>
         </div>
-      </div>
-      <div className="flex flex-col items-end gap-0.5 text-xs leading-normal">
-        <span className="text-black">{tradeTimeLabel}</span>
-        <span className="text-black/70">{time}</span>
+        <span className="text-xs leading-none text-black/70">{time}</span>
       </div>
     </div>
   );
