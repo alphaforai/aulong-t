@@ -76,3 +76,28 @@ html[lang="ms-MY"] [class*="font-noto-sc-black"] {
   font-family: var(--font-noto-sans), "Segoe UI", sans-serif;
   font-synthesis: none;
 }
+
+@keyframes realtime-dot-blink {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.88);
+  }
+}
+
+@layer utilities {
+  .animate-realtime-dot {
+    animation: realtime-dot-blink 1.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-realtime-dot {
+      animation: none;
+    }
+  }
+}

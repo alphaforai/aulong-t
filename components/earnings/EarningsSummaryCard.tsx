@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import type { Locale } from "@/lib/local";
@@ -7,6 +8,7 @@ import { getUserAssets } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { earningsAssets } from "./assets";
+import { FinancialManagement } from "./FinancialManagement";
 import { toast } from "sonner";
 
 /** 底栏统计在窄卡片里用短文案的语言 */
@@ -38,6 +40,7 @@ function formatIncome(value: number) {
 export function EarningsSummaryCard() {
   const { t, locale } = useTranslation();
   const copy = useEarningsSummaryCopy(locale, t);
+  const [deployOpen, setDeployOpen] = useState(false);
   const walletAddress = useUserInfoStore((state) => state.userInfo.walletAddress);
 
   const { data: userAssetsResponse, isPending: userAssetsPending } = useQuery({
@@ -51,7 +54,11 @@ export function EarningsSummaryCard() {
     ? t("common.loadingDots")
     : formatIncome(totalIncomeUsdt);
 
+    
+ 
+
   return (
+    <>
     <section className="relative h-[148px] w-full shrink-0 overflow-hidden rounded-[12px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <SummaryBackground />
 
@@ -64,7 +71,7 @@ export function EarningsSummaryCard() {
       </div>
 
       {/* 收益记录 — 稿右上角 */}
-      <button
+      {/* <button
         type="button"
         className="absolute right-[15px] top-3 z-10 flex max-w-[40%] items-center justify-end gap-1"
         onClick={() => {
@@ -81,15 +88,13 @@ export function EarningsSummaryCard() {
           height={14}
           className="size-3.5 shrink-0 -scale-y-100 rotate-90"
         />
-      </button>
+      </button> */}
 
       {/* 去理财 — 稿 right 7px, top 43px，与大号金额同一行 */}
       <button
         type="button"
         className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] select-none items-center justify-center rounded-[33px] border border-white bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92]"
-        onClick={() => {
-          toast.success(t("common.notOpen"));
-        }}
+        onClick={() => setDeployOpen(true)}
       >
         {copy.invest}
       </button>
@@ -126,6 +131,12 @@ export function EarningsSummaryCard() {
         />
       </div>
     </section>
+
+    <FinancialManagement
+      open={deployOpen}
+      onClose={() => setDeployOpen(false)}
+    />
+    </>
   );
 }
 

@@ -95,19 +95,33 @@ export function TransactionRecordCard() {
 
   return (
     <section className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-      <div className="flex h-[27px] shrink-0 items-center gap-[3px] overflow-hidden">
-        <div className="relative size-[22px] shrink-0 overflow-hidden">
-          <AppImage
-            src={earningsAssets.txIcon}
-            alt=""
-            width={22}
-            height={22}
-            className="absolute h-[135.06%] w-[136.84%] max-w-none -left-[18.42%] -top-[16.88%]"
-          />
+      <div className="flex h-[27px] shrink-0 items-center justify-between gap-2 overflow-hidden">
+        <div className="flex min-w-0 items-center gap-[3px]">
+          <div className="relative size-[22px] shrink-0 overflow-hidden">
+            <AppImage
+              src={earningsAssets.txIcon}
+              alt=""
+              width={22}
+              height={22}
+              className="absolute h-[135.06%] w-[136.84%] max-w-none -left-[18.42%] -top-[16.88%]"
+            />
+          </div>
+          <h2 className="truncate text-base font-semibold leading-[22px] text-black/80">
+            {t("earnings.transactionRecord")}
+          </h2>
         </div>
-        <h2 className="text-base font-semibold leading-[22px] text-black/80">
-          {t("earnings.transactionRecord")}
-        </h2>
+        <span className="inline-flex h-6 shrink-0 items-center gap-1.5 rounded-[41px] bg-[rgba(231,231,231,0.5)] pl-1.5 pr-2.5">
+          <span
+            className="relative flex size-3 shrink-0 items-center justify-center"
+            aria-hidden
+          >
+            <span className="absolute size-3 animate-ping rounded-full bg-[rgba(255,42,42,0.45)]" />
+            <span className="relative size-2 rounded-full bg-[#ff2a2a] animate-realtime-dot" />
+          </span>
+          <span className="text-sm leading-normal text-black">
+            {t("earnings.realtime")}
+          </span>
+        </span>
       </div>
 
       <RecordDivider />

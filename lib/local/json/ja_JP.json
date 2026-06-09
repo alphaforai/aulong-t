@@ -94,6 +94,7 @@
     "deployInvalidAmount": "有効な数量を入力してください",
     "deployInsufficientBalance": "残高が不足しています",
     "deployBelowMinAmount": "預託数量は {min} USDT 以上必要です",
+    "deployWhitelistRequired": "ホワイトリストが有効化されていないため、操作できません",
     "aiStrategy": {
       "panelTitle": "AI戦略",
       "tabDeploying": "展開中",
@@ -111,7 +112,8 @@
       "runProgressSuffix": " 日",
       "redeemAfter": "{time}後",
       "redeemable": "償還可",
-      "redeemSuccess": "償還申請が完了しました"
+      "redeemSuccess": "償還申請が完了しました",
+      "noRecords": "記録がありません"
     },
     "aulPrice": "AULコイン価格",
     "holdAul": "保有AUL価値",
@@ -203,8 +205,8 @@
   },
   "mine": {
     "totalAssets": "総資産(USDT)",
-    "totalEarnings": "総収益(USDT)",
-    "totalRelease": "総リリース(AUL)",
+    "totalEarnings": "USDT出金可能残高",
+    "totalRelease": "AUL出金可能残高",
     "usdtWithdraw": "USDT出金",
     "aulWithdraw": "AUL出金",
     "xWithdraw": "X出金",
@@ -284,14 +286,16 @@
     "withdrawSuccess": "出金申請が完了しました"
   },
   "earnings": {
-    "totalEarnings": "総収益(USDT)",
+    "totalEarnings": "AIエージェント総収益(USDT)",
     "earningsRecord": "収益記録",
     "claim": "受取",
-    "pendingEarnings": "未配布収益",
+    "pendingEarnings": "出金可能収益",
     "lastPeriodEarnings": "前期収益",
-    "transactionRecord": "取引記録",
+    "transactionRecord": "AULONGエージェント運行記録",
+    "realtime": "リアルタイム",
     "noTransactions": "取引記録がありません",
     "tradeTime": "取引時間",
+    "waitingConfirm": "確認待ち",
     "investBtn": "投資",
     "claimBtn": "受取",
     "totalEarningsCard": "総収益(USDT)",

@@ -94,6 +94,7 @@
     "deployInvalidAmount": "Sila masukkan jumlah yang sah",
     "deployInsufficientBalance": "Baki tidak mencukupi",
     "deployBelowMinAmount": "Jumlah minimum ialah {min} USDT",
+    "deployWhitelistRequired": "Whitelist belum diaktifkan, operasi tidak tersedia buat masa ini",
     "aiStrategy": {
       "panelTitle": "Strategi AI",
       "tabDeploying": "Sedang deploy",
@@ -111,7 +112,8 @@
       "runProgressSuffix": " hari",
       "redeemAfter": "Selepas {time}",
       "redeemable": "Tebus",
-      "redeemSuccess": "Permohonan tebus berjaya"
+      "redeemSuccess": "Permohonan tebus berjaya",
+      "noRecords": "Tiada rekod buat masa ini"
     },
     "aulPrice": "Harga syiling AUL",
     "holdAul": "Nilai pegangan AUL",
@@ -203,8 +205,8 @@
   },
   "mine": {
     "totalAssets": "Jumlah aset (USDT)",
-    "totalEarnings": "Jumlah pendapatan (USDT)",
-    "totalRelease": "Jumlah pelepasan (AUL)",
+    "totalEarnings": "Baki boleh keluar USDT",
+    "totalRelease": "Baki boleh keluar AUL",
     "usdtWithdraw": "Keluarkan USDT",
     "aulWithdraw": "Keluarkan AUL",
     "xWithdraw": "Keluarkan X",
@@ -284,14 +286,16 @@
     "withdrawSuccess": "Permohonan pengeluaran berjaya"
   },
   "earnings": {
-    "totalEarnings": "Jumlah pendapatan (USDT)",
+    "totalEarnings": "Jumlah Pendapatan AI Agent (USDT)",
     "earningsRecord": "Rekod pendapatan",
     "claim": "Tuntut",
-    "pendingEarnings": "Pendapatan belum dibayar",
+    "pendingEarnings": "Pendapatan boleh dikeluarkan",
     "lastPeriodEarnings": "Pendapatan tempoh lepas",
-    "transactionRecord": "Rekod transaksi",
+    "transactionRecord": "Rekod Operasi Ejen AULONG",
+    "realtime": "Masa nyata",
     "noTransactions": "Tiada rekod transaksi",
     "tradeTime": "Masa transaksi",
+    "waitingConfirm": "Menunggu pengesahan",
     "investBtn": "Labur",
     "claimBtn": "Tuntut",
     "totalEarningsCard": "Jumlah (USDT)",

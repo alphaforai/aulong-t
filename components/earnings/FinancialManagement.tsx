@@ -2,22 +2,15 @@
 
 import React from "react";
 import { AppImage } from "@/components/AppImage";
-import { entrustAssets } from "./assets";
+import { entrustAssets } from "@/components/entrust/assets";
 import {
   bottomSheetOverlayFrame,
   bottomSheetOverlayRoot,
 } from "@/lib/mobileShell";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useUserInfoStore } from "@/lib/store";
-import {
-  useReadContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
-import { UsdtContract } from "@/lib/abis/usdt";
-import { entrustContract } from "@/lib/abis/entrust";
-import { TicketSalesContract } from "@/lib/abis/ticketsales";
-import { formatEther, maxUint256, parseEther } from "viem";
+import { deployStake, getStakePlans, getUserAssets } from "@/lib/api/users";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 function getErrorMessage(error: unknown, fallback: string) {
@@ -28,35 +21,57 @@ function getErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-type EntrustTxStep = "idle" | "approve" | "entrust";
+type StakePlan = {
+  id: number;
+  name: string;
+  planImageUrl: string;
+  planIntro: string;
+  displayApr: string;
+  displayAprMin: number;
+  displayAprMax: number;
+  periodDays: number;
+  apr: number;
+  status?: number;
+  planType?: number;
+};
 
-/** 部署 Agent 抽屉：与首页策略卡片一一对应 */
 export type DeployStrategy = {
   id: number;
   iconSrc: string;
   iconSize?: number;
   title: string;
   description: string;
-  /** 卡片 APR 数值（不含 %） */
   apr: string;
-  /** 抽屉「预计 APR」展示，如 70%-180% */
   aprEstimate: string;
-  /** 周期天数（展示用字符串，与卡片一致） */
   period: string;
-  /** 链上质押周期（EntrustTest supportedPeriods） */
   periodDays: number;
 };
 
-export type DeployAgentProps = {
+export type FinancialManagementProps = {
   open: boolean;
-  strategy: DeployStrategy | null;
-  strategies: DeployStrategy[];
   onClose: () => void;
-  /** 链上部署成功后触发（抽屉关闭动画结束后） */
-  onDeploySuccess?: () => void;
 };
 
 const CUSTODY_ASSET = "USDT";
+
+function toDeployStrategy(plan: StakePlan): DeployStrategy {
+  const aprEstimate =
+    plan.displayApr ||
+    (plan.displayAprMin != null && plan.displayAprMax != null
+      ? `${plan.displayAprMin}%-${plan.displayAprMax}%`
+      : "");
+
+  return {
+    id: plan.id,
+    iconSrc: plan.planImageUrl || entrustAssets.strategyTrend,
+    title: plan.name || "",
+    description: plan.planIntro || "",
+    apr: plan.apr != null ? String(plan.apr) : "",
+    aprEstimate,
+    period: plan.periodDays != null ? String(plan.periodDays) : "",
+    periodDays: plan.periodDays ?? 0,
+  };
+}
 
 function SheetRow({
   label,
@@ -100,22 +115,12 @@ function SelectChevron({ open }: { open?: boolean }) {
   );
 }
 
-function SelectField({
-  children,
-  onClick,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-}) {
+function SelectField({ children }: { children: React.ReactNode }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex h-[50px] w-full items-center justify-between rounded-[8px] bg-white/70 px-4 text-left"
-    >
+    <div className="flex h-[50px] w-full items-center justify-between rounded-[8px] bg-white/70 px-4 text-left">
       {children}
       <SelectChevron />
-    </button>
+    </div>
   );
 }
 
@@ -174,9 +179,7 @@ function StrategySelect({
         onClick={() => setOpen((prev) => !prev)}
         className="flex h-[50px] w-full items-center justify-between rounded-[8px] bg-white/70 px-4 text-left"
       >
-        <span className="text-base font-semibold text-[#333]">
-          {value.title}
-        </span>
+        <span className="text-base font-semibold text-[#333]">{value.title}</span>
         <SelectChevron open={open} />
       </button>
       {listMounted && (
@@ -216,40 +219,76 @@ function StrategySelect({
   );
 }
 
-export function DeployAgent({
+export function FinancialManagement({
   open,
-  strategy,
-  strategies,
   onClose,
-  onDeploySuccess,
-}: DeployAgentProps) {
+}: FinancialManagementProps) {
   const { t: rawT } = useTranslation();
   const t: (key: string, params?: Record<string, string | number>) => string =
     rawT;
-  const userInfo = useUserInfoStore((state) => state.userInfo);
-  const isWalletConnected = Boolean(userInfo.walletAddress);
+  const walletAddress = useUserInfoStore(
+    (state) => state.userInfo.walletAddress,
+  );
+  const isWalletConnected = Boolean(walletAddress);
   const [entered, setEntered] = React.useState(false);
   const [amount, setAmount] = React.useState("");
-  const [isDeployTxActive, setIsDeployTxActive] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<DeployStrategy | null>(null);
-  const txStepRef = React.useRef<EntrustTxStep>("idle");
-  const pendingAmountWeiRef = React.useRef(parseEther("0"));
-  const pendingPeriodDaysRef = React.useRef<number>(0);
-  const processedTxHashRef = React.useRef<`0x${string}` | undefined>(undefined);
-  const lastWriteErrorRef = React.useRef<unknown>(null);
-  const lastReceiptErrorRef = React.useRef<unknown>(null);
 
-  const closeSheet = React.useCallback(
-    (afterClose?: () => void) => {
-      setEntered(false);
-      window.setTimeout(() => {
-        onClose();
-        afterClose?.();
-      }, 300);
+  const opFailed: string = t("common.operationFailed");
+  const queryClient = useQueryClient();
+
+  const closeSheet = React.useCallback(() => {
+    setEntered(false);
+    window.setTimeout(() => onClose(), 300);
+  }, [onClose]);
+
+  const { data: stakePlansResponse, isPending: plansPending } = useQuery({
+    queryKey: ["stakePlans", "earnings", 2],
+    queryFn: () =>
+      getStakePlans({
+        page: 0,
+        limit: undefined,
+        searchCount: false,
+        lastId: undefined,
+        name: undefined,
+        status: 1,
+        planType: 2,
+      }),
+    enabled: open,
+  });
+
+  const strategies = React.useMemo(() => {
+    const raw = stakePlansResponse?.data;
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .filter((plan) => {
+        const item = plan as StakePlan;
+        const statusOk = item.status === undefined || item.status === 1;
+        const typeOk = item.planType === undefined || item.planType === 2;
+        return statusOk && typeOk;
+      })
+      .map((plan) => toDeployStrategy(plan as StakePlan));
+  }, [stakePlansResponse]);
+
+  const { data: userAssetsResponse, isPending: userAssetsPending } = useQuery(
+    {
+      queryKey: ["userAssets", walletAddress],
+      queryFn: () => getUserAssets(),
+      enabled: open && Boolean(walletAddress),
     },
-    [onClose],
   );
+
+  const availableBalance = React.useMemo(() => {
+    const balance = userAssetsResponse?.data?.usdtBalance;
+    const num = Number(balance);
+    if (!Number.isFinite(num)) return "0.00";
+    return num.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }, [userAssetsResponse]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -260,185 +299,44 @@ export function DeployAgent({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closeSheet]);
 
-  const opFailed: string = t("common.operationFailed");
-  const walletAddress = userInfo.walletAddress as `0x${string}` | undefined;
-  const readEnabled = open && Boolean(walletAddress);
-
-  const {
-    data: usdtBalanceData,
-    isPending: usdtBalancePending,
-    refetch: refetchUsdtBalance,
-  } = useReadContract({
-    ...UsdtContract,
-    functionName: "balanceOf",
-    args: walletAddress ? [walletAddress] : undefined,
-    query: { enabled: readEnabled },
-  });
-
-  const { data: usdtAllowanceData, isPending: usdtAllowancePending } =
-    useReadContract({
-      ...UsdtContract,
-      functionName: "allowance",
-      args:
-        walletAddress && entrustContract.address
-          ? [walletAddress, entrustContract.address]
-          : undefined,
-      query: { enabled: readEnabled && Boolean(entrustContract.address) },
-    });
-
-  const { data: minEntrustAmountData } = useReadContract({
-    ...entrustContract,
-    functionName: "minEntrustAmount",
-    query: { enabled: readEnabled },
-  });
-
-  const { data: purchasesData, isPending: purchasesPending } = useReadContract({
-    ...TicketSalesContract,
-    functionName: "purchases",
-    args: readEnabled ? [walletAddress as `0x${string}`] : undefined,
-    query: { enabled: readEnabled },
-  });
-
-  const isWhitelisted = Boolean(purchasesData?.[0]);
-
-  const {
-    data: txHash,
-    error: writeError,
-    writeContract,
-    reset: resetWrite,
-  } = useWriteContract();
-
-  const {
-    isSuccess: txConfirmed,
-    error: receiptError,
-  } = useWaitForTransactionReceipt({
-    hash: txHash,
-    query: { enabled: Boolean(txHash && isDeployTxActive) },
-  });
-
-  const finishDeployTx = React.useCallback(() => {
-    setIsDeployTxActive(false);
-    txStepRef.current = "idle";
-    resetWrite();
-  }, [resetWrite]);
-
-  const sendContractTx = React.useCallback(
-    (variables: Parameters<typeof writeContract>[0]) => {
-      writeContract(variables, {
-        onError: () => {
-          finishDeployTx();
-          closeSheet();
-        },
-      });
-    },
-    [writeContract, finishDeployTx, closeSheet],
-  );
-
   React.useEffect(() => {
     if (!open) {
       setEntered(false);
       setAmount("");
       setSelectedStrategy(null);
-      finishDeployTx();
-      processedTxHashRef.current = undefined;
+      setIsSubmitting(false);
       return;
     }
-    if (strategy) setSelectedStrategy(strategy);
     const frame = requestAnimationFrame(() => {
       requestAnimationFrame(() => setEntered(true));
     });
     return () => cancelAnimationFrame(frame);
-  }, [open, strategy, finishDeployTx]);
-
-  const availableBalance =
-    usdtBalanceData != null ? formatEther(usdtBalanceData) : "0.00";
+  }, [open]);
 
   React.useEffect(() => {
-    if (!writeError) {
-      lastWriteErrorRef.current = null;
-      return;
-    }
-    if (lastWriteErrorRef.current !== writeError) {
-      lastWriteErrorRef.current = writeError;
-      finishDeployTx();
-      toast.error(getErrorMessage(writeError, opFailed));
-      closeSheet();
-    }
-  }, [writeError, opFailed, finishDeployTx, closeSheet]);
-
-  React.useEffect(() => {
-    if (!receiptError) {
-      lastReceiptErrorRef.current = null;
-      return;
-    }
-    if (lastReceiptErrorRef.current !== receiptError) {
-      lastReceiptErrorRef.current = receiptError;
-      finishDeployTx();
-      toast.error(getErrorMessage(receiptError, opFailed));
-      closeSheet();
-    }
-  }, [receiptError, opFailed, finishDeployTx, closeSheet]);
-
-  React.useEffect(() => {
-    if (!txConfirmed || !txHash || processedTxHashRef.current === txHash) {
-      return;
-    }
-    processedTxHashRef.current = txHash;
-
-    if (txStepRef.current === "approve") {
-      txStepRef.current = "entrust";
-      sendContractTx({
-        ...entrustContract,
-        functionName: "entrustUSDT",
-        args: [pendingAmountWeiRef.current, BigInt(pendingPeriodDaysRef.current)],
-      });
-      return;
-    }
-
-    if (txStepRef.current === "entrust") {
-      finishDeployTx();
-      toast.success(t("entrust.deploySuccess"));
-      void refetchUsdtBalance();
-      setAmount("");
-      closeSheet(() => onDeploySuccess?.());
-    }
-  }, [
-    txConfirmed,
-    txHash,
-    sendContractTx,
-    finishDeployTx,
-    closeSheet,
-    t,
-    refetchUsdtBalance,
-    onDeploySuccess,
-  ]);
-
-  if (!open || !strategy || !selectedStrategy) return null;
-
-  const periodLabel = `${selectedStrategy.period}${t("entrust.periodUnit")}`;
-
-  const displayBalance = usdtBalancePending
-    ? t("common.loadingDots")
-    : availableBalance;
-
-  const isTxBusy = isDeployTxActive;
+    if (!open || strategies.length === 0) return;
+    setSelectedStrategy((prev) => {
+      if (prev && strategies.some((item) => item.id === prev.id)) return prev;
+      return strategies[0];
+    });
+  }, [open, strategies]);
 
   const handleMax = () => {
-    if (usdtBalancePending || isTxBusy || availableBalance === "0.00") return;
-    setAmount(availableBalance);
+    if (userAssetsPending || isSubmitting) return;
+    const balance = userAssetsResponse?.data?.usdtBalance;
+    const num = Number(balance);
+    if (!Number.isFinite(num) || num <= 0) return;
+    setAmount(String(num));
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
     if (!isWalletConnected) {
       toast.success(t("entrust.deployConnectWalletFirst"));
       return;
     }
-    if (purchasesPending) return;
-    if (!isWhitelisted) {
-      toast.error(t("entrust.deployWhitelistRequired"));
+    if (plansPending || userAssetsPending || isSubmitting || !selectedStrategy) {
       return;
     }
-    if (usdtBalancePending || usdtAllowancePending || isTxBusy) return;
 
     const trimmed = amount.trim();
     if (!trimmed || !/^\d+(\.\d+)?$/.test(trimmed)) {
@@ -446,69 +344,51 @@ export function DeployAgent({
       return;
     }
 
-    let amountWei: bigint;
-    try {
-      amountWei = parseEther(trimmed);
-    } catch {
+    const parsedAmount = Number(trimmed);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       toast.error(t("entrust.deployInvalidAmount"));
       return;
     }
 
-    if (amountWei <= parseEther("0")) {
-      toast.error(t("entrust.deployInvalidAmount"));
-      return;
-    }
-
-    if (
-      typeof minEntrustAmountData === "bigint" &&
-      amountWei < minEntrustAmountData
-    ) {
-      toast.error(
-        t("entrust.deployBelowMinAmount", {
-          min: formatEther(minEntrustAmountData),
-        }),
-      );
-      return;
-    }
-
-    const balanceWei =
-      typeof usdtBalanceData === "bigint" ? usdtBalanceData : undefined;
-    if (balanceWei != null && amountWei > balanceWei) {
+    const balance = Number(userAssetsResponse?.data?.usdtBalance ?? 0);
+    if (Number.isFinite(balance) && parsedAmount > balance) {
       toast.error(t("entrust.deployInsufficientBalance"));
       return;
     }
 
-    pendingAmountWeiRef.current = amountWei;
-    pendingPeriodDaysRef.current = selectedStrategy.periodDays;
-    processedTxHashRef.current = undefined;
-    setIsDeployTxActive(true);
-
-    const allowance =
-      typeof usdtAllowanceData === "bigint"
-        ? usdtAllowanceData
-        : parseEther("0");
-    if (allowance < amountWei) {
-      txStepRef.current = "approve";
-      sendContractTx({
-        ...UsdtContract,
-        functionName: "approve",
-        args: [entrustContract.address, maxUint256],
+    setIsSubmitting(true);
+    try {
+      await deployStake({
+        planId: selectedStrategy.id,
+        amount: parsedAmount,
       });
-      return;
+      await queryClient.invalidateQueries({
+        queryKey: ["userAssets", walletAddress],
+      });
+      toast.success(t("entrust.deploySuccess"));
+      setAmount("");
+      closeSheet();
+    } catch (error) {
+      toast.error(getErrorMessage(error, opFailed));
+    } finally {
+      setIsSubmitting(false);
     }
-
-    txStepRef.current = "entrust";
-    sendContractTx({
-      ...entrustContract,
-      functionName: "entrustUSDT",
-      args: [amountWei, BigInt(selectedStrategy.periodDays)],
-    });
   };
+
+  if (!open) return null;
+
+  const periodLabel = selectedStrategy
+    ? `${selectedStrategy.period}${t("entrust.periodUnit")}`
+    : "—";
+
+  const displayBalance = userAssetsPending
+    ? t("common.loadingDots")
+    : availableBalance;
 
   const launchButtonLabel = !isWalletConnected
     ? t("entrust.deployConnectWalletFirst")
-    : isTxBusy
-      ? t("entrust.deployTxConfirming")
+    : isSubmitting
+      ? t("earnings.waitingConfirm")
       : t("entrust.start");
 
   return (
@@ -516,7 +396,7 @@ export function DeployAgent({
       className={`${bottomSheetOverlayRoot} z-70`}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="deploy-agent-sheet-title"
+      aria-labelledby="financial-management-sheet-title"
     >
       <div className={bottomSheetOverlayFrame}>
         <button
@@ -525,7 +405,7 @@ export function DeployAgent({
           className={`absolute inset-0 bg-black/50 backdrop-blur-[6px] transition-opacity duration-300 ease-out ${
             entered ? "opacity-100" : "opacity-0"
           }`}
-          onClick={() => closeSheet()}
+          onClick={closeSheet}
         />
         <div
           className={`relative flex max-h-[min(602px,92dvh)] w-full flex-col overflow-hidden rounded-t-[12px] bg-white/90 shadow-[0_-12px_40px_rgba(0,0,0,0.15)] backdrop-blur-[6px] transition-transform duration-300 ease-out ${
@@ -535,7 +415,7 @@ export function DeployAgent({
         >
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3 pt-5">
             <h2
-              id="deploy-agent-sheet-title"
+              id="financial-management-sheet-title"
               className="text-center text-lg font-semibold uppercase leading-normal text-[#333]"
             >
               {t("entrust.deployAgentTitle")}
@@ -543,7 +423,7 @@ export function DeployAgent({
 
             <div className="mt-4 flex items-center gap-[3px]">
               <AppImage
-                src={selectedStrategy.iconSrc}
+                src={selectedStrategy?.iconSrc ?? entrustAssets.strategyTrend}
                 alt=""
                 width={22}
                 height={22}
@@ -555,18 +435,24 @@ export function DeployAgent({
             </div>
 
             <div className="mt-3">
-              <StrategySelect
-                strategies={strategies}
-                value={selectedStrategy}
-                onChange={setSelectedStrategy}
-              />
+              {plansPending || !selectedStrategy ? (
+                <div className="flex h-[50px] items-center justify-center rounded-[8px] bg-white/70 text-sm text-black/50">
+                  {t("common.loading")}
+                </div>
+              ) : (
+                <StrategySelect
+                  strategies={strategies}
+                  value={selectedStrategy}
+                  onChange={setSelectedStrategy}
+                />
+              )}
             </div>
 
             <div className="mt-3 rounded-[8px] bg-white/70 px-4 py-3">
               <div className="flex flex-col gap-4">
                 <SheetRow
                   label={t("entrust.deployAgentLabel")}
-                  value={selectedStrategy.title}
+                  value={selectedStrategy?.title ?? "—"}
                 />
                 <SheetRow
                   label={t("entrust.deployCyclePeriod")}
@@ -574,7 +460,7 @@ export function DeployAgent({
                 />
                 <SheetRow
                   label={t("entrust.deployEstimatedApr")}
-                  value={selectedStrategy.aprEstimate}
+                  value={selectedStrategy?.aprEstimate ?? "—"}
                 />
               </div>
             </div>
@@ -583,11 +469,8 @@ export function DeployAgent({
               {t("entrust.deployCustodyAsset")}
             </p>
             <div className="mt-1.5">
-              <SelectField
-              // onClick={() => toast.success(t("common.notOpen"))}
-              >
+              <SelectField>
                 <span className="flex items-center gap-1.5">
-                  {/* 原生 img，避免 next/image 缓存旧的 BTC 图标 */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={entrustAssets.deployUsdtIcon}
@@ -635,8 +518,11 @@ export function DeployAgent({
           <div className="shrink-0 px-3 pb-[max(env(safe-area-inset-bottom),16px)] pt-2">
             <button
               type="button"
-              onClick={handleLaunch}
-              disabled={isWalletConnected && (usdtBalancePending || isTxBusy)}
+              onClick={() => void handleLaunch()}
+              disabled={
+                isWalletConnected &&
+                (plansPending || userAssetsPending || isSubmitting || !selectedStrategy)
+              }
               className="relative mx-auto flex h-[58px] w-full max-w-[308px] items-center justify-center overflow-hidden rounded-[33px] border border-white px-[10px] shadow-[0_4px_6px_rgba(213,0,0,0.12)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <span

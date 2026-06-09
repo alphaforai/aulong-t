@@ -28,7 +28,6 @@ export function AssetSummaryCard() {
   });
 
   const userAssets = userAssetsResponse?.data;
-  console.log("userAssets", userAssets);
   const totalAssets = userAssets?.totalBalance ?? 0;
   const usdtBalance = userAssets?.usdtBalance ?? 0;
   const xcoinBalance = userAssets?.xCoinBalance ?? 0;

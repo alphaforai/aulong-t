@@ -94,6 +94,7 @@
     "deployInvalidAmount": "Vui lòng nhập số lượng hợp lệ",
     "deployInsufficientBalance": "Số dư không đủ",
     "deployBelowMinAmount": "Số tiền ký quỹ tối thiểu là {min} USDT",
+    "deployWhitelistRequired": "Chưa kích hoạt whitelist, tạm thời không thể thao tác",
     "aiStrategy": {
       "panelTitle": "Chiến lược AI",
       "tabDeploying": "Đang triển khai",
@@ -111,7 +112,8 @@
       "runProgressSuffix": " ngày",
       "redeemAfter": "Sau {time}",
       "redeemable": "Rút được",
-      "redeemSuccess": "Yêu cầu rút đã được gửi"
+      "redeemSuccess": "Yêu cầu rút đã được gửi",
+      "noRecords": "Chưa có bản ghi"
     },
     "aulPrice": "Giá coin AUL",
     "holdAul": "Giá trị AUL nắm giữ",
@@ -203,8 +205,8 @@
   },
   "mine": {
     "totalAssets": "Tổng tài sản (USDT)",
-    "totalEarnings": "Tổng thu nhập (USDT)",
-    "totalRelease": "Tổng phát hành (AUL)",
+    "totalEarnings": "Số dư có thể rút USDT",
+    "totalRelease": "Số dư có thể rút AUL",
     "usdtWithdraw": "Rút USDT",
     "aulWithdraw": "Rút AUL",
     "xWithdraw": "Rút X",
@@ -284,14 +286,16 @@
     "withdrawSuccess": "Yêu cầu rút tiền đã được gửi"
   },
   "earnings": {
-    "totalEarnings": "Tổng thu nhập (USDT)",
+    "totalEarnings": "Tổng thu nhập AI Agent (USDT)",
     "earningsRecord": "Lịch sử thu nhập",
     "claim": "Nhận",
-    "pendingEarnings": "Thu nhập chờ phát",
+    "pendingEarnings": "Thu nhập có thể rút",
     "lastPeriodEarnings": "Thu nhập kỳ trước",
-    "transactionRecord": "Lịch sử giao dịch",
+    "transactionRecord": "Lịch sử vận hành Agent AULONG",
+    "realtime": "Trực tiếp",
     "noTransactions": "Chưa có giao dịch",
     "tradeTime": "Thời gian giao dịch",
+    "waitingConfirm": "Đang chờ xác nhận",
     "investBtn": "Đầu tư",
     "claimBtn": "Nhận",
     "totalEarningsCard": "Tổng (USDT)",

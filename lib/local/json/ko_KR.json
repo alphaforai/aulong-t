@@ -94,6 +94,7 @@
     "deployInvalidAmount": "유효한 수량을 입력하세요",
     "deployInsufficientBalance": "잔액이 부족합니다",
     "deployBelowMinAmount": "최소 예치 금액은 {min} USDT 입니다",
+    "deployWhitelistRequired": "화이트리스트가 활성화되지 않아 작업할 수 없습니다",
     "aiStrategy": {
       "panelTitle": "AI 전략",
       "tabDeploying": "배포 중",
@@ -111,7 +112,8 @@
       "runProgressSuffix": " 일",
       "redeemAfter": "{time} 후",
       "redeemable": "상환 가능",
-      "redeemSuccess": "상환 신청이 완료되었습니다"
+      "redeemSuccess": "상환 신청이 완료되었습니다",
+      "noRecords": "기록이 없습니다"
     },
     "aulPrice": "AUL 코인 가격",
     "holdAul": "보유 AUL 가치",
@@ -203,8 +205,8 @@
   },
   "mine": {
     "totalAssets": "총 자산(USDT)",
-    "totalEarnings": "총 수익(USDT)",
-    "totalRelease": "총 릴리스(AUL)",
+    "totalEarnings": "USDT 출금 가능 잔액",
+    "totalRelease": "AUL 출금 가능 잔액",
     "usdtWithdraw": "USDT 출금",
     "aulWithdraw": "AUL 출금",
     "xWithdraw": "X 출금",
@@ -284,14 +286,16 @@
     "withdrawSuccess": "출금 신청이 완료되었습니다"
   },
   "earnings": {
-    "totalEarnings": "총 수익(USDT)",
+    "totalEarnings": "AI 에이전트 총 수익(USDT)",
     "earningsRecord": "수익 기록",
     "claim": "수령",
-    "pendingEarnings": "지급 대기 수익",
+    "pendingEarnings": "출금 가능 수익",
     "lastPeriodEarnings": "이전 기간 수익",
-    "transactionRecord": "거래 기록",
+    "transactionRecord": "AULONG 에이전트 운행 기록",
+    "realtime": "실시간",
     "noTransactions": "거래 기록 없음",
     "tradeTime": "거래 시간",
+    "waitingConfirm": "확인 대기 중",
     "investBtn": "투자",
     "claimBtn": "수령",
     "totalEarningsCard": "총 수익(USDT)",

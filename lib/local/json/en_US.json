@@ -94,6 +94,7 @@
     "deployInvalidAmount": "Enter a valid amount",
     "deployInsufficientBalance": "Insufficient balance",
     "deployBelowMinAmount": "Minimum amount is {min} USDT",
+    "deployWhitelistRequired": "Whitelist not activated. This action is unavailable.",
     "aiStrategy": {
       "panelTitle": "AI Strategy",
       "tabDeploying": "Deploying",
@@ -111,7 +112,8 @@
       "runProgressSuffix": " d left",
       "redeemAfter": "After {time}",
       "redeemable": "Redeem",
-      "redeemSuccess": "Redemption submitted"
+      "redeemSuccess": "Redemption submitted",
+      "noRecords": "No records yet"
     },
     "aulPrice": "AUL price",
     "holdAul": "Held AUL value",
@@ -203,8 +205,8 @@
   },
   "mine": {
     "totalAssets": "Total assets (USDT)",
-    "totalEarnings": "Total earnings (USDT)",
-    "totalRelease": "Total release (AUL)",
+    "totalEarnings": "USDT withdrawable balance",
+    "totalRelease": "AUL withdrawable balance",
     "usdtWithdraw": "Withdraw USDT",
     "aulWithdraw": "Withdraw AUL",
     "xWithdraw": "Withdraw X",
@@ -284,14 +286,16 @@
     "withdrawSuccess": "Withdrawal submitted"
   },
   "earnings": {
-    "totalEarnings": "Total earnings (USDT)",
+    "totalEarnings": "Total AI Agent Earnings (USDT)",
     "earningsRecord": "Earnings history",
     "claim": "Claim",
-    "pendingEarnings": "Pending earnings",
+    "pendingEarnings": "Withdrawable earnings",
     "lastPeriodEarnings": "Last period earnings",
-    "transactionRecord": "Transaction history",
+    "transactionRecord": "AULONG Agent Operation Records",
+    "realtime": "Live",
     "noTransactions": "No transactions yet",
     "tradeTime": "Trade time",
+    "waitingConfirm": "Waiting for confirmation",
     "investBtn": "Invest",
     "claimBtn": "Claim",
     "totalEarningsCard": "Total (USDT)",

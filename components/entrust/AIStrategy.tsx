@@ -551,6 +551,10 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
                 <p className="py-8 text-center text-sm text-black/50">
                   {t("common.loadingDots")}
                 </p>
+              ) : records.length === 0 ? (
+                <p className="py-8 text-center text-sm text-black/50">
+                  {t("entrust.aiStrategy.noRecords")}
+                </p>
               ) : (
                 records.map((record) => (
                   <StrategyRecordCard

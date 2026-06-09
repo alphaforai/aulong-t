@@ -94,6 +94,7 @@
     "deployInvalidAmount": "请输入有效的托管数量",
     "deployInsufficientBalance": "余额不足",
     "deployBelowMinAmount": "托管金额不能低于 {min} USDT",
+    "deployWhitelistRequired": "未开通白名单，暂无法操作",
     "aiStrategy": {
       "panelTitle": "AI策略",
       "tabDeploying": "部署中",
@@ -111,7 +112,8 @@
       "runProgressSuffix": " 天",
       "redeemAfter": "{time}后",
       "redeemable": "可赎回",
-      "redeemSuccess": "赎回申请成功"
+      "redeemSuccess": "赎回申请成功",
+      "noRecords": "暂无记录"
     },
     "aulPrice": "AUL 币价格",
     "holdAul": "持有 AUL 价值",
@@ -203,8 +205,8 @@
   },
   "mine": {
     "totalAssets": "总资产(USDT)",
-    "totalEarnings": "总收益(USDT)",
-    "totalRelease": "总释放(AUL)",
+    "totalEarnings": "USDT可提余额",
+    "totalRelease": "AUL可提余额",
     "usdtWithdraw": "USDT提取",
     "aulWithdraw": "AUL提取",
     "xWithdraw": "X提取",
@@ -284,14 +286,16 @@
     "withdrawSuccess": "提现申请成功"
   },
   "earnings": {
-    "totalEarnings": "总收益(USDT)",
+    "totalEarnings": "AI智能体总收益(USDT)",
     "earningsRecord": "收益记录",
     "claim": "领取",
-    "pendingEarnings": "待发放收益",
+    "pendingEarnings": "可提收益",
     "lastPeriodEarnings": "上期收益",
-    "transactionRecord": "交易记录",
+    "transactionRecord": "AULONG智能体运行记录",
+    "realtime": "实时",
     "noTransactions": "暂无交易记录",
     "tradeTime": "交易时间",
+    "waitingConfirm": "等待确认中",
     "investBtn": "去理财",
     "claimBtn": "领取",
     "totalEarningsCard": "总收益(USDT)",

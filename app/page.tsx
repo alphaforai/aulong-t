@@ -7,21 +7,55 @@ import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
 import {
   DeployAgent,
-  DEPLOY_STRATEGIES,
   type DeployStrategy,
 } from "@/components/entrust/DeployAgent";
 import { TicketCard } from "@/components/entrust/TicketCard";
 import { ProjectsInfo } from "@/components/entrust/ProjectsInfo";
 import { AIStrategy } from "@/components/entrust/AIStrategy";
 import { AulongPageShell } from "@/components/AulongPageShell";
-import { useTranslation } from "@/lib/hooks/useTranslation";
+import { getStakePlans } from "@/lib/api/users";
+import { useQuery } from "@tanstack/react-query";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { useUserInfoStore } from "@/lib/store";
 import { useReadContract } from "wagmi";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+type StakePlan = {
+  id: number;
+  name: string;
+  planImageUrl: string;
+  planIntro: string;
+  displayApr: string;
+  displayAprMin: number;
+  displayAprMax: number;
+  periodDays: number;
+  dailyRate: number;
+  dailyStakeLimit: number;
+  accountMaxAmount: number;
+  apr: number;
+  status?: number;
+};
+
+function toDeployStrategy(plan: StakePlan): DeployStrategy {
+  const aprEstimate =
+    plan.displayApr ||
+    (plan.displayAprMin != null && plan.displayAprMax != null
+      ? `${plan.displayAprMin}%-${plan.displayAprMax}%`
+      : "");
+
+  return {
+    id: plan.id,
+    iconSrc: plan.planImageUrl || entrustAssets.strategyTrend,
+    title: plan.name || "",
+    description: plan.planIntro || "",
+    apr: plan.apr != null ? String(plan.apr) : "",
+    aprEstimate,
+    period: plan.periodDays != null ? String(plan.periodDays) : "",
+    periodDays: plan.periodDays ?? 0,
+  };
+}
 
 export default function HomePage() {
-  const { t } = useTranslation();
   const [showProjectsInfo, setShowProjectsInfo] = useState(false);
   const [showAIStrategy, setShowAIStrategy] = useState(false);
   const [deployStrategy, setDeployStrategy] = useState<DeployStrategy | null>(
@@ -41,32 +75,35 @@ export default function HomePage() {
     },
   });
 
+  const { data: stakePlansResponse } = useQuery({
+    queryKey: ["stakePlans"],
+    queryFn: () =>
+      getStakePlans({
+        page: 0,
+        limit: undefined,
+        searchCount: false,
+        lastId: undefined,
+        name: undefined,
+        status: 1,
+        planType: 1,
+      }),
+  });
+
+  console.log(stakePlansResponse);
+
+  const strategies = useMemo(() => {
+    const raw = stakePlansResponse?.data;
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .filter((plan) => {
+        const status = (plan as StakePlan).status;
+        return status === undefined || status === 1;
+      })
+      .map((plan) => toDeployStrategy(plan as StakePlan));
+  }, [stakePlansResponse]);
+
   const hasPurchased = Boolean(purchasesData?.[0]);
   const showTicketCard = !hasPurchased;
-
-  const strategies: DeployStrategy[] = (
-    [
-      {
-        id: "trend" as const,
-        iconSrc: entrustAssets.strategyTrend,
-        title: t("entrust.strategyTrendTitle"),
-        description: t("entrust.strategyTrendDesc"),
-      },
-      {
-        id: "arbitrage" as const,
-        iconSrc: entrustAssets.strategyArbitrage,
-        title: t("entrust.strategyArbitrageTitle"),
-        description: t("entrust.strategyArbitrageDesc"),
-      },
-      {
-        id: "hedge" as const,
-        iconSrc: entrustAssets.strategyHedge,
-        iconSize: 34,
-        title: t("entrust.strategyHedgeTitle"),
-        description: t("entrust.strategyHedgeDesc"),
-      },
-    ] satisfies Omit<DeployStrategy, keyof (typeof DEPLOY_STRATEGIES)["trend"]>[]
-  ).map((def) => ({ ...def, ...DEPLOY_STRATEGIES[def.id] }));
 
   return (
     <AulongPageShell panelClassName="bg-white">
@@ -102,6 +139,7 @@ export default function HomePage() {
         strategy={deployStrategy}
         strategies={strategies}
         onClose={() => setDeployStrategy(null)}
+        onDeploySuccess={() => setShowAIStrategy(true)}
       />
 
       <AIStrategy
