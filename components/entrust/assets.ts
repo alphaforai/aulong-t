@@ -8,6 +8,10 @@ export const entrustAssets = {
   rulesArrow: "/assets/entrust/rules-arrow.png",
   btnWhitelist: "/assets/entrust/btn-whitelist.png",
   ticketDeco: "/assets/entrust/ticket-deco.png",
+  announcementIcon: "/assets/entrust/announcement-megaphone.png",
+  announcementWindowFrame: "/assets/entrust/announcement-window-frame.png",
+  announcementWindowFrameOverlay:
+    "/assets/entrust/announcement-window-frame-overlay.png",
   projectBanner: "/assets/entrust/project-banner.png",
   startAiBanner: "/assets/entrust/start-ai-banner.png",
   chartFill: "/assets/entrust/chart-fill.png",

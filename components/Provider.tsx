@@ -9,6 +9,7 @@ import { InviteCodeFromUrlSync } from "@/components/InviteCodeFromUrlSync";
 import { I18nProvider } from "@/components/I18nProvider";
 import { LocaleSync } from "@/components/LocaleSync";
 import { WalletSessionSync } from "@/components/WalletSessionSync";
+import { AnnouncementWindow } from "@/components/entrust/AnnouncementWindow";
 
 export function Provider({ children }: { children: React.ReactNode }) {
   // 初始化函数只在组件首次渲染时执行一次，后续 re-render 继续使用同一个 queryClient，React Query 的缓存和请求状态能稳定保留
@@ -23,6 +24,7 @@ export function Provider({ children }: { children: React.ReactNode }) {
         <WalletSessionSync />
         <I18nProvider>
           <LocaleSync />
+          <AnnouncementWindow />
           {children}
         </I18nProvider>
         <Toaster richColors position="top-center" />

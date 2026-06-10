@@ -1,6 +1,10 @@
 "use client";
 
 import { entrustAssets } from "@/components/entrust/assets";
+import { Announcement } from "@/components/entrust/Announcement";
+import { AnnouncementList } from "@/components/entrust/AnnouncementList";
+import { AnnouncementDetail } from "@/components/entrust/AnnouncementDetail";
+import type { ArticleItem } from "@/components/entrust/announcementTypes";
 import { ProjectBannerCard } from "@/components/entrust/ProjectBannerCard";
 import { StartAiBannerCard } from "@/components/entrust/StartAiBannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
@@ -58,6 +62,10 @@ function toDeployStrategy(plan: StakePlan): DeployStrategy {
 export default function HomePage() {
   const [showProjectsInfo, setShowProjectsInfo] = useState(false);
   const [showAIStrategy, setShowAIStrategy] = useState(false);
+  const [showAnnouncementList, setShowAnnouncementList] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(
+    null,
+  );
   const [deployStrategy, setDeployStrategy] = useState<DeployStrategy | null>(
     null,
   );
@@ -89,7 +97,6 @@ export default function HomePage() {
       }),
   });
 
-  console.log(stakePlansResponse);
 
   const strategies = useMemo(() => {
     const raw = stakePlansResponse?.data;
@@ -108,6 +115,8 @@ export default function HomePage() {
   return (
     <AulongPageShell panelClassName="bg-white">
       {showTicketCard && <TicketCard />}
+
+      <Announcement onClick={() => setShowAnnouncementList(true)} />
 
       <ProjectBannerCard
         onClick={() => {
@@ -150,6 +159,21 @@ export default function HomePage() {
       <ProjectsInfo
         open={showProjectsInfo}
         onClose={() => setShowProjectsInfo(false)}
+      />
+
+      <AnnouncementList
+        open={showAnnouncementList}
+        onClose={() => {
+          setShowAnnouncementList(false);
+          setSelectedArticle(null);
+        }}
+        onSelectArticle={setSelectedArticle}
+      />
+
+      <AnnouncementDetail
+        open={selectedArticle !== null}
+        article={selectedArticle}
+        onClose={() => setSelectedArticle(null)}
       />
     </AulongPageShell>
   );
