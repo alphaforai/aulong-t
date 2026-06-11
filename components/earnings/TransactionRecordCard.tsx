@@ -229,24 +229,28 @@ function TransactionRow({
       type="button"
       onClick={handleOpenExplorer}
       disabled={!explorerUrl}
-      className="flex w-full shrink-0 flex-col gap-2 py-3 text-left transition-opacity disabled:cursor-default active:opacity-70"
+      className="block w-full shrink-0 appearance-none border-0 bg-transparent py-3 text-left transition-opacity disabled:cursor-default active:opacity-70"
     >
-      <div className="flex items-start justify-between">
-        <p className="text-xs leading-5 tracking-[0.1px] text-black">
+      <div className="flex w-full items-start justify-between">
+        <p className="min-w-0 flex-1 truncate pr-2 text-xs leading-5 tracking-[0.1px] text-black">
           {shortAddress(fullAddress)}
         </p>
-        <span className="text-xs leading-5 text-black">{tradeTimeLabel}</span>
+        <span className="shrink-0 whitespace-nowrap text-xs leading-5 text-black">
+          {tradeTimeLabel}
+        </span>
       </div>
-      <div className="flex items-end justify-between">
-        <div className="flex items-end gap-1.5">
-          <span className="font-mulish text-lg font-semibold leading-none text-[#138144]">
+      <div className="mt-2 flex w-full items-end justify-between">
+        <div className="flex min-w-0 flex-1 items-end pr-2">
+          <span className="shrink-0 font-mulish text-lg font-semibold leading-none text-[#138144]">
             {amount}
           </span>
-          <span className="pb-px text-xs leading-none text-black/70">
+          <span className="ml-1.5 shrink-0 pb-px text-xs leading-none text-black/70">
             {currency}
           </span>
         </div>
-        <span className="text-xs leading-none text-black/70">{time}</span>
+        <span className="shrink-0 whitespace-nowrap text-xs leading-none text-black/70">
+          {time}
+        </span>
       </div>
     </button>
   );
