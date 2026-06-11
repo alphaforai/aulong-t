@@ -18,7 +18,19 @@ import { UsdtContract } from "@/lib/abis/usdt";
 import { entrustContract } from "@/lib/abis/entrust";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { formatEther, maxUint256, parseEther } from "viem";
+import { getStakeDeployInvestPreview } from "@/lib/api/users";
 import { toast } from "sonner";
+
+type StakeInvestPreview = {
+  planId?: number;
+  periodDays?: number;
+  minAmount?: number;
+  maxAmount?: number;
+  dailyStakeLimit?: number;
+  accountMaxAmount?: number;
+};
+
+type AmountLimitError = "belowMin" | "aboveMax" | "dailyLimit" | "accountMax";
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
@@ -26,6 +38,110 @@ function getErrorMessage(error: unknown, fallback: string) {
     return e.shortMessage || e.message || fallback;
   }
   return fallback;
+}
+
+function formatUsdtLimit(value: unknown) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return "0";
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+}
+
+function parseAmountInput(trimmed: string): number | null {
+  if (!trimmed || !/^\d+(\.\d+)?$/.test(trimmed)) return null;
+  const num = Number(trimmed);
+  if (!Number.isFinite(num) || num <= 0) return null;
+  return num;
+}
+
+function normalizePreview(raw: unknown): StakeInvestPreview | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  return raw as StakeInvestPreview;
+}
+
+function getAmountLimitError(
+  amount: number,
+  preview: StakeInvestPreview | undefined,
+): AmountLimitError | null {
+  if (!preview) return null;
+
+  const minAmount = Number(preview.minAmount ?? 0);
+  const maxAmount = Number(preview.maxAmount ?? 0);
+  const dailyStakeLimit = Number(preview.dailyStakeLimit ?? 0);
+  const accountMaxAmount = Number(preview.accountMaxAmount ?? 0);
+
+  if (minAmount > 0 && amount < minAmount) return "belowMin";
+  if (maxAmount > 0 && amount > maxAmount) return "aboveMax";
+  if (dailyStakeLimit > 0 && amount > dailyStakeLimit) return "dailyLimit";
+  if (accountMaxAmount > 0 && amount > accountMaxAmount) return "accountMax";
+  return null;
+}
+
+function getAmountLimitMessage(
+  error: AmountLimitError,
+  preview: StakeInvestPreview,
+  t: (key: string, params?: Record<string, string | number>) => string,
+) {
+  switch (error) {
+    case "belowMin":
+      return t("entrust.deployBelowMinAmount", {
+        min: formatUsdtLimit(preview.minAmount),
+      });
+    case "aboveMax":
+      return t("entrust.deployAboveMaxAmount", {
+        max: formatUsdtLimit(preview.maxAmount),
+      });
+    case "dailyLimit":
+      return t("entrust.deployDailyStakeLimitExceeded", {
+        limit: formatUsdtLimit(preview.dailyStakeLimit),
+      });
+    case "accountMax":
+      return t("entrust.deployAccountMaxAmountExceeded", {
+        limit: formatUsdtLimit(preview.accountMaxAmount),
+      });
+  }
+}
+
+async function validateInvestPreview(
+  periodDays: number,
+  amount: number,
+  t: (key: string, params?: Record<string, string | number>) => string,
+  fallback: string,
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  try {
+    const previewResponse = await getStakeDeployInvestPreview({
+      periodDays,
+      amount,
+    });
+    const preview = normalizePreview(previewResponse?.data);
+    if (!preview) {
+      return { ok: false, message: fallback };
+    }
+
+    const limitError = getAmountLimitError(amount, preview);
+    if (limitError) {
+      return {
+        ok: false,
+        message: getAmountLimitMessage(limitError, preview, t),
+      };
+    }
+    return { ok: true };
+  } catch (error) {
+    const preview =
+      error && typeof error === "object" && "data" in error
+        ? normalizePreview((error as { data?: unknown }).data)
+        : undefined;
+    const limitError = getAmountLimitError(amount, preview);
+    if (limitError && preview) {
+      return {
+        ok: false,
+        message: getAmountLimitMessage(limitError, preview, t),
+      };
+    }
+    return { ok: false, message: getErrorMessage(error, fallback) };
+  }
 }
 
 type EntrustTxStep = "idle" | "approve" | "entrust";
@@ -231,6 +347,7 @@ export function DeployAgent({
   const [entered, setEntered] = React.useState(false);
   const [amount, setAmount] = React.useState("");
   const [isDeployTxActive, setIsDeployTxActive] = React.useState(false);
+  const [isPreviewValidating, setIsPreviewValidating] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<DeployStrategy | null>(null);
   const txStepRef = React.useRef<EntrustTxStep>("idle");
@@ -286,12 +403,6 @@ export function DeployAgent({
       query: { enabled: readEnabled && Boolean(entrustContract.address) },
     });
 
-  const { data: minEntrustAmountData } = useReadContract({
-    ...entrustContract,
-    functionName: "minEntrustAmount",
-    query: { enabled: readEnabled },
-  });
-
   const { data: purchasesData, isPending: purchasesPending } = useReadContract({
     ...TicketSalesContract,
     functionName: "purchases",
@@ -339,6 +450,7 @@ export function DeployAgent({
       setEntered(false);
       setAmount("");
       setSelectedStrategy(null);
+      setIsPreviewValidating(false);
       finishDeployTx();
       processedTxHashRef.current = undefined;
       return;
@@ -428,7 +540,7 @@ export function DeployAgent({
     setAmount(availableBalance);
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async () => {
     if (!isWalletConnected) {
       toast.success(t("entrust.deployConnectWalletFirst"));
       return;
@@ -438,10 +550,19 @@ export function DeployAgent({
       toast.error(t("entrust.deployWhitelistRequired"));
       return;
     }
-    if (usdtBalancePending || usdtAllowancePending || isTxBusy) return;
+    if (
+      usdtBalancePending ||
+      usdtAllowancePending ||
+      isTxBusy ||
+      isPreviewValidating
+    ) {
+      return;
+    }
+    if (!selectedStrategy) return;
 
     const trimmed = amount.trim();
-    if (!trimmed || !/^\d+(\.\d+)?$/.test(trimmed)) {
+    const parsedLaunchAmount = parseAmountInput(trimmed);
+    if (parsedLaunchAmount == null) {
       toast.error(t("entrust.deployInvalidAmount"));
       return;
     }
@@ -454,27 +575,23 @@ export function DeployAgent({
       return;
     }
 
-    if (amountWei <= parseEther("0")) {
-      toast.error(t("entrust.deployInvalidAmount"));
-      return;
-    }
-
-    if (
-      typeof minEntrustAmountData === "bigint" &&
-      amountWei < minEntrustAmountData
-    ) {
-      toast.error(
-        t("entrust.deployBelowMinAmount", {
-          min: formatEther(minEntrustAmountData),
-        }),
-      );
-      return;
-    }
-
     const balanceWei =
       typeof usdtBalanceData === "bigint" ? usdtBalanceData : undefined;
     if (balanceWei != null && amountWei > balanceWei) {
       toast.error(t("entrust.deployInsufficientBalance"));
+      return;
+    }
+
+    setIsPreviewValidating(true);
+    const previewValidation = await validateInvestPreview(
+      selectedStrategy.periodDays,
+      parsedLaunchAmount,
+      t,
+      opFailed,
+    );
+    setIsPreviewValidating(false);
+    if (!previewValidation.ok) {
+      toast.error(previewValidation.message);
       return;
     }
 
@@ -509,7 +626,9 @@ export function DeployAgent({
     ? t("entrust.deployConnectWalletFirst")
     : isTxBusy
       ? t("entrust.deployTxConfirming")
-      : t("entrust.start");
+      : isPreviewValidating
+        ? t("common.loadingDots")
+        : t("entrust.start");
 
   return (
     <div
@@ -635,8 +754,11 @@ export function DeployAgent({
           <div className="shrink-0 px-3 pb-[max(env(safe-area-inset-bottom),16px)] pt-2">
             <button
               type="button"
-              onClick={handleLaunch}
-              disabled={isWalletConnected && (usdtBalancePending || isTxBusy)}
+              onClick={() => void handleLaunch()}
+              disabled={
+                isWalletConnected &&
+                (usdtBalancePending || isTxBusy || isPreviewValidating)
+              }
               className="relative mx-auto flex h-[58px] w-full max-w-[308px] items-center justify-center overflow-hidden rounded-[33px] border border-white px-[10px] shadow-[0_4px_6px_rgba(213,0,0,0.12)] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <span

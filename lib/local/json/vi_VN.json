@@ -97,6 +97,9 @@
     "deployInvalidAmount": "Vui lòng nhập số lượng hợp lệ",
     "deployInsufficientBalance": "Số dư không đủ",
     "deployBelowMinAmount": "Số tiền ký quỹ tối thiểu là {min} USDT",
+    "deployAboveMaxAmount": "Số tiền ký quỹ tối đa là {max} USDT",
+    "deployDailyStakeLimitExceeded": "Vượt hạn mức triển khai trong ngày {limit} USDT",
+    "deployAccountMaxAmountExceeded": "Vượt giới hạn tài khoản {limit} USDT",
     "deployWhitelistRequired": "Chưa kích hoạt whitelist, tạm thời không thể thao tác",
     "aiStrategy": {
       "panelTitle": "Chiến lược AI",

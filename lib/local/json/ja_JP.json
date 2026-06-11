@@ -97,6 +97,9 @@
     "deployInvalidAmount": "有効な数量を入力してください",
     "deployInsufficientBalance": "残高が不足しています",
     "deployBelowMinAmount": "預託数量は {min} USDT 以上必要です",
+    "deployAboveMaxAmount": "預託数量は {max} USDT 以下にしてください",
+    "deployDailyStakeLimitExceeded": "1日のデプロイ上限 {limit} USDT を超えています",
+    "deployAccountMaxAmountExceeded": "アカウント上限 {limit} USDT を超えています",
     "deployWhitelistRequired": "ホワイトリストが有効化されていないため、操作できません",
     "aiStrategy": {
       "panelTitle": "AI戦略",

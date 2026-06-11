@@ -9,7 +9,17 @@ import {
 } from "@/lib/mobileShell";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useUserInfoStore } from "@/lib/store";
-import { deployStake, getStakePlans, getUserAssets } from "@/lib/api/users";
+import {
+  deployStake,
+  getStakeDeployMinePreview,
+  getStakePlans,
+  getUserAssets,
+} from "@/lib/api/users";
+import {
+  parseAmountInput,
+  toPlanLimits,
+  validateMineStakePreview,
+} from "@/lib/stakeAmountValidation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -30,6 +40,10 @@ type StakePlan = {
   displayAprMin: number;
   displayAprMax: number;
   periodDays: number;
+  minAmount?: number;
+  maxAmount?: number;
+  dailyStakeLimit?: number;
+  accountMaxAmount?: number;
   apr: number;
   status?: number;
   planType?: number;
@@ -45,6 +59,10 @@ export type DeployStrategy = {
   aprEstimate: string;
   period: string;
   periodDays: number;
+  minAmount?: number;
+  maxAmount?: number;
+  dailyStakeLimit?: number;
+  accountMaxAmount?: number;
 };
 
 export type FinancialManagementProps = {
@@ -70,6 +88,10 @@ function toDeployStrategy(plan: StakePlan): DeployStrategy {
     aprEstimate,
     period: plan.periodDays != null ? String(plan.periodDays) : "",
     periodDays: plan.periodDays ?? 0,
+    minAmount: plan.minAmount ?? 0,
+    maxAmount: plan.maxAmount ?? 0,
+    dailyStakeLimit: plan.dailyStakeLimit ?? 0,
+    accountMaxAmount: plan.accountMaxAmount ?? 0,
   };
 }
 
@@ -233,6 +255,7 @@ export function FinancialManagement({
   const [entered, setEntered] = React.useState(false);
   const [amount, setAmount] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isPreviewValidating, setIsPreviewValidating] = React.useState(false);
   const [selectedStrategy, setSelectedStrategy] =
     React.useState<DeployStrategy | null>(null);
 
@@ -305,6 +328,7 @@ export function FinancialManagement({
       setAmount("");
       setSelectedStrategy(null);
       setIsSubmitting(false);
+      setIsPreviewValidating(false);
       return;
     }
     const frame = requestAnimationFrame(() => {
@@ -334,18 +358,19 @@ export function FinancialManagement({
       toast.success(t("entrust.deployConnectWalletFirst"));
       return;
     }
-    if (plansPending || userAssetsPending || isSubmitting || !selectedStrategy) {
+    if (
+      plansPending ||
+      userAssetsPending ||
+      isSubmitting ||
+      isPreviewValidating ||
+      !selectedStrategy
+    ) {
       return;
     }
 
     const trimmed = amount.trim();
-    if (!trimmed || !/^\d+(\.\d+)?$/.test(trimmed)) {
-      toast.error(t("entrust.deployInvalidAmount"));
-      return;
-    }
-
-    const parsedAmount = Number(trimmed);
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+    const parsedAmount = parseAmountInput(trimmed);
+    if (parsedAmount == null) {
       toast.error(t("entrust.deployInvalidAmount"));
       return;
     }
@@ -353,6 +378,21 @@ export function FinancialManagement({
     const balance = Number(userAssetsResponse?.data?.usdtBalance ?? 0);
     if (Number.isFinite(balance) && parsedAmount > balance) {
       toast.error(t("entrust.deployInsufficientBalance"));
+      return;
+    }
+
+    setIsPreviewValidating(true);
+    const previewValidation = await validateMineStakePreview(
+      selectedStrategy.id,
+      parsedAmount,
+      toPlanLimits(selectedStrategy),
+      t,
+      opFailed,
+      getStakeDeployMinePreview,
+    );
+    setIsPreviewValidating(false);
+    if (!previewValidation.ok) {
+      toast.error(previewValidation.message);
       return;
     }
 
@@ -389,7 +429,9 @@ export function FinancialManagement({
     ? t("entrust.deployConnectWalletFirst")
     : isSubmitting
       ? t("earnings.waitingConfirm")
-      : t("entrust.start");
+      : isPreviewValidating
+        ? t("common.loadingDots")
+        : t("entrust.start");
 
   return (
     <div
@@ -521,7 +563,11 @@ export function FinancialManagement({
               onClick={() => void handleLaunch()}
               disabled={
                 isWalletConnected &&
-                (plansPending || userAssetsPending || isSubmitting || !selectedStrategy)
+                (plansPending ||
+                  userAssetsPending ||
+                  isSubmitting ||
+                  isPreviewValidating ||
+                  !selectedStrategy)
               }
               className="relative mx-auto flex h-[58px] w-full max-w-[308px] items-center justify-center overflow-hidden rounded-[33px] border border-white px-[10px] shadow-[0_4px_6px_rgba(213,0,0,0.12)] disabled:cursor-not-allowed disabled:opacity-60"
             >

@@ -97,6 +97,9 @@
     "deployInvalidAmount": "Enter a valid amount",
     "deployInsufficientBalance": "Insufficient balance",
     "deployBelowMinAmount": "Minimum amount is {min} USDT",
+    "deployAboveMaxAmount": "Maximum amount is {max} USDT",
+    "deployDailyStakeLimitExceeded": "Exceeds daily deployment limit of {limit} USDT",
+    "deployAccountMaxAmountExceeded": "Exceeds account cap of {limit} USDT",
     "deployWhitelistRequired": "Whitelist not activated. This action is unavailable.",
     "aiStrategy": {
       "panelTitle": "AI Strategy",

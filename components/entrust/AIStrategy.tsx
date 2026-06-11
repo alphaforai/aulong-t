@@ -431,7 +431,7 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
       const status = stake.status as StakeStatus;
       if (status === 1 || status === 3) {
         deploying.push(card);
-      } else if (status === 2) {
+      } else if (status === 2 || status === 4) {
         history.push(card);
       }
     }

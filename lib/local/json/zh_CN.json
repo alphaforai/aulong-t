@@ -97,6 +97,9 @@
     "deployInvalidAmount": "请输入有效的托管数量",
     "deployInsufficientBalance": "余额不足",
     "deployBelowMinAmount": "托管金额不能低于 {min} USDT",
+    "deployAboveMaxAmount": "托管金额不能超过 {max} USDT",
+    "deployDailyStakeLimitExceeded": "超过单日部署额度 {limit} USDT",
+    "deployAccountMaxAmountExceeded": "超过单账户封顶 {limit} USDT",
     "deployWhitelistRequired": "未开通白名单，暂无法操作",
     "aiStrategy": {
       "panelTitle": "AI策略",

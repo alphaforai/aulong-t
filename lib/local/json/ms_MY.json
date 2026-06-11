@@ -97,6 +97,9 @@
     "deployInvalidAmount": "Sila masukkan jumlah yang sah",
     "deployInsufficientBalance": "Baki tidak mencukupi",
     "deployBelowMinAmount": "Jumlah minimum ialah {min} USDT",
+    "deployAboveMaxAmount": "Jumlah maksimum ialah {max} USDT",
+    "deployDailyStakeLimitExceeded": "Melebihi had penempatan harian {limit} USDT",
+    "deployAccountMaxAmountExceeded": "Melebihi had akaun {limit} USDT",
     "deployWhitelistRequired": "Whitelist belum diaktifkan, operasi tidak tersedia buat masa ini",
     "aiStrategy": {
       "panelTitle": "Strategi AI",

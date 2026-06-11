@@ -97,6 +97,9 @@
     "deployInvalidAmount": "유효한 수량을 입력하세요",
     "deployInsufficientBalance": "잔액이 부족합니다",
     "deployBelowMinAmount": "최소 예치 금액은 {min} USDT 입니다",
+    "deployAboveMaxAmount": "최대 예치 금액은 {max} USDT 입니다",
+    "deployDailyStakeLimitExceeded": "일일 배포 한도 {limit} USDT를 초과했습니다",
+    "deployAccountMaxAmountExceeded": "계정 상한 {limit} USDT를 초과했습니다",
     "deployWhitelistRequired": "화이트리스트가 활성화되지 않아 작업할 수 없습니다",
     "aiStrategy": {
       "panelTitle": "AI 전략",

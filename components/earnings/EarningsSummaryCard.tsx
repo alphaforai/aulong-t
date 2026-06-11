@@ -54,8 +54,17 @@ export function EarningsSummaryCard() {
     ? t("common.loadingDots")
     : formatIncome(totalIncomeUsdt);
 
-    
- 
+  const usdtBalance = userAssetsResponse?.data?.usdtBalance ?? 0;
+  const usdtBalanceLabel = userAssetsPending
+    ? t("common.loadingDots")
+    : formatIncome(usdtBalance);
+
+  const xcoinReleasedBalance =
+    userAssetsResponse?.data?.xCoinReleasedBalance ?? 0;
+  const xcoinReleasedBalanceLabel = userAssetsPending
+    ? t("common.loadingDots")
+    : formatIncome(xcoinReleasedBalance);
+
 
   return (
     <>
@@ -112,7 +121,11 @@ export function EarningsSummaryCard() {
 
       {/* 底部统计 — 稿 top 94px, gap 11px */}
       <div className="absolute left-[9px] top-[94px] z-10 flex w-[calc(100%-18px)] items-center gap-[11px]">
-        <StatBlock label={copy.pending} compact={COMPACT_STAT_LOCALES.includes(locale)} />
+        <StatBlock
+          label={copy.pending}
+          value={usdtBalanceLabel}
+          compact={COMPACT_STAT_LOCALES.includes(locale)}
+        />
         <div className="flex h-9 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">
             <AppImage
@@ -126,6 +139,7 @@ export function EarningsSummaryCard() {
         </div>
         <StatBlock
           label={copy.lastPeriod}
+          value={xcoinReleasedBalanceLabel}
           withTrailingSpace
           compact={COMPACT_STAT_LOCALES.includes(locale)}
         />
@@ -197,10 +211,12 @@ function SummaryBackground() {
 
 function StatBlock({
   label,
+  value,
   withTrailingSpace = false,
   compact = false,
 }: {
   label: string;
+  value: string;
   withTrailingSpace?: boolean;
   compact?: boolean;
 }) {
@@ -209,14 +225,14 @@ function StatBlock({
       <p className="text-sm leading-normal text-black/70">{label}</p>
       <p className="text-black leading-none">
         <span className="font-mulish text-base font-bold leading-normal">
-          0.00
+          {value}
         </span>
         {withTrailingSpace ? (
           <span className="font-mulish text-sm font-bold leading-normal">
             {" "}
           </span>
         ) : null}
-        <span className="text-[10px] leading-normal">USDT</span>
+        <span className="text-[10px] leading-normal"> USDT</span>
       </p>
     </div>
   );
