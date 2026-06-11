@@ -447,7 +447,7 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
               <FieldBlock label={t("mine.withdrawCurrency")}>
                 <button
                   type="button"
-                  onClick={() => toast.success(t("common.notOpen"))}
+                //   onClick={() => toast.success(t("common.notOpen"))}
                   className="flex h-12 w-full items-center justify-start rounded-[6px] bg-[#eff0f1] px-[11px] py-1"
                 >
                   <span className="flex items-center gap-1.5">

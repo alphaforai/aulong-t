@@ -3,7 +3,6 @@
 import React from "react";
 import AulongHeader from "@/components/AulongHeader";
 import { AppImage } from "@/components/AppImage";
-import { entrustAssets } from "./assets";
 import { teamAssets } from "@/components/team/assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import {
@@ -13,6 +12,7 @@ import {
 import { withImageUrlPrefix } from "@/lib/imageUrl";
 import type { ArticleItem } from "./announcementTypes";
 import {
+  ARTICLE_PLAIN_TEXT_CLASS,
   ARTICLE_RICH_TEXT_CLASS,
   getArticleBodyContent,
 } from "./announcementRichText";
@@ -75,8 +75,7 @@ export function AnnouncementDetail({
 
   if (!open || !article) return null;
 
-  const coverSrc =
-    withImageUrlPrefix(article.picUrl) || entrustAssets.strategyTrend;
+  const coverSrc = withImageUrlPrefix(article.picUrl);
 
   return (
     <div
@@ -124,17 +123,23 @@ export function AnnouncementDetail({
             </header>
 
             <div className="relative z-10 min-h-0 flex-1 overflow-y-auto bg-[#f8f8f8] px-3 pb-[max(env(safe-area-inset-bottom),16px)] pt-2">
-              <div className="relative aspect-[351/197] w-full overflow-hidden rounded-[7px]">
-                <AppImage
-                  src={coverSrc}
-                  alt=""
-                  width={351}
-                  height={197}
-                  className="size-full object-cover"
-                />
-              </div>
+              {coverSrc ? (
+                <div className="relative aspect-[351/197] w-full overflow-hidden rounded-[7px]">
+                  <AppImage
+                    src={coverSrc}
+                    alt=""
+                    width={351}
+                    height={197}
+                    className="size-full object-cover"
+                  />
+                </div>
+              ) : null}
 
-              <h2 className="mt-4 text-base font-semibold leading-normal text-[#161616]">
+              <h2
+                className={`break-words text-base font-semibold leading-normal text-[#161616] [overflow-wrap:anywhere] ${
+                  coverSrc ? "mt-4" : ""
+                }`}
+              >
                 {article.title || "—"}
               </h2>
 
@@ -148,7 +153,7 @@ export function AnnouncementDetail({
                   dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
                 />
               ) : plainBody ? (
-                <div className="mt-4 whitespace-pre-wrap text-sm leading-normal text-black">
+                <div className={`${ARTICLE_PLAIN_TEXT_CLASS} mt-4`}>
                   {plainBody}
                 </div>
               ) : null}

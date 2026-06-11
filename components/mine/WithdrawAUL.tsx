@@ -201,13 +201,13 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
             >
               {t("mine.withdrawPanelTitle")}
             </h1>
-            <button
+            {/* <button
               type="button"
               onClick={() => toast.success(t("common.notOpen"))}
               className="absolute right-3 text-sm leading-[26px] text-[#272727]"
             >
               {t("mine.withdrawRules")}
-            </button>
+            </button> */}
           </header>
 
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-[max(env(safe-area-inset-bottom),24px)] pt-4">

@@ -4,7 +4,6 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import AulongHeader from "@/components/AulongHeader";
 import { AppImage } from "@/components/AppImage";
-import { entrustAssets } from "./assets";
 import { teamAssets } from "@/components/team/assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { getArticleList } from "@/lib/api/users";
@@ -40,8 +39,7 @@ function AnnouncementListItem({
   article: ArticleItem;
   onClick: () => void;
 }) {
-  const coverSrc =
-    withImageUrlPrefix(article.picUrl) || entrustAssets.strategyTrend;
+  const coverSrc = withImageUrlPrefix(article.picUrl);
 
   return (
     <button
@@ -49,16 +47,22 @@ function AnnouncementListItem({
       onClick={onClick}
       className="flex w-full gap-[5px] text-left"
     >
-      <div className="relative h-[70px] w-[126px] shrink-0 overflow-hidden rounded-[7px]">
-        <AppImage
-          src={coverSrc}
-          alt=""
-          width={126}
-          height={70}
-          className="size-full object-cover"
-        />
-      </div>
-      <div className="flex h-[70px] min-w-0 flex-1 flex-col justify-between pt-[5px]">
+      {coverSrc ? (
+        <div className="relative h-[70px] w-[126px] shrink-0 overflow-hidden rounded-[7px]">
+          <AppImage
+            src={coverSrc}
+            alt=""
+            width={126}
+            height={70}
+            className="size-full object-cover"
+          />
+        </div>
+      ) : null}
+      <div
+        className={`flex min-w-0 flex-1 flex-col justify-between ${
+          coverSrc ? "h-[70px] pt-[5px]" : "py-1"
+        }`}
+      >
         <p className="line-clamp-2 text-sm font-medium leading-normal text-[#212a34]">
           {article.title || "—"}
         </p>
@@ -75,11 +79,11 @@ export function AnnouncementList({
   onClose,
   onSelectArticle,
 }: AnnouncementListProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [entered, setEntered] = React.useState(false);
 
   const { data: articleListResponse, isPending, isError } = useQuery({
-    queryKey: ["articleList", "announcement"],
+    queryKey: ["articleList", "announcement", locale],
     queryFn: () =>
       getArticleList({
         page: 0,

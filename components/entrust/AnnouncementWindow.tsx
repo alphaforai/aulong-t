@@ -10,6 +10,7 @@ import { useAuthStore, useUserInfoStore } from "@/lib/store";
 import { shellMaxWidth, shellMdPaddingY } from "@/lib/mobileShell";
 import type { ArticleItem } from "./announcementTypes";
 import {
+  ARTICLE_PLAIN_TEXT_CLASS,
   ARTICLE_RICH_TEXT_CLASS,
   getArticleBodyContent,
 } from "./announcementRichText";
@@ -63,7 +64,7 @@ function AnnouncementWindowBody({ article }: { article: ArticleItem }) {
           dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
       ) : plainBody ? (
-        <div className="mt-3 whitespace-pre-wrap text-sm leading-normal text-black">
+        <div className={`${ARTICLE_PLAIN_TEXT_CLASS} mt-3`}>
           {plainBody}
         </div>
       ) : null}
@@ -72,7 +73,7 @@ function AnnouncementWindowBody({ article }: { article: ArticleItem }) {
 }
 
 export function AnnouncementWindow() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const accessToken = useAuthStore((state) => state.accessToken);
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
@@ -86,7 +87,7 @@ export function AnnouncementWindow() {
   const contentScrollRef = React.useRef<HTMLDivElement>(null);
 
   const { data: articleListResponse, isSuccess } = useQuery({
-    queryKey: ["articleList", "announcement", "top"],
+    queryKey: ["articleList", "announcement", "top", locale],
     queryFn: () =>
       getArticleList({
         page: 0,

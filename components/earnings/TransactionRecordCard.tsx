@@ -4,13 +4,15 @@ import React, { Fragment } from "react";
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { earningsAssets } from "./assets";
-import { mineAssets } from "@/components/mine/assets";
+// import { mineAssets } from "@/components/mine/assets";
 import { getSolanablockinfoPage } from "@/lib/api/users";
 import { useQuery } from "@tanstack/react-query";
 import { formatAmount } from "@/components/team/format";
 
 const PAGE_SIZE = 7;
-const TX_CURRENCY = "SOL";
+const TX_POLL_INTERVAL_MS = 2000;
+const TX_CURRENCY = "USDT";
+const SOLANA_EXPLORER_ADDRESS_BASE = "https://explorer.solana.com/address/";
 
 type SolanaBlockItem = {
   id?: number;
@@ -51,47 +53,48 @@ function formatBlockTime(value?: string | null) {
 export function TransactionRecordCard() {
   const { t } = useTranslation();
   const listScrollRef = React.useRef<HTMLDivElement>(null);
-  const [page, setPage] = React.useState(0);
+  // const [page, setPage] = React.useState(0);
 
   const {
     data: txResponse,
     isPending,
-    isFetching,
     isError,
   } = useQuery({
-    queryKey: ["solanaBlockInfoPage", page],
+    queryKey: ["solanaBlockInfoPage"],
     queryFn: () =>
       getSolanablockinfoPage({
-        page,
+        page: 0,
         limit: PAGE_SIZE,
-        searchCount: true,
+        searchCount: false,
         lastId: undefined,
         slot: undefined,
         blockHash: undefined,
         leader: undefined,
       }),
+    refetchInterval: TX_POLL_INTERVAL_MS,
+    refetchOnWindowFocus: false,
   });
 
   const rawList = (
     txResponse?.data as { list?: SolanaBlockItem[]; total?: number } | undefined
   )?.list;
-  const records = Array.isArray(rawList) ? rawList : [];
-  const totalRaw = Number(
-    (txResponse?.data as { total?: number } | undefined)?.total,
-  );
-  const totalSafe = Number.isFinite(totalRaw)
-    ? Math.max(0, Math.trunc(totalRaw))
-    : 0;
-  const totalPages = totalSafe === 0 ? 1 : Math.ceil(totalSafe / PAGE_SIZE);
-  const canPrev = page > 0;
-  const canNext = totalSafe > 0 && page + 1 < totalPages;
-  const listPending = isPending || isFetching;
+  const records = Array.isArray(rawList) ? rawList.slice(0, PAGE_SIZE) : [];
+  // const totalRaw = Number(
+  //   (txResponse?.data as { total?: number } | undefined)?.total,
+  // );
+  // const totalSafe = Number.isFinite(totalRaw)
+  //   ? Math.max(0, Math.trunc(totalRaw))
+  //   : 0;
+  // const totalPages = totalSafe === 0 ? 1 : Math.ceil(totalSafe / PAGE_SIZE);
+  // const canPrev = page > 0;
+  // const canNext = totalSafe > 0 && page + 1 < totalPages;
+  const isInitialLoading = isPending && !txResponse;
   const hasRecords = records.length > 0;
 
-  const goToPage = React.useCallback((nextPage: number) => {
-    setPage(Math.max(0, nextPage));
-    listScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  // const goToPage = React.useCallback((nextPage: number) => {
+  //   setPage(Math.max(0, nextPage));
+  //   listScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  // }, []);
 
   return (
     <section className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
@@ -128,11 +131,9 @@ export function TransactionRecordCard() {
 
       <div
         ref={listScrollRef}
-        className={`flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity ${
-          listPending && !isPending ? "opacity-70" : "opacity-100"
-        }`}
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto"
       >
-        {listPending && !hasRecords ? (
+        {isInitialLoading ? (
           <div className="flex flex-1 items-center justify-center py-12 text-sm text-black/50">
             {t("common.loading")}
           </div>
@@ -148,7 +149,7 @@ export function TransactionRecordCard() {
           records.map((record, index) => (
             <Fragment key={record.id ?? `${record.blockHash}-${index}`}>
               <TransactionRow
-                address={shortAddress(record.leader || record.blockHash)}
+                address={record.leader || record.blockHash}
                 amount={`+${formatAmount(record.relatedTotalReward)}`}
                 currency={TX_CURRENCY}
                 time={formatBlockTime(record.blockTimeAt || record.createdAt)}
@@ -160,7 +161,7 @@ export function TransactionRecordCard() {
         )}
       </div>
 
-      {totalSafe > PAGE_SIZE ? (
+      {/* {totalSafe > PAGE_SIZE ? (
         <TransactionPagination
           page={page}
           totalPages={totalPages}
@@ -172,7 +173,7 @@ export function TransactionRecordCard() {
           onPageChange={goToPage}
           t={t}
         />
-      ) : null}
+      ) : null} */}
     </section>
   );
 }
@@ -198,17 +199,32 @@ function TransactionRow({
   time,
   tradeTimeLabel,
 }: {
-  address: string;
+  address?: string | null;
   amount: string;
   currency: string;
   time: string;
   tradeTimeLabel: string;
 }) {
+  const fullAddress = address?.trim() ?? "";
+  const explorerUrl = fullAddress
+    ? `${SOLANA_EXPLORER_ADDRESS_BASE}${fullAddress}`
+    : null;
+
+  const handleOpenExplorer = () => {
+    if (!explorerUrl) return;
+    window.open(explorerUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
-    <div className="flex w-full shrink-0 flex-col gap-2 py-3">
+    <button
+      type="button"
+      onClick={handleOpenExplorer}
+      disabled={!explorerUrl}
+      className="flex w-full shrink-0 flex-col gap-2 py-3 text-left transition-opacity disabled:cursor-default active:opacity-70"
+    >
       <div className="flex items-start justify-between">
         <p className="text-xs leading-5 tracking-[0.1px] text-black">
-          {address}
+          {shortAddress(fullAddress)}
         </p>
         <span className="text-xs leading-5 text-black">{tradeTimeLabel}</span>
       </div>
@@ -223,10 +239,11 @@ function TransactionRow({
         </div>
         <span className="text-xs leading-none text-black/70">{time}</span>
       </div>
-    </div>
+    </button>
   );
 }
 
+/*
 function buildPageRange(
   current: number,
   total: number,
@@ -362,3 +379,4 @@ function PaginationNavButton({
     </button>
   );
 }
+*/

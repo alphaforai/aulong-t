@@ -8,7 +8,7 @@ import { useUserInfoStore } from "@/lib/store";
 import { mineAssets } from "./assets";
 import { WithdrawAUL } from "./WithdrawAUL";
 import { WithdrawUSDT } from "./WithdrawUSDT";
-import { toast } from "sonner";
+import { FinancialManagement } from "./FinancialManagement2";
 import { useQuery } from "@tanstack/react-query";
 import { getUserAssets } from "@/lib/api/users";
 
@@ -18,6 +18,8 @@ export function AssetSummaryCard() {
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const [showWithdrawUsdt, setShowWithdrawUsdt] = React.useState(false);
   const [showWithdrawAul, setShowWithdrawAul] = React.useState(false);
+  const [showFinancialManagement, setShowFinancialManagement] =
+    React.useState(false);
 
 
   // getUserAssets
@@ -81,9 +83,7 @@ export function AssetSummaryCard() {
           icon={mineAssets.actionInvest}
           label={t("mine.goInvest")}
           variant="primary"
-          onClick={() => {
-            toast.success(t("common.notOpen"));
-          }}
+          onClick={() => setShowFinancialManagement(true)}
         />
       </div>
 
@@ -94,6 +94,10 @@ export function AssetSummaryCard() {
       <WithdrawAUL
         open={showWithdrawAul}
         onClose={() => setShowWithdrawAul(false)}
+      />
+      <FinancialManagement
+        open={showFinancialManagement}
+        onClose={() => setShowFinancialManagement(false)}
       />
     </section>
   );

@@ -18,6 +18,7 @@ import { ProjectsInfo } from "@/components/entrust/ProjectsInfo";
 import { AIStrategy } from "@/components/entrust/AIStrategy";
 import { AulongPageShell } from "@/components/AulongPageShell";
 import { getStakePlans } from "@/lib/api/users";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useQuery } from "@tanstack/react-query";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
 import { useUserInfoStore } from "@/lib/store";
@@ -60,6 +61,7 @@ function toDeployStrategy(plan: StakePlan): DeployStrategy {
 }
 
 export default function HomePage() {
+  const { locale } = useTranslation();
   const [showProjectsInfo, setShowProjectsInfo] = useState(false);
   const [showAIStrategy, setShowAIStrategy] = useState(false);
   const [showAnnouncementList, setShowAnnouncementList] = useState(false);
@@ -84,7 +86,7 @@ export default function HomePage() {
   });
 
   const { data: stakePlansResponse } = useQuery({
-    queryKey: ["stakePlans"],
+    queryKey: ["stakePlans", 1, locale],
     queryFn: () =>
       getStakePlans({
         page: 0,

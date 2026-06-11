@@ -14,6 +14,7 @@ import {
 } from "@/lib/mobileShell";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { log } from "console";
 
 export type AIStrategyProps = {
   open: boolean;
@@ -128,11 +129,8 @@ function mapStakeToCard(
     daysElapsed: isActive ? stake.runDays : undefined,
     daysRemaining: isActive ? stake.remainDays : undefined,
     showRedeemButton:
-      isActive &&
-      (status === 3 ||
-        Boolean(stake.canRedeem) ||
-        countdownSec > 0),
-    redeemReady: status === 3,
+      isActive && (Boolean(stake.canRedeem) || countdownSec > 0),
+    redeemReady: Boolean(stake.canRedeem),
     redeemCountdown:
       countdownSec > 0 ? formatCountdown(countdownSec) : undefined,
   };
@@ -380,7 +378,11 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
         maxStartTime: undefined,
       }),
     enabled: open && Boolean(walletAddress),
+    refetchInterval: open ? 2000 : false,
+    refetchOnWindowFocus: false,
   });
+
+  console.log(stakeListResponse);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -407,11 +409,6 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, closePanel]);
-
-  React.useEffect(() => {
-    if (!open || !walletAddress) return;
-    void refetchStakeList();
-  }, [open, walletAddress, refetchStakeList]);
 
   const fallbackTitle = t("entrust.strategyTrendTitle");
   const fallbackDesc = t("entrust.strategyTrendDesc");
@@ -547,7 +544,7 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
 
           <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-[max(env(safe-area-inset-bottom),16px)] pt-4">
             <div className="flex flex-col gap-4">
-              {stakeListPending ? (
+              {stakeListPending && !stakeListResponse ? (
                 <p className="py-8 text-center text-sm text-black/50">
                   {t("common.loadingDots")}
                 </p>

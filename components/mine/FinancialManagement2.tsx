@@ -124,6 +124,101 @@ function SelectField({ children }: { children: React.ReactNode }) {
   );
 }
 
+function StrategySelect({
+  strategies,
+  value,
+  onChange,
+}: {
+  strategies: DeployStrategy[];
+  value: DeployStrategy;
+  onChange: (strategy: DeployStrategy) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [listMounted, setListMounted] = React.useState(false);
+  const [listExpanded, setListExpanded] = React.useState(false);
+  const rootRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (open) {
+      setListMounted(true);
+      const frame = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setListExpanded(true));
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    setListExpanded(false);
+    const timer = window.setTimeout(() => setListMounted(false), 200);
+    return () => window.clearTimeout(timer);
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (rootRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex h-[50px] w-full items-center justify-between rounded-[8px] bg-white/70 px-4 text-left"
+      >
+        <span className="text-base font-semibold text-[#333]">{value.title}</span>
+        <SelectChevron open={open} />
+      </button>
+      {listMounted && (
+        <ul
+          role="listbox"
+          aria-label={value.title}
+          className={`absolute inset-x-0 top-[calc(100%+4px)] z-30 origin-top overflow-hidden rounded-[8px] border border-white bg-white/95 shadow-[0_4px_12px_rgba(51,51,51,0.12)] backdrop-blur-[6px] transition-[transform,opacity] duration-300 ease-out ${
+            listExpanded
+              ? "pointer-events-auto scale-y-100 opacity-100"
+              : "pointer-events-none scale-y-0 opacity-0"
+          }`}
+        >
+          {strategies.map((item) => {
+            const selected = item.id === value.id;
+            return (
+              <li key={item.id} role="option" aria-selected={selected}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(item);
+                    setOpen(false);
+                  }}
+                  className={`flex h-[50px] w-full items-center px-4 text-left text-base transition-colors ${
+                    selected
+                      ? "bg-white/70 font-semibold text-[#333]"
+                      : "font-normal text-[#333] hover:bg-white/50"
+                  }`}
+                >
+                  {item.title}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function FinancialManagement({
   open,
   onClose,
@@ -345,11 +440,11 @@ export function FinancialManagement({
                   {t("common.loading")}
                 </div>
               ) : (
-                <div className="flex h-[50px] w-full items-center rounded-[8px] bg-white/70 px-4">
-                  <span className="text-base font-semibold text-[#333]">
-                    {selectedStrategy.title}
-                  </span>
-                </div>
+                <StrategySelect
+                  strategies={strategies}
+                  value={selectedStrategy}
+                  onChange={setSelectedStrategy}
+                />
               )}
             </div>
 
