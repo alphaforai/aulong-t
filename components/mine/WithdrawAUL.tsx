@@ -96,8 +96,6 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
       enabled: open && Boolean(walletAddress),
     });
 
-  console.log(withdrawalPreviewResponse);
-
   const { withdrawAulFeeRate, feeRateX } = React.useMemo(() => {
     const preview = withdrawalPreviewResponse?.data as
       | { feeRateX?: number }
