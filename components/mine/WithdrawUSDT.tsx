@@ -6,7 +6,12 @@ import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import { applyWithdrawal, getUserAssets, getXcoinPrice } from "@/lib/api/users";
+import {
+  applyWithdrawal,
+  getUserAssets,
+  getWithdrawalPreview,
+  getXcoinPrice,
+} from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
@@ -47,9 +52,7 @@ const GRADIENT_INSET =
 const DISABLED_OVERLAY =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-[rgba(241,241,241,0.57)]";
 
-const MIN_WITHDRAW = 0.1;
-const WITHDRAW_USDT_FEE_RATE = 0.1;
-const WITHDRAW_AUL_FEE_RATE = 0.05;
+const MIN_WITHDRAW = 1;
 
 function formatBalance(value: number): string {
   return value.toLocaleString("en-US", {
@@ -108,6 +111,31 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
   });
 
   const aulPrice = Number(xcoinPriceResponse?.data?.currentPrice ?? 0);
+
+  const { data: withdrawalPreviewResponse, isPending: withdrawalPreviewPending } =
+    useQuery({
+      queryKey: ["withdrawalPreview", "USDT", walletAddress],
+      queryFn: () =>
+        getWithdrawalPreview({
+          currency: "USDT",
+          amount: 1,
+          txHash: "",
+        }),
+      enabled: open && Boolean(walletAddress),
+    });
+
+  const { withdrawUsdtFeeRate, withdrawAulFeeRate, feeRateX } = React.useMemo(() => {
+    const preview = withdrawalPreviewResponse?.data as
+      | { feeRateUsdt?: number; feeRateX?: number }
+      | undefined;
+    const feeRateUsdt = Number(preview?.feeRateUsdt);
+    const feeRateXValue = Number(preview?.feeRateX);
+    return {
+      withdrawUsdtFeeRate: Number.isFinite(feeRateUsdt) ? feeRateUsdt / 100 : 0,
+      withdrawAulFeeRate: Number.isFinite(feeRateXValue) ? feeRateXValue / 100 : 0,
+      feeRateX: Number.isFinite(feeRateXValue) ? feeRateXValue : 0,
+    };
+  }, [withdrawalPreviewResponse]);
 
   const wallet = walletAddress as `0x${string}` | undefined;
   const chainReadEnabled = open && Boolean(wallet);
@@ -295,15 +323,14 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     if (parsedAmount == null || parsedAmount <= 0 || aulPrice <= 0) {
       return BigInt(0);
     }
-    const feeAulAmount =
-      (parsedAmount * WITHDRAW_AUL_FEE_RATE) / aulPrice;
+    const feeAulAmount = (parsedAmount * withdrawAulFeeRate) / aulPrice;
     if (feeAulAmount <= 0) return BigInt(0);
     try {
       return parseEther(sanitizeAmountInput(String(feeAulAmount)));
     } catch {
       return BigInt(0);
     }
-  }, [parsedAmount, aulPrice]);
+  }, [parsedAmount, aulPrice, withdrawAulFeeRate]);
 
   const insufficientAulFee =
     !aulBalancePending &&
@@ -316,6 +343,8 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     !userAssetsPending &&
     !aulBalancePending &&
     !xcoinPricePending &&
+    !withdrawalPreviewPending &&
+    feeRateX > 0 &&
     !isTxBusy &&
     hasAmount &&
     !exceedsLimit &&
@@ -333,14 +362,16 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
 
   const feeUsdt =
     parsedAmount != null && parsedAmount > 0
-      ? parsedAmount * WITHDRAW_USDT_FEE_RATE
+      ? parsedAmount * withdrawUsdtFeeRate
       : 0;
 
   const feeAul =
     feeAulWei > BigInt(0) ? Number(formatEther(feeAulWei)) : 0;
 
   const feeAulLabel =
-    xcoinPricePending && parsedAmount != null && parsedAmount > 0
+    (xcoinPricePending || withdrawalPreviewPending) &&
+    parsedAmount != null &&
+    parsedAmount > 0
       ? t("common.loadingDots")
       : formatBalance(feeAul);
 
@@ -524,7 +555,13 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
                     />
                     <InfoRow
                       label={t("mine.withdrawFee")}
-                      value={`${formatBalance(feeUsdt)} USDT + ${feeAulLabel} AUL`}
+                      value={
+                        withdrawalPreviewPending &&
+                        parsedAmount != null &&
+                        parsedAmount > 0
+                          ? t("common.loadingDots")
+                          : `${formatBalance(feeUsdt)} USDT + ${feeAulLabel} AUL`
+                      }
                     />
                   </div>
                 </div>

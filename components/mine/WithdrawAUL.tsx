@@ -6,7 +6,11 @@ import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import { applyWithdrawal, getUserAssets } from "@/lib/api/users";
+import {
+  applyWithdrawal,
+  getUserAssets,
+  getWithdrawalPreview,
+} from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
@@ -38,7 +42,6 @@ const DISABLED_OVERLAY =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-[rgba(241,241,241,0.57)]";
 
 const MIN_WITHDRAW = 1;
-const WITHDRAW_AUL_FEE_RATE = 0.15;
 
 function formatBalance(value: number): string {
   return value.toLocaleString("en-US", {
@@ -80,6 +83,31 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
   });
 
   const withdrawableAul = userAssetsResponse?.data?.xCoinBalance ?? 0;
+
+  const { data: withdrawalPreviewResponse, isPending: withdrawalPreviewPending } =
+    useQuery({
+      queryKey: ["withdrawalPreview", "AUL", walletAddress],
+      queryFn: () =>
+        getWithdrawalPreview({
+          currency: "AUL",
+          amount: 1,
+          txHash: "",
+        }),
+      enabled: open && Boolean(walletAddress),
+    });
+
+  console.log(withdrawalPreviewResponse);
+
+  const { withdrawAulFeeRate, feeRateX } = React.useMemo(() => {
+    const preview = withdrawalPreviewResponse?.data as
+      | { feeRateX?: number }
+      | undefined;
+    const feeRateXValue = Number(preview?.feeRateX);
+    return {
+      withdrawAulFeeRate: Number.isFinite(feeRateXValue) ? feeRateXValue / 100 : 0,
+      feeRateX: Number.isFinite(feeRateXValue) ? feeRateXValue : 0,
+    };
+  }, [withdrawalPreviewResponse]);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -123,6 +151,8 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
   const hasAmount = parsedAmount != null && parsedAmount > 0;
   const canSubmit =
     !userAssetsPending &&
+    !withdrawalPreviewPending &&
+    feeRateX > 0 &&
     !isSubmitting &&
     hasAmount &&
     !exceedsLimit &&
@@ -134,8 +164,13 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
 
   const feeAul =
     parsedAmount != null && parsedAmount > 0
-      ? parsedAmount * WITHDRAW_AUL_FEE_RATE
+      ? parsedAmount * withdrawAulFeeRate
       : 0;
+
+  const feeAulLabel =
+    withdrawalPreviewPending && parsedAmount != null && parsedAmount > 0
+      ? t("common.loadingDots")
+      : formatBalance(feeAul);
 
   const handleSubmit = async () => {
     if (!canSubmit || parsedAmount == null) return;
@@ -288,7 +323,7 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
                     />
                     <InfoRow
                       label={t("mine.withdrawFee")}
-                      value={`${formatBalance(feeAul)} AUL`}
+                      value={`${feeAulLabel} AUL`}
                     />
                   </div>
                 </div>
