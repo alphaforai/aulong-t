@@ -59,6 +59,7 @@ export function TransactionRecordCard() {
     data: txResponse,
     isPending,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ["solanaBlockInfoPage"],
     queryFn: () =>
@@ -72,8 +73,16 @@ export function TransactionRecordCard() {
         leader: undefined,
       }),
     refetchInterval: TX_POLL_INTERVAL_MS,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
+
+  React.useEffect(() => {
+    const handlePageShow = () => {
+      void refetch();
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, [refetch]);
 
   const rawList = (
     txResponse?.data as { list?: SolanaBlockItem[]; total?: number } | undefined
@@ -212,7 +221,7 @@ function TransactionRow({
 
   const handleOpenExplorer = () => {
     if (!explorerUrl) return;
-    window.open(explorerUrl, "_blank", "noopener,noreferrer");
+    window.location.assign(explorerUrl);
   };
 
   return (
