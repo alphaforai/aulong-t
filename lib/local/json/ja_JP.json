@@ -110,6 +110,8 @@
       "runStatus": "稼働状態",
       "statusDeployed": "展開済",
       "statusEnded": "終了",
+      "statusRedeeming": "償還中",
+      "statusRedeemed": "償還済",
       "strategyName": "戦略名",
       "startTime": "開始",
       "endTime": "終了",

@@ -110,6 +110,8 @@
       "runStatus": "Status",
       "statusDeployed": "Dideploy",
       "statusEnded": "Tamat",
+      "statusRedeeming": "Menebus",
+      "statusRedeemed": "Ditebus",
       "strategyName": "Strategi",
       "startTime": "Mula",
       "endTime": "Tamat",

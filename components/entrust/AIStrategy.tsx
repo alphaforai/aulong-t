@@ -23,8 +23,8 @@ export type AIStrategyProps = {
 
 type TabId = "deploying" | "history";
 
-/** 1质押中 2已解押 3解押中 */
-type StakeStatus = 1 | 2 | 3;
+/** 1已部署 2可赎回 3赎回中 4已赎回 */
+type StakeStatus = 1 | 2 | 3 | 4;
 
 type StakeItem = {
   id: number;
@@ -62,6 +62,7 @@ type StrategyCardModel = {
   progressTrack?: "light" | "dark";
   daysElapsed?: number;
   daysRemaining?: number;
+  stakeStatus: StakeStatus;
   showRedeemButton: boolean;
   redeemReady: boolean;
   redeemCountdown?: string;
@@ -120,16 +121,43 @@ function resolveEndTime(stake: StakeItem): string | undefined {
   return undefined;
 }
 
+type StakeStatusLabels = {
+  deployed: string;
+  redeemable: string;
+  redeeming: string;
+  redeemed: string;
+};
+
+function resolveStakeStatusLabel(
+  stake: StakeItem,
+  status: StakeStatus,
+  labels: StakeStatusLabels,
+) {
+  if (stake.statusLabel) return stake.statusLabel;
+  switch (status) {
+    case 1:
+      return labels.deployed;
+    case 2:
+      return labels.redeemable;
+    case 3:
+      return labels.redeeming;
+    case 4:
+      return labels.redeemed;
+    default:
+      return labels.deployed;
+  }
+}
+
 function mapStakeToCard(
   stake: StakeItem,
   locale: Locale,
   fallbackTitle: string,
   fallbackDesc: string,
-  fallbackStatusActive: string,
-  fallbackStatusEnded: string,
+  statusLabels: StakeStatusLabels,
 ): StrategyCardModel {
   const status = (stake.status ?? 0) as StakeStatus;
-  const isActive = status === 1 || status === 3;
+  const isRunning = status === 1;
+  const isActive = status === 1 || status === 2 || status === 3;
   const progressPercent = stake.progressPercent;
   const countdownSec = stake.redeemCountdownSeconds ?? 0;
 
@@ -141,23 +169,26 @@ function mapStakeToCard(
     description: stake.planIntro || fallbackDesc,
     depositedAmount: formatAmount(stake.amount),
     cumulativeEarnings: formatAmount(stake.accumulatedEarnings),
-    statusLabel:
-      stake.statusLabel ||
-      (isActive ? fallbackStatusActive : fallbackStatusEnded),
+    statusLabel: resolveStakeStatusLabel(stake, status, statusLabels),
     isActive,
     strategyName: stake.planName || fallbackTitle,
     startTime: stake.startedAt || "—",
     endTime: resolveEndTime(stake),
-    progressPercent: isActive ? progressPercent : undefined,
+    progressPercent: isRunning ? progressPercent : undefined,
     progressTrack:
       progressPercent != null && progressPercent >= 90 ? "dark" : "light",
-    daysElapsed: isActive ? stake.runDays : undefined,
-    daysRemaining: isActive ? stake.remainDays : undefined,
+    daysElapsed: isRunning ? stake.runDays : undefined,
+    daysRemaining: isRunning ? stake.remainDays : undefined,
+    stakeStatus: status,
     showRedeemButton:
-      isActive && (Boolean(stake.canRedeem) || countdownSec > 0),
-    redeemReady: Boolean(stake.canRedeem),
+      status === 2 ||
+      status === 3 ||
+      (status === 1 && (Boolean(stake.canRedeem) || countdownSec > 0)),
+    redeemReady: status === 2 || (status === 1 && Boolean(stake.canRedeem)),
     redeemCountdown:
-      countdownSec > 0 ? formatCountdown(countdownSec, locale) : undefined,
+      status === 1 && countdownSec > 0
+        ? formatCountdown(countdownSec, locale)
+        : undefined,
   };
 }
 
@@ -327,11 +358,23 @@ function StrategyRecordCard({
         {record.showRedeemButton ? (
           <button
             type="button"
-            disabled={!record.redeemReady || redeeming}
+            disabled={
+              !record.redeemReady || redeeming || record.stakeStatus === 3
+            }
             onClick={() => onRedeem(record.stakeId)}
             className={`mx-auto flex h-[58px] w-full max-w-[308px] flex-col items-center justify-center px-2.5 disabled:cursor-not-allowed ${GRADIENT_BTN}`}
           >
-            {record.redeemReady ? (
+            {record.stakeStatus === 3 ? (
+              <>
+                <span className={GRADIENT_FILL} aria-hidden />
+                <span className={GRADIENT_INSET} aria-hidden />
+                <span className="relative text-base font-semibold text-white [text-shadow:0_1px_3px_rgba(94,44,44,0.25)]">
+                  {redeeming
+                    ? t("common.loadingDots")
+                    : t("entrust.aiStrategy.statusRedeeming")}
+                </span>
+              </>
+            ) : record.redeemReady ? (
               <>
                 <span className={GRADIENT_FILL} aria-hidden />
                 <span className={GRADIENT_INSET} aria-hidden />
@@ -409,6 +452,8 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     refetchOnWindowFocus: false,
   });
 
+  console.log("stakeListResponse", stakeListResponse);
+
   const closePanel = React.useCallback(() => {
     setEntered(false);
     window.setTimeout(() => onClose(), 300);
@@ -437,8 +482,15 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
 
   const fallbackTitle = t("entrust.strategyTrendTitle");
   const fallbackDesc = t("entrust.strategyTrendDesc");
-  const fallbackActive = t("entrust.aiStrategy.statusDeployed");
-  const fallbackEnded = t("entrust.aiStrategy.statusEnded");
+  const statusLabels = React.useMemo<StakeStatusLabels>(
+    () => ({
+      deployed: t("entrust.aiStrategy.statusDeployed"),
+      redeemable: t("entrust.aiStrategy.redeemable"),
+      redeeming: t("entrust.aiStrategy.statusRedeeming"),
+      redeemed: t("entrust.aiStrategy.statusRedeemed"),
+    }),
+    [t],
+  );
 
   const { deployingRecords, historyRecords } = React.useMemo(() => {
     const list = (stakeListResponse?.data ?? []) as StakeItem[];
@@ -451,26 +503,18 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
         locale,
         fallbackTitle,
         fallbackDesc,
-        fallbackActive,
-        fallbackEnded,
+        statusLabels,
       );
       const status = stake.status as StakeStatus;
-      if (status === 1 || status === 3) {
+      if (status === 1 || status === 2 || status === 3) {
         deploying.push(card);
-      } else if (status === 2 || status === 4) {
+      } else if (status === 4) {
         history.push(card);
       }
     }
 
     return { deployingRecords: deploying, historyRecords: history };
-  }, [
-    stakeListResponse,
-    locale,
-    fallbackTitle,
-    fallbackDesc,
-    fallbackActive,
-    fallbackEnded,
-  ]);
+  }, [stakeListResponse, locale, fallbackTitle, fallbackDesc, statusLabels]);
 
   const records = tab === "deploying" ? deployingRecords : historyRecords;
 

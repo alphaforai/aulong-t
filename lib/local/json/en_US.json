@@ -110,6 +110,8 @@
       "runStatus": "Status",
       "statusDeployed": "Deployed",
       "statusEnded": "Ended",
+      "statusRedeeming": "Redeeming",
+      "statusRedeemed": "Redeemed",
       "strategyName": "Strategy",
       "startTime": "Start",
       "endTime": "End",

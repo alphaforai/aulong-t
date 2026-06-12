@@ -110,6 +110,8 @@
       "runStatus": "운행 상태",
       "statusDeployed": "배포됨",
       "statusEnded": "종료",
+      "statusRedeeming": "상환 중",
+      "statusRedeemed": "상환 완료",
       "strategyName": "전략명",
       "startTime": "시작",
       "endTime": "종료",

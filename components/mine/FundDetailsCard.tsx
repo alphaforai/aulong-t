@@ -82,6 +82,29 @@ function formatLedgerTime(value?: string) {
   return format(date, "yyyy-MM-dd HH:mm");
 }
 
+function normalizeBillTypeOptions(raw: unknown): BillTypeOption[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const { code, name } = item as BillTypeOption;
+    if (typeof code !== "string" || typeof name !== "string") return [];
+    const normalizedCode = code.trim();
+    const normalizedName = name.trim();
+    return normalizedCode && normalizedName
+      ? [{ code: normalizedCode, name: normalizedName }]
+      : [];
+  });
+}
+
+function resolveChangeTypeFilter(
+  selectedCode: string,
+  billTypes: BillTypeOption[],
+): string | undefined {
+  if (selectedCode === ALL_BILL_TYPE) return undefined;
+  const matched = billTypes.find((item) => item.code === selectedCode);
+  return matched?.code;
+}
+
 const FILTER_SHEETS: { id: FilterSheetId; labelKey: string }[] = [
   { id: "billType", labelKey: "mine.filterBillType" },
   { id: "currency", labelKey: "mine.filterCurrency" },
@@ -112,24 +135,10 @@ export function FundDetailsCard() {
     queryFn: getAssetLedgerChangeTypes,
   });
 
-  const apiBillTypes = React.useMemo(() => {
-    const raw = changeTypesResponse?.data;
-    console.log(raw);
-    
-    if (!Array.isArray(raw)) return [];
-    return raw.flatMap((item) => {
-      if (
-        !item ||
-        typeof item !== "object" ||
-        typeof (item as BillTypeOption).code !== "string" ||
-        typeof (item as BillTypeOption).name !== "string"
-      ) {
-        return [];
-      }
-      const { code, name } = item as BillTypeOption;
-      return code ? [{ code, name }] : [];
-    });
-  }, [changeTypesResponse]);
+  const apiBillTypes = React.useMemo(
+    () => normalizeBillTypeOptions(changeTypesResponse?.data),
+    [changeTypesResponse],
+  );
 
   const billTypeOptions = React.useMemo<BillTypeOption[]>(
     () => [
@@ -147,8 +156,7 @@ export function FundDetailsCard() {
     }
   }, [apiBillTypes, selectedBillType]);
 
-  const changeType =
-    selectedBillType === ALL_BILL_TYPE ? undefined : selectedBillType;
+  const changeType = resolveChangeTypeFilter(selectedBillType, apiBillTypes);
   const currencyFilter =
     selectedCurrency === "all" ? undefined : selectedCurrency;
   const createdAtStart =
@@ -162,7 +170,7 @@ export function FundDetailsCard() {
     setPage(0);
   }, [
     walletAddress,
-    selectedBillType,
+    changeType,
     selectedCurrency,
     timeFilterMode,
     startDate,
@@ -180,7 +188,7 @@ export function FundDetailsCard() {
       walletAddress,
       userId,
       page,
-      selectedBillType,
+      changeType,
       selectedCurrency,
       timeFilterMode,
       createdAtStart,
@@ -360,7 +368,12 @@ export function FundDetailsCard() {
         loading={billTypesPending}
         selected={selectedBillType}
         onSelect={(code) => {
-          setSelectedBillType(code);
+          if (code === ALL_BILL_TYPE) {
+            setSelectedBillType(ALL_BILL_TYPE);
+          } else {
+            const matched = apiBillTypes.find((item) => item.code === code);
+            setSelectedBillType(matched?.code ?? ALL_BILL_TYPE);
+          }
           setActiveSheet(null);
         }}
         onClose={() => setActiveSheet(null)}

@@ -110,6 +110,8 @@
       "runStatus": "Trạng thái",
       "statusDeployed": "Đã triển khai",
       "statusEnded": "Đã kết thúc",
+      "statusRedeeming": "Đang rút",
+      "statusRedeemed": "Đã rút",
       "strategyName": "Chiến lược",
       "startTime": "Bắt đầu",
       "endTime": "Kết thúc",

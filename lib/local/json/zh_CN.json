@@ -110,6 +110,8 @@
       "runStatus": "运行状态",
       "statusDeployed": "已部署",
       "statusEnded": "已结束",
+      "statusRedeeming": "赎回中",
+      "statusRedeemed": "已赎回",
       "strategyName": "策略名称",
       "startTime": "开始时间",
       "endTime": "结束时间",
