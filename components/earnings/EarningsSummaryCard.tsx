@@ -9,7 +9,6 @@ import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { earningsAssets } from "./assets";
 import { FinancialManagement } from "./FinancialManagement";
-import { toast } from "sonner";
 
 /** 底栏统计在窄卡片里用短文案的语言 */
 const COMPACT_STAT_LOCALES: Locale[] = ["en_US", "ko_KR", "vi_VN", "ja_JP", "ms_MY"];
@@ -36,7 +35,7 @@ function formatIncome(value: number) {
   });
 }
 
-/** 收益摘要卡 — 对齐 Figma 439:331 / 438:5985 */
+/** 收益摘要卡 — 对齐 Figma 1117:2113 */
 export function EarningsSummaryCard() {
   const { t, locale } = useTranslation();
   const copy = useEarningsSummaryCopy(locale, t);
@@ -65,92 +64,62 @@ export function EarningsSummaryCard() {
     ? t("common.loadingDots")
     : formatIncome(xcoinReleasedBalance);
 
-
   return (
     <>
-    <section className="relative h-[148px] w-full shrink-0 overflow-hidden rounded-[12px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-      <SummaryBackground />
+      <section className="relative flex h-[221px] w-full shrink-0 flex-col overflow-hidden rounded-[12px] bg-white/80 px-3 pb-3 pt-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+        <SummaryBackground />
+        <AiDecoration />
 
-      {/* 总收益 — 稿 left 9px, top 9px */}
-      <div className="absolute left-[9px] top-[9px] z-10 flex max-w-[calc(100%-120px)] flex-col gap-2">
-        <p className="text-sm font-extrabold leading-normal text-black/70">{copy.totalEarnings}</p>
-        <p className="font-mulish text-[32px] font-bold leading-none text-black">
-          {totalIncomeLabel}
-        </p>
-      </div>
-
-      {/* 收益记录 — 稿右上角 */}
-      {/* <button
-        type="button"
-        className="absolute right-[15px] top-3 z-10 flex max-w-[40%] items-center justify-end gap-1"
-        onClick={() => {
-          toast.success(t("common.notOpen"));
-        }}
-      >
-        <span className="truncate text-xs leading-normal text-black/70">
-          {copy.earningsRecord}
-        </span>
-        <AppImage
-          src={earningsAssets.recordArrow}
-          alt=""
-          width={14}
-          height={14}
-          className="size-3.5 shrink-0 -scale-y-100 rotate-90"
-        />
-      </button> */}
-
-      {/* 去理财 — 稿 right 7px, top 43px，与大号金额同一行 */}
-      <button
-        type="button"
-        className="absolute right-[7px] top-[43px] z-10 flex h-9 w-[104px] select-none items-center justify-center rounded-[33px] border border-white bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92]"
-        onClick={() => setDeployOpen(true)}
-      >
-        {copy.invest}
-      </button>
-
-      {/* 横线 — 稿 top 85px */}
-      <div className="absolute left-1/2 top-[85px] z-10 h-px w-[220px] -translate-x-1/2">
-        <AppImage
-          src={earningsAssets.summaryDividerH}
-          alt=""
-          width={220}
-          height={1}
-          className="block h-px w-full max-w-none"
-        />
-      </div>
-
-      {/* 底部统计 — 稿 top 94px, gap 11px */}
-      <div className="absolute left-[9px] top-[94px] z-10 flex w-[calc(100%-18px)] items-center gap-[11px]">
-        <StatBlock
-          label={copy.pending}
-          value={usdtBalanceLabel}
-          compact={COMPACT_STAT_LOCALES.includes(locale)}
-        />
-        <div className="flex h-9 w-0 shrink-0 items-center justify-center">
-          <div className="rotate-90">
-            <AppImage
-              src={earningsAssets.summaryDividerV}
-              alt=""
-              width={36}
-              height={1}
-              className="h-px w-9 max-w-none"
-            />
-          </div>
+        <div className="relative z-10 flex max-w-[calc(100%-100px)] flex-col gap-2">
+          <p className="text-sm leading-normal text-black/70">{copy.totalEarnings}</p>
+          <p className="font-mulish text-[32px] font-bold leading-none text-black">
+            {totalIncomeLabel}
+          </p>
         </div>
-        <StatBlock
-          label={copy.lastPeriod}
-          value={xcoinReleasedBalanceLabel}
-          withTrailingSpace
-          compact={COMPACT_STAT_LOCALES.includes(locale)}
-        />
-      </div>
-    </section>
 
-    <FinancialManagement
-      open={deployOpen}
-      onClose={() => setDeployOpen(false)}
-    />
+        <div className="relative z-10 mt-5 flex gap-3">
+          <StatCard
+            label={copy.pending}
+            value={usdtBalanceLabel}
+            icon={earningsAssets.statPendingIcon}
+            iconClassName="left-[-33.2%] top-[-30.15%] size-[166.53%]"
+          />
+          <StatCard
+            label={copy.lastPeriod}
+            value={xcoinReleasedBalanceLabel}
+            icon={earningsAssets.statLastPeriodIcon}
+            iconClassName="left-[-30.11%] top-[-27.96%] size-[160.22%]"
+          />
+        </div>
+
+        <button
+          type="button"
+          className="relative z-10 mt-3 flex h-11 w-full shrink-0 select-none items-center justify-center rounded-[33px] border border-white bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000] text-base font-semibold leading-normal text-white shadow-[0_4px_6px_rgba(213,0,0,0.12),inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5] [text-shadow:0_1px_3px_rgba(94,44,44,0.25)] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.98]"
+          onClick={() => setDeployOpen(true)}
+        >
+          {copy.invest}
+        </button>
+      </section>
+
+      <FinancialManagement
+        open={deployOpen}
+        onClose={() => setDeployOpen(false)}
+      />
     </>
+  );
+}
+
+function AiDecoration() {
+  return (
+    <div className="pointer-events-none absolute right-0 top-0 z-[1] h-[107px] w-[118px] overflow-hidden">
+      <AppImage
+        src={earningsAssets.summaryAiDeco}
+        alt=""
+        fill
+        className="object-cover opacity-70"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/0 from-[23.95%] to-[#fbfbfb]" />
+    </div>
   );
 }
 
@@ -158,8 +127,8 @@ function SummaryBackground() {
   const maskStyle = {
     maskImage: `url(${earningsAssets.summaryDecoMask})`,
     WebkitMaskImage: `url(${earningsAssets.summaryDecoMask})`,
-    maskSize: "371px 168px",
-    WebkitMaskSize: "371px 168px",
+    maskSize: "371px 241px",
+    WebkitMaskSize: "371px 241px",
     maskRepeat: "no-repeat" as const,
     WebkitMaskRepeat: "no-repeat" as const,
   };
@@ -187,13 +156,13 @@ function SummaryBackground() {
       </div>
 
       <div className="absolute -left-[264px] -top-[253px] flex h-[590px] w-[574px] items-center justify-center">
-        <div className="flex-none -skew-x-[1.43deg] rotate-[-33.51deg]">
+        <div className="flex-none -skew-x-[18.57deg] rotate-[-42.75deg] scale-y-95">
           <div
-            className="relative h-[424px] w-[419px] opacity-[0.11]"
+            className="relative h-[529px] w-[458px] opacity-[0.11]"
             style={{
               ...maskStyle,
-              maskPosition: "253.884px 247.714px",
-              WebkitMaskPosition: "253.884px 247.714px",
+              maskPosition: "258px 336px",
+              WebkitMaskPosition: "258px 336px",
             }}
           >
             <AppImage
@@ -209,31 +178,37 @@ function SummaryBackground() {
   );
 }
 
-function StatBlock({
+function StatCard({
   label,
   value,
-  withTrailingSpace = false,
-  compact = false,
+  icon,
+  iconClassName,
 }: {
   label: string;
   value: string;
-  withTrailingSpace?: boolean;
-  compact?: boolean;
+  icon: string;
+  iconClassName: string;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <p className="text-sm leading-normal text-black/70">{label}</p>
-      <p className="text-black leading-none">
-        <span className="font-mulish text-base font-bold leading-normal">
-          {value}
-        </span>
-        {withTrailingSpace ? (
-          <span className="font-mulish text-sm font-bold leading-normal">
-            {" "}
+    <div className="relative flex h-[65px] min-w-0 flex-1 overflow-hidden rounded-[8px] bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 py-3">
+        <p className="truncate text-sm leading-normal text-black/70">{label}</p>
+        <p className="truncate leading-none text-[#333]">
+          <span className="font-mulish text-base font-bold leading-normal">
+            {value}
           </span>
-        ) : null}
-        <span className="text-[10px] leading-normal"> USDT</span>
-      </p>
+          <span className="text-[10px] leading-normal"> USDT</span>
+        </p>
+      </div>
+      <div className="pointer-events-none absolute right-1.5 top-1/2 size-11 -translate-y-1/2 overflow-hidden">
+        <AppImage
+          src={icon}
+          alt=""
+          width={44}
+          height={44}
+          className={`absolute max-w-none ${iconClassName}`}
+        />
+      </div>
     </div>
   );
 }
