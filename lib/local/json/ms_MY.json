@@ -289,7 +289,19 @@
     "withdrawFee": "Yuran",
     "withdrawExceedLimit": "Melebihi had pengeluaran",
     "withdrawSubmit": "Keluarkan sekarang",
-    "withdrawSuccess": "Permohonan pengeluaran berjaya"
+    "withdrawSuccess": "Permohonan pengeluaran berjaya",
+    "withdrawRecordTitle": "Rekod pengeluaran",
+    "withdrawRecordBtn": "Rekod",
+    "withdrawRecordFilterTime": "Masa",
+    "withdrawRecordFilterStatus": "Status",
+    "withdrawRecordStatusAll": "Semua",
+    "withdrawRecordStatusPending": "Menunggu semakan",
+    "withdrawRecordStatusSuccess": "Berjaya",
+    "withdrawRecordStatusRejected": "Ditolak",
+    "withdrawRecordRejectReason": "Sebab ditolak: {reason}",
+    "withdrawRecordFee": "Yuran",
+    "withdrawRecordEmpty": "Tiada rekod pengeluaran",
+    "withdrawRecordLoadFailed": "Gagal memuatkan rekod pengeluaran"
   },
   "earnings": {
     "totalEarnings": "Jumlah Pendapatan AI Agent (USDT)",

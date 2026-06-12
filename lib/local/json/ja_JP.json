@@ -289,7 +289,19 @@
     "withdrawFee": "手数料",
     "withdrawExceedLimit": "出金可能額を超えています",
     "withdrawSubmit": "今すぐ出金",
-    "withdrawSuccess": "出金申請が完了しました"
+    "withdrawSuccess": "出金申請が完了しました",
+    "withdrawRecordTitle": "出金履歴",
+    "withdrawRecordBtn": "出金履歴",
+    "withdrawRecordFilterTime": "時間",
+    "withdrawRecordFilterStatus": "状態",
+    "withdrawRecordStatusAll": "すべて",
+    "withdrawRecordStatusPending": "審査待ち",
+    "withdrawRecordStatusSuccess": "成功",
+    "withdrawRecordStatusRejected": "却下",
+    "withdrawRecordRejectReason": "却下理由：{reason}",
+    "withdrawRecordFee": "手数料",
+    "withdrawRecordEmpty": "出金履歴がありません",
+    "withdrawRecordLoadFailed": "出金履歴の読み込みに失敗しました"
   },
   "earnings": {
     "totalEarnings": "AIエージェント総収益(USDT)",

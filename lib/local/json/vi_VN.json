@@ -289,7 +289,19 @@
     "withdrawFee": "Phí",
     "withdrawExceedLimit": "Vượt quá hạn mức rút",
     "withdrawSubmit": "Rút ngay",
-    "withdrawSuccess": "Yêu cầu rút tiền đã được gửi"
+    "withdrawSuccess": "Yêu cầu rút tiền đã được gửi",
+    "withdrawRecordTitle": "Lịch sử rút tiền",
+    "withdrawRecordBtn": "Lịch sử",
+    "withdrawRecordFilterTime": "Thời gian",
+    "withdrawRecordFilterStatus": "Trạng thái",
+    "withdrawRecordStatusAll": "Tất cả",
+    "withdrawRecordStatusPending": "Chờ duyệt",
+    "withdrawRecordStatusSuccess": "Thành công",
+    "withdrawRecordStatusRejected": "Đã từ chối",
+    "withdrawRecordRejectReason": "Lý do từ chối: {reason}",
+    "withdrawRecordFee": "Phí",
+    "withdrawRecordEmpty": "Chưa có lịch sử rút tiền",
+    "withdrawRecordLoadFailed": "Không thể tải lịch sử rút tiền"
   },
   "earnings": {
     "totalEarnings": "Tổng thu nhập AI Agent (USDT)",

@@ -289,7 +289,19 @@
     "withdrawFee": "수수료",
     "withdrawExceedLimit": "출금 한도 초과",
     "withdrawSubmit": "지금 출금",
-    "withdrawSuccess": "출금 신청이 완료되었습니다"
+    "withdrawSuccess": "출금 신청이 완료되었습니다",
+    "withdrawRecordTitle": "출금 기록",
+    "withdrawRecordBtn": "출금 기록",
+    "withdrawRecordFilterTime": "시간",
+    "withdrawRecordFilterStatus": "상태",
+    "withdrawRecordStatusAll": "전체",
+    "withdrawRecordStatusPending": "심사 대기",
+    "withdrawRecordStatusSuccess": "성공",
+    "withdrawRecordStatusRejected": "반려됨",
+    "withdrawRecordRejectReason": "반려 사유: {reason}",
+    "withdrawRecordFee": "수수료",
+    "withdrawRecordEmpty": "출금 기록이 없습니다",
+    "withdrawRecordLoadFailed": "출금 기록을 불러오지 못했습니다"
   },
   "earnings": {
     "totalEarnings": "AI 에이전트 총 수익(USDT)",

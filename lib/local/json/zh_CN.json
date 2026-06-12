@@ -289,7 +289,19 @@
     "withdrawFee": "手续费",
     "withdrawExceedLimit": "超过可提现额度",
     "withdrawSubmit": "立即提取",
-    "withdrawSuccess": "提现申请成功"
+    "withdrawSuccess": "提现申请成功",
+    "withdrawRecordTitle": "提现记录",
+    "withdrawRecordBtn": "提现记录",
+    "withdrawRecordFilterTime": "时间",
+    "withdrawRecordFilterStatus": "状态",
+    "withdrawRecordStatusAll": "全部",
+    "withdrawRecordStatusPending": "待审核",
+    "withdrawRecordStatusSuccess": "成功",
+    "withdrawRecordStatusRejected": "已驳回",
+    "withdrawRecordRejectReason": "驳回原因：{reason}",
+    "withdrawRecordFee": "手续费",
+    "withdrawRecordEmpty": "暂无提现记录",
+    "withdrawRecordLoadFailed": "加载提现记录失败"
   },
   "earnings": {
     "totalEarnings": "AI智能体总收益(USDT)",
