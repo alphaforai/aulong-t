@@ -21,9 +21,9 @@ import { getStakePlans } from "@/lib/api/users";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useQuery } from "@tanstack/react-query";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
-import { useUserInfoStore } from "@/lib/store";
+import { useEntrustUiStore, useUserInfoStore } from "@/lib/store";
 import { useReadContract } from "wagmi";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type StakePlan = {
   id: number;
@@ -64,6 +64,18 @@ export default function HomePage() {
   const { locale } = useTranslation();
   const [showProjectsInfo, setShowProjectsInfo] = useState(false);
   const [showAIStrategy, setShowAIStrategy] = useState(false);
+  const pendingOpenAIStrategy = useEntrustUiStore(
+    (state) => state.pendingOpenAIStrategy,
+  );
+  const clearPendingOpenAIStrategy = useEntrustUiStore(
+    (state) => state.clearPendingOpenAIStrategy,
+  );
+
+  useEffect(() => {
+    if (!pendingOpenAIStrategy) return;
+    setShowAIStrategy(true);
+    clearPendingOpenAIStrategy();
+  }, [pendingOpenAIStrategy, clearPendingOpenAIStrategy]);
   const [showAnnouncementList, setShowAnnouncementList] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(
     null,

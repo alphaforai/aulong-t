@@ -8,7 +8,7 @@ import {
   bottomSheetOverlayRoot,
 } from "@/lib/mobileShell";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import { useUserInfoStore } from "@/lib/store";
+import { useEntrustUiStore, useUserInfoStore } from "@/lib/store";
 import {
   deployStake,
   getStakeDeployMinePreview,
@@ -21,6 +21,7 @@ import {
   validateMineStakePreview,
 } from "@/lib/stakeAmountValidation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 function getErrorMessage(error: unknown, fallback: string) {
@@ -166,11 +167,21 @@ export function FinancialManagement({
 
   const opFailed: string = t("common.operationFailed");
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const requestOpenAIStrategy = useEntrustUiStore(
+    (state) => state.requestOpenAIStrategy,
+  );
 
-  const closeSheet = React.useCallback(() => {
-    setEntered(false);
-    window.setTimeout(() => onClose(), 300);
-  }, [onClose]);
+  const closeSheet = React.useCallback(
+    (afterClose?: () => void) => {
+      setEntered(false);
+      window.setTimeout(() => {
+        onClose();
+        afterClose?.();
+      }, 300);
+    },
+    [onClose],
+  );
 
   const { data: stakePlansResponse, isPending: plansPending } = useQuery({
     queryKey: ["stakePlans", 2, locale],
@@ -312,7 +323,10 @@ export function FinancialManagement({
       });
       toast.success(t("entrust.deploySuccess"));
       setAmount("");
-      closeSheet();
+      closeSheet(() => {
+        requestOpenAIStrategy();
+        router.push("/");
+      });
     } catch (error) {
       toast.error(getErrorMessage(error, opFailed));
     } finally {
@@ -352,7 +366,7 @@ export function FinancialManagement({
           className={`absolute inset-0 bg-black/50 backdrop-blur-[6px] transition-opacity duration-300 ease-out ${
             entered ? "opacity-100" : "opacity-0"
           }`}
-          onClick={closeSheet}
+          onClick={() => closeSheet()}
         />
         <div
           className={`relative flex max-h-[min(602px,92dvh)] w-full flex-col overflow-hidden rounded-t-[12px] bg-white/90 shadow-[0_-12px_40px_rgba(0,0,0,0.15)] backdrop-blur-[6px] transition-transform duration-300 ease-out ${

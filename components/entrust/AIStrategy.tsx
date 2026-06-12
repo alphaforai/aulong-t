@@ -6,6 +6,7 @@ import { AppImage } from "@/components/AppImage";
 import { entrustAssets } from "./assets";
 import { teamAssets } from "@/components/team/assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import type { Locale } from "@/lib/local";
 import { applyRedeem, getStakeList } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import {
@@ -14,7 +15,6 @@ import {
 } from "@/lib/mobileShell";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { log } from "console";
 
 export type AIStrategyProps = {
   open: boolean;
@@ -37,6 +37,7 @@ type StakeItem = {
   statusLabel?: string;
   startedAt?: string;
   endAt?: string;
+  redeemedAt?: string;
   runDays?: number;
   remainDays?: number;
   progressPercent?: number;
@@ -56,7 +57,7 @@ type StrategyCardModel = {
   isActive: boolean;
   strategyName: string;
   startTime: string;
-  endTime: string;
+  endTime?: string;
   progressPercent?: number;
   progressTrack?: "light" | "dark";
   daysElapsed?: number;
@@ -88,16 +89,40 @@ function formatAmount(value: number | undefined) {
   });
 }
 
-function formatCountdown(totalSeconds: number) {
+function formatCountdown(totalSeconds: number, locale: Locale) {
   const sec = Math.max(0, Math.floor(totalSeconds));
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  const days = Math.floor(sec / 86400);
+  const hours = Math.floor((sec % 86400) / 3600);
+  const minutes = Math.floor((sec % 3600) / 60);
+  const seconds = sec % 60;
+
+  switch (locale) {
+    case "zh_CN":
+      return `${days}天${hours}时${minutes}分${seconds}秒`;
+    case "ja_JP":
+      return `${days}日${hours}時${minutes}分${seconds}秒`;
+    case "ko_KR":
+      return `${days}일 ${hours}시 ${minutes}분 ${seconds}초`;
+    case "vi_VN":
+      return `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`;
+    case "ms_MY":
+      return `${days} hari ${hours} jam ${minutes} min ${seconds} saat`;
+    default:
+      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
+}
+
+function resolveEndTime(stake: StakeItem): string | undefined {
+  const endAt = stake.endAt?.trim();
+  if (endAt) return endAt;
+  const redeemedAt = stake.redeemedAt?.trim();
+  if (redeemedAt) return redeemedAt;
+  return undefined;
 }
 
 function mapStakeToCard(
   stake: StakeItem,
+  locale: Locale,
   fallbackTitle: string,
   fallbackDesc: string,
   fallbackStatusActive: string,
@@ -122,7 +147,7 @@ function mapStakeToCard(
     isActive,
     strategyName: stake.planName || fallbackTitle,
     startTime: stake.startedAt || "—",
-    endTime: stake.endAt || "—",
+    endTime: resolveEndTime(stake),
     progressPercent: isActive ? progressPercent : undefined,
     progressTrack:
       progressPercent != null && progressPercent >= 90 ? "dark" : "light",
@@ -132,7 +157,7 @@ function mapStakeToCard(
       isActive && (Boolean(stake.canRedeem) || countdownSec > 0),
     redeemReady: Boolean(stake.canRedeem),
     redeemCountdown:
-      countdownSec > 0 ? formatCountdown(countdownSec) : undefined,
+      countdownSec > 0 ? formatCountdown(countdownSec, locale) : undefined,
   };
 }
 
@@ -171,7 +196,7 @@ function StrategyRecordCard({
   redeeming: boolean;
   onRedeem: (stakeId: number) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const statusColor = record.isActive ? "bg-[#2cb360]" : "bg-[#d76464]";
   const statusTextColor = record.isActive ? "text-[#2cb360]" : "text-[#d76464]";
 
@@ -255,11 +280,13 @@ function StrategyRecordCard({
               {record.startTime}
             </span>
           </DetailCell>
-          <DetailCell label={t("entrust.aiStrategy.endTime")}>
-            <span className="text-xs font-medium text-[#333]">
-              {record.endTime}
-            </span>
-          </DetailCell>
+          {record.endTime ? (
+            <DetailCell label={t("entrust.aiStrategy.endTime")}>
+              <span className="text-xs font-medium text-[#333]">
+                {record.endTime}
+              </span>
+            </DetailCell>
+          ) : null}
         </div>
 
         {record.progressPercent != null &&
@@ -345,7 +372,7 @@ function StrategyRecordCard({
 }
 
 export function AIStrategy({ open, onClose }: AIStrategyProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const [entered, setEntered] = React.useState(false);
   const [tab, setTab] = React.useState<TabId>("deploying");
@@ -381,8 +408,6 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     refetchInterval: open ? 2000 : false,
     refetchOnWindowFocus: false,
   });
-
-  console.log(stakeListResponse);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -423,6 +448,7 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     for (const stake of list) {
       const card = mapStakeToCard(
         stake,
+        locale,
         fallbackTitle,
         fallbackDesc,
         fallbackActive,
@@ -439,6 +465,7 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     return { deployingRecords: deploying, historyRecords: history };
   }, [
     stakeListResponse,
+    locale,
     fallbackTitle,
     fallbackDesc,
     fallbackActive,

@@ -6,12 +6,8 @@ import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import {
-  applyWithdrawal,
-  getUserAssets,
-  getWithdrawalPreview,
-  getXcoinPrice,
-} from "@/lib/api/users";
+import { getPlatformConfig } from "@/lib/api/platformConfig";
+import { applyWithdrawal, getUserAssets, getXcoinPrice } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
@@ -53,7 +49,13 @@ const GRADIENT_INSET =
 const DISABLED_OVERLAY =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-[rgba(241,241,241,0.57)]";
 
-const MIN_WITHDRAW = 1;
+type WithdrawPlatformConfig = {
+  feeUsdtRatio?: number;
+  feeXRatio?: number;
+  maxWithdrawAmount?: number;
+  minWithdrawAmount?: number;
+  usdtWithdrawEnabled?: boolean;
+};
 
 function formatBalance(value: number): string {
   return value.toLocaleString("en-US", {
@@ -114,30 +116,48 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
 
   const aulPrice = Number(xcoinPriceResponse?.data?.currentPrice ?? 0);
 
-  const { data: withdrawalPreviewResponse, isPending: withdrawalPreviewPending } =
-    useQuery({
-      queryKey: ["withdrawalPreview", "USDT", walletAddress],
-      queryFn: () =>
-        getWithdrawalPreview({
-          currency: "USDT",
-          amount: 1,
-          txHash: "",
-        }),
-      enabled: open && Boolean(walletAddress),
-    });
+  const { data: withdrawConfig, isPending: withdrawConfigPending } = useQuery({
+    queryKey: ["platformConfig", "withdraw"],
+    queryFn: () => getPlatformConfig("withdraw"),
+    enabled: open,
+  });
 
-  const { withdrawUsdtFeeRate, withdrawAulFeeRate, feeRateX } = React.useMemo(() => {
-    const preview = withdrawalPreviewResponse?.data as
-      | { feeRateUsdt?: number; feeRateX?: number }
-      | undefined;
-    const feeRateUsdt = Number(preview?.feeRateUsdt);
-    const feeRateXValue = Number(preview?.feeRateX);
+  // withdrawConfig example:
+  //   {
+  //     aulAutoDisburseThreshold: 1,
+  //     aulWithdrawEnabled: true,            // 是否开启AUL提现
+  //     feeUsdtRatio: 10,                    // USDT提现中USDT手续费比例
+  //     feeXRatio: 5,                         // USDT提现中AUL手续费占比
+  //     maxWithdrawAmount: 0,                  // USDT提现单笔最大提现金额，0表示不限制
+  //     maxWithdrawAmountX: 0,                 // AUL提现单笔最大提现金额，0表示不限制
+  //     minWithdrawAmount: 5,                  // USDT提现单笔最小提现金额
+  //     minWithdrawAmountX: 0,                 // AUL提现单笔最小提现金额
+  //     usdtAutoDisburseThreshold: 1,
+  //     usdtWithdrawEnabled: true,           // 是否开启USDT提现
+  //     withdrawFeeRate: 15,                 // USDT提现总手续费比例
+  //     withdrawFeeRateX: 15,                // AUL提现总手续费比例
+  // }
+
+  const {
+    usdtWithdrawEnabled,
+    minWithdrawAmount,
+    maxWithdrawAmount,
+    feeUsdtRatio,
+    feeXRatio,
+  } = React.useMemo(() => {
+    const config = withdrawConfig as WithdrawPlatformConfig | undefined;
+    const min = Number(config?.minWithdrawAmount);
+    const max = Number(config?.maxWithdrawAmount);
+    const usdtFee = Number(config?.feeUsdtRatio);
+    const xFee = Number(config?.feeXRatio);
     return {
-      withdrawUsdtFeeRate: Number.isFinite(feeRateUsdt) ? feeRateUsdt / 100 : 0,
-      withdrawAulFeeRate: Number.isFinite(feeRateXValue) ? feeRateXValue / 100 : 0,
-      feeRateX: Number.isFinite(feeRateXValue) ? feeRateXValue : 0,
+      usdtWithdrawEnabled: config?.usdtWithdrawEnabled === true,
+      minWithdrawAmount: Number.isFinite(min) ? min : 0,
+      maxWithdrawAmount: Number.isFinite(max) ? max : 0,
+      feeUsdtRatio: Number.isFinite(usdtFee) ? usdtFee : 0,
+      feeXRatio: Number.isFinite(xFee) ? xFee : 0,
     };
-  }, [withdrawalPreviewResponse]);
+  }, [withdrawConfig]);
 
   const wallet = walletAddress as `0x${string}` | undefined;
   const chainReadEnabled = open && Boolean(wallet);
@@ -318,21 +338,29 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     parsedAmount != null &&
     parsedAmount > withdrawableUsdt;
   const belowMin =
-    parsedAmount != null && parsedAmount > 0 && parsedAmount < MIN_WITHDRAW;
+    parsedAmount != null &&
+    parsedAmount > 0 &&
+    minWithdrawAmount > 0 &&
+    parsedAmount < minWithdrawAmount;
+  const aboveMax =
+    parsedAmount != null &&
+    parsedAmount > 0 &&
+    maxWithdrawAmount > 0 &&
+    parsedAmount > maxWithdrawAmount;
   const hasAmount = parsedAmount != null && parsedAmount > 0;
 
   const feeAulWei = React.useMemo(() => {
-    if (parsedAmount == null || parsedAmount <= 0 || aulPrice <= 0) {
+    if (parsedAmount == null || parsedAmount <= 0 || aulPrice <= 0 || feeXRatio <= 0) {
       return BigInt(0);
     }
-    const feeAulAmount = (parsedAmount * withdrawAulFeeRate) / aulPrice;
+    const feeAulAmount = (parsedAmount * (feeXRatio / 100)) / aulPrice;
     if (feeAulAmount <= 0) return BigInt(0);
     try {
       return parseEther(sanitizeAmountInput(String(feeAulAmount)));
     } catch {
       return BigInt(0);
     }
-  }, [parsedAmount, aulPrice, withdrawAulFeeRate]);
+  }, [parsedAmount, aulPrice, feeXRatio]);
 
   const insufficientAulFee =
     !aulBalancePending &&
@@ -345,12 +373,14 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     !userAssetsPending &&
     !aulBalancePending &&
     !xcoinPricePending &&
-    !withdrawalPreviewPending &&
-    feeRateX > 0 &&
+    !withdrawConfigPending &&
+    usdtWithdrawEnabled &&
+    feeXRatio > 0 &&
     !isTxBusy &&
     hasAmount &&
     !exceedsLimit &&
     !belowMin &&
+    !aboveMax &&
     feeAulWei > BigInt(0) &&
     !insufficientAulFee;
 
@@ -364,21 +394,83 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
 
   const feeUsdt =
     parsedAmount != null && parsedAmount > 0
-      ? parsedAmount * withdrawUsdtFeeRate
+      ? (parsedAmount * feeUsdtRatio) / 100
       : 0;
 
   const feeAul =
     feeAulWei > BigInt(0) ? Number(formatEther(feeAulWei)) : 0;
 
   const feeAulLabel =
-    (xcoinPricePending || withdrawalPreviewPending) &&
+    (xcoinPricePending || withdrawConfigPending) &&
     parsedAmount != null &&
     parsedAmount > 0
       ? t("common.loadingDots")
       : formatBalance(feeAul);
 
+  const lastRangeToastKeyRef = React.useRef<string | null>(null);
+
+  const notifyAmountRangeError = React.useCallback(
+    (value: number | null) => {
+      if (withdrawConfigPending || value == null || value <= 0) {
+        lastRangeToastKeyRef.current = null;
+        return false;
+      }
+
+      if (minWithdrawAmount > 0 && value < minWithdrawAmount) {
+        const key = `below:${minWithdrawAmount}`;
+        if (lastRangeToastKeyRef.current !== key) {
+          lastRangeToastKeyRef.current = key;
+          toast.error(
+            t("mine.withdrawUsdtBelowMin", {
+              min: formatBalance(minWithdrawAmount),
+            }),
+          );
+        }
+        return true;
+      }
+
+      if (maxWithdrawAmount > 0 && value > maxWithdrawAmount) {
+        const key = `above:${maxWithdrawAmount}`;
+        if (lastRangeToastKeyRef.current !== key) {
+          lastRangeToastKeyRef.current = key;
+          toast.error(
+            t("mine.withdrawUsdtAboveMax", {
+              max: formatBalance(maxWithdrawAmount),
+            }),
+          );
+        }
+        return true;
+      }
+
+      lastRangeToastKeyRef.current = null;
+      return false;
+    },
+    [withdrawConfigPending, minWithdrawAmount, maxWithdrawAmount, t],
+  );
+
+  React.useEffect(() => {
+    if (!open || withdrawConfigPending) return;
+
+    const timer = window.setTimeout(() => {
+      notifyAmountRangeError(parsedAmount);
+    }, 600);
+
+    return () => window.clearTimeout(timer);
+  }, [open, withdrawConfigPending, parsedAmount, notifyAmountRangeError]);
+
+  const amountRangeInvalid = belowMin || aboveMax;
+
   const handleSubmit = () => {
-    if (!canSubmit || isTxBusy) return;
+    if (parsedAmount == null || isTxBusy || withdrawConfigPending) return;
+
+    if (!usdtWithdrawEnabled) {
+      toast.error(t("mine.withdrawUsdtClosed"));
+      return;
+    }
+
+    if (notifyAmountRangeError(parsedAmount)) return;
+
+    if (!canSubmit) return;
 
     if (insufficientAulFee) {
       toast.error(opFailed);
@@ -502,7 +594,9 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
                 <div className="flex flex-col gap-2">
                   <div
                     className={`flex h-12 items-center justify-between rounded-[6px] bg-[#eff0f1] px-[11px] py-1 ${
-                      exceedsLimit ? "border border-red-500" : "border border-transparent"
+                      exceedsLimit || amountRangeInvalid
+                        ? "border border-red-500"
+                        : "border border-transparent"
                     }`}
                   >
                     <input
@@ -513,6 +607,7 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
                       onChange={(e) =>
                         setAmount(sanitizeAmountInput(e.target.value))
                       }
+                      onBlur={() => notifyAmountRangeError(parsedAmount)}
                       className="min-w-0 flex-1 bg-transparent text-sm text-[#333] placeholder:text-[#949494] outline-none"
                     />
                     <div className="flex shrink-0 items-center gap-4">
@@ -542,6 +637,20 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
                         {t("mine.withdrawExceedLimit")}
                       </p>
                     ) : null}
+                    {belowMin ? (
+                      <p className="text-sm tracking-[0.18px] text-[#ea4747]">
+                        {t("mine.withdrawUsdtBelowMin", {
+                          min: formatBalance(minWithdrawAmount),
+                        })}
+                      </p>
+                    ) : null}
+                    {aboveMax ? (
+                      <p className="text-sm tracking-[0.18px] text-[#ea4747]">
+                        {t("mine.withdrawUsdtAboveMax", {
+                          max: formatBalance(maxWithdrawAmount),
+                        })}
+                      </p>
+                    ) : null}
 
                     <InfoRow
                       label={
@@ -558,7 +667,7 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
                     <InfoRow
                       label={t("mine.withdrawFee")}
                       value={
-                        withdrawalPreviewPending &&
+                        withdrawConfigPending &&
                         parsedAmount != null &&
                         parsedAmount > 0
                           ? t("common.loadingDots")
@@ -572,7 +681,7 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
 
             <button
               type="button"
-              disabled={!canSubmit || isTxBusy}
+              disabled={isTxBusy || !hasAmount || withdrawConfigPending}
               onClick={handleSubmit}
               className={`mx-auto mt-10 flex h-[58px] w-full max-w-[308px] flex-col items-center justify-center px-2.5 ${GRADIENT_BTN} disabled:cursor-not-allowed`}
             >

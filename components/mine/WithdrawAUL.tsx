@@ -6,11 +6,8 @@ import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import {
-  applyWithdrawal,
-  getUserAssets,
-  getWithdrawalPreview,
-} from "@/lib/api/users";
+import { getPlatformConfig } from "@/lib/api/platformConfig";
+import { applyWithdrawal, getUserAssets } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
@@ -42,7 +39,12 @@ const GRADIENT_INSET =
 const DISABLED_OVERLAY =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-[rgba(241,241,241,0.57)]";
 
-const MIN_WITHDRAW = 1;
+type WithdrawPlatformConfig = {
+  aulWithdrawEnabled?: boolean;
+  maxWithdrawAmountX?: number;
+  minWithdrawAmountX?: number;
+  withdrawFeeRateX?: number;
+};
 
 function formatBalance(value: number): string {
   return value.toLocaleString("en-US", {
@@ -86,28 +88,45 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
 
   const withdrawableAul = userAssetsResponse?.data?.xCoinBalance ?? 0;
 
-  const { data: withdrawalPreviewResponse, isPending: withdrawalPreviewPending } =
-    useQuery({
-      queryKey: ["withdrawalPreview", "AUL", walletAddress],
-      queryFn: () =>
-        getWithdrawalPreview({
-          currency: "AUL",
-          amount: 1,
-          txHash: "",
-        }),
-      enabled: open && Boolean(walletAddress),
-    });
+  const { data: withdrawConfig, isPending: withdrawConfigPending } = useQuery({
+    queryKey: ["platformConfig", "withdraw"],
+    queryFn: () => getPlatformConfig("withdraw"),
+    enabled: open,
+  });
 
-  const { withdrawAulFeeRate, feeRateX } = React.useMemo(() => {
-    const preview = withdrawalPreviewResponse?.data as
-      | { feeRateX?: number }
-      | undefined;
-    const feeRateXValue = Number(preview?.feeRateX);
+  // withdrawConfig example:
+//   {
+//     aulAutoDisburseThreshold: 1,          
+//     aulWithdrawEnabled: true,            // 是否开启AUL提现
+//     feeUsdtRatio: 10,                    // USDT提现中USDT手续费比例
+//     feeXRatio: 5,                         // USDT提现中AUL手续费占比
+//     maxWithdrawAmount: 0,                  // USDT提现单笔最大提现金额，0表示不限制
+//     maxWithdrawAmountX: 0,                 // AUL提现单笔最大提现金额，0表示不限制
+//     minWithdrawAmount: 5,                  // USDT提现单笔最小提现金额
+//     minWithdrawAmountX: 0,                 // AUL提现单笔最小提现金额
+//     usdtAutoDisburseThreshold: 1,
+//     usdtWithdrawEnabled: true,           // 是否开启USDT提现
+//     withdrawFeeRate: 15,                 // USDT提现总手续费比例
+//     withdrawFeeRateX: 15,                // AUL提现总手续费比例
+// }
+
+  const {
+    aulWithdrawEnabled,
+    minWithdrawAmountX,
+    maxWithdrawAmountX,
+    withdrawFeeRateX,
+  } = React.useMemo(() => {
+    const config = withdrawConfig as WithdrawPlatformConfig | undefined;
+    const min = Number(config?.minWithdrawAmountX);
+    const max = Number(config?.maxWithdrawAmountX);
+    const feeRate = Number(config?.withdrawFeeRateX);
     return {
-      withdrawAulFeeRate: Number.isFinite(feeRateXValue) ? feeRateXValue / 100 : 0,
-      feeRateX: Number.isFinite(feeRateXValue) ? feeRateXValue : 0,
+      aulWithdrawEnabled: config?.aulWithdrawEnabled === true,
+      minWithdrawAmountX: Number.isFinite(min) ? min : 0,
+      maxWithdrawAmountX: Number.isFinite(max) ? max : 0,
+      withdrawFeeRateX: Number.isFinite(feeRate) ? feeRate : 0,
     };
-  }, [withdrawalPreviewResponse]);
+  }, [withdrawConfig]);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -147,16 +166,26 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
     parsedAmount != null &&
     parsedAmount > withdrawableAul;
   const belowMin =
-    parsedAmount != null && parsedAmount > 0 && parsedAmount < MIN_WITHDRAW;
+    parsedAmount != null &&
+    parsedAmount > 0 &&
+    minWithdrawAmountX > 0 &&
+    parsedAmount < minWithdrawAmountX;
+  const aboveMax =
+    parsedAmount != null &&
+    parsedAmount > 0 &&
+    maxWithdrawAmountX > 0 &&
+    parsedAmount > maxWithdrawAmountX;
   const hasAmount = parsedAmount != null && parsedAmount > 0;
   const canSubmit =
     !userAssetsPending &&
-    !withdrawalPreviewPending &&
-    feeRateX > 0 &&
+    !withdrawConfigPending &&
+    aulWithdrawEnabled &&
+    withdrawFeeRateX > 0 &&
     !isSubmitting &&
     hasAmount &&
     !exceedsLimit &&
-    !belowMin;
+    !belowMin &&
+    !aboveMax;
 
   const withdrawableAulLabel = userAssetsPending
     ? t("common.loadingDots")
@@ -164,16 +193,41 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
 
   const feeAul =
     parsedAmount != null && parsedAmount > 0
-      ? parsedAmount * withdrawAulFeeRate
+      ? (parsedAmount * withdrawFeeRateX) / 100
       : 0;
 
   const feeAulLabel =
-    withdrawalPreviewPending && parsedAmount != null && parsedAmount > 0
+    withdrawConfigPending && parsedAmount != null && parsedAmount > 0
       ? t("common.loadingDots")
       : formatBalance(feeAul);
 
   const handleSubmit = async () => {
-    if (!canSubmit || parsedAmount == null) return;
+    if (parsedAmount == null || isSubmitting || withdrawConfigPending) return;
+
+    if (!aulWithdrawEnabled) {
+      toast.error(t("mine.withdrawClosed"));
+      return;
+    }
+
+    if (minWithdrawAmountX > 0 && parsedAmount < minWithdrawAmountX) {
+      toast.error(
+        t("mine.withdrawAulBelowMin", {
+          min: formatBalance(minWithdrawAmountX),
+        }),
+      );
+      return;
+    }
+
+    if (maxWithdrawAmountX > 0 && parsedAmount > maxWithdrawAmountX) {
+      toast.error(
+        t("mine.withdrawAulAboveMax", {
+          max: formatBalance(maxWithdrawAmountX),
+        }),
+      );
+      return;
+    }
+
+    if (!canSubmit) return;
 
     setIsSubmitting(true);
     try {
@@ -250,7 +304,7 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
               <FieldBlock label={t("mine.withdrawCurrency")}>
                 <button
                   type="button"
-                  onClick={() => toast.success(t("common.notOpen"))}
+                //   onClick={() => toast.success(t("common.notOpen"))}
                   className="flex h-12 w-full items-center justify-start rounded-[6px] bg-[#eff0f1] px-[11px] py-1"
                 >
                   <span className="flex items-center gap-1.5">
