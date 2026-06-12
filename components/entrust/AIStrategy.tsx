@@ -31,6 +31,7 @@ type StakeItem = {
   planName?: string;
   planImageUrl?: string;
   planIntro?: string;
+  planType?: number;
   amount?: number;
   accumulatedEarnings?: number;
   status?: number;
@@ -53,6 +54,7 @@ type StrategyCardModel = {
   description: string;
   depositedAmount: string;
   cumulativeEarnings: string;
+  cumulativeEarningsUnit: "USDT" | "AUL";
   statusLabel: string;
   isActive: boolean;
   strategyName: string;
@@ -169,6 +171,7 @@ function mapStakeToCard(
     description: stake.planIntro || fallbackDesc,
     depositedAmount: formatAmount(stake.amount),
     cumulativeEarnings: formatAmount(stake.accumulatedEarnings),
+    cumulativeEarningsUnit: stake.planType === 2 ? "AUL" : "USDT",
     statusLabel: resolveStakeStatusLabel(stake, status, statusLabels),
     isActive,
     strategyName: stake.planName || fallbackTitle,
@@ -192,13 +195,19 @@ function mapStakeToCard(
   };
 }
 
-function AmountValue({ amount }: { amount: string }) {
+function AmountValue({
+  amount,
+  unit = "USDT",
+}: {
+  amount: string;
+  unit?: "USDT" | "AUL";
+}) {
   return (
     <p className="whitespace-nowrap text-[0px] text-[rgba(0,0,0,0.8)]">
       <span className="font-mulish text-sm font-medium leading-normal">
         {amount}
       </span>
-      <span className="font-mulish text-[10px] leading-normal"> USDT</span>
+      <span className="font-mulish text-[10px] leading-normal"> {unit}</span>
     </p>
   );
 }
@@ -276,7 +285,10 @@ function StrategyRecordCard({
               <p className="text-xs text-black/70">
                 {t("entrust.aiStrategy.cumulativeEarnings")}
               </p>
-              <AmountValue amount={record.cumulativeEarnings} />
+              <AmountValue
+                amount={record.cumulativeEarnings}
+                unit={record.cumulativeEarningsUnit}
+              />
             </div>
           </div>
         </div>
@@ -439,6 +451,7 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
         lastId: undefined,
         userId,
         planId: undefined,
+        planType: undefined,
         status: undefined,
         walletAddress,
         txHash: undefined,
@@ -451,8 +464,6 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
     refetchInterval: open ? 2000 : false,
     refetchOnWindowFocus: false,
   });
-
-  console.log("stakeListResponse", stakeListResponse);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);

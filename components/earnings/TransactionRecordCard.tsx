@@ -13,9 +13,13 @@ const PAGE_SIZE = 7;
 const TX_POLL_INTERVAL_MS = 2000;
 const TX_CURRENCY = "USDT";
 const SOLANA_EXPLORER_ADDRESS_BASE = "https://explorer.solana.com/address/";
+const BSC_EXPLORER_ADDRESS_BASE = "https://bscscan.com/address/";
+
+type TxChain = "SOL" | "BSC";
 
 type SolanaBlockItem = {
   id?: number;
+  chain?: TxChain | string;
   slot?: number;
   blockHash?: string;
   leader?: string;
@@ -29,6 +33,16 @@ type SolanaBlockItem = {
   blockTimeAt?: string;
   createdAt?: string;
 };
+
+function getExplorerAddressUrl(
+  chain: string | undefined,
+  address: string,
+): string | null {
+  if (!address) return null;
+  if (chain === "BSC") return `${BSC_EXPLORER_ADDRESS_BASE}${address}`;
+  if (chain === "SOL") return `${SOLANA_EXPLORER_ADDRESS_BASE}${address}`;
+  return null;
+}
 
 function shortAddress(value?: string | null) {
   if (!value || typeof value !== "string") return "—";
@@ -75,6 +89,7 @@ export function TransactionRecordCard() {
     refetchInterval: TX_POLL_INTERVAL_MS,
     refetchOnWindowFocus: true,
   });
+
 
   React.useEffect(() => {
     const handlePageShow = () => {
@@ -158,6 +173,7 @@ export function TransactionRecordCard() {
           records.map((record, index) => (
             <Fragment key={record.id ?? `${record.blockHash}-${index}`}>
               <TransactionRow
+                chain={record.chain}
                 address={record.leader || record.blockHash}
                 amount={`+${formatAmount(record.relatedTotalReward)}`}
                 currency={TX_CURRENCY}
@@ -202,12 +218,14 @@ function RecordDivider() {
 }
 
 function TransactionRow({
+  chain,
   address,
   amount,
   currency,
   time,
   tradeTimeLabel,
 }: {
+  chain?: string | null;
   address?: string | null;
   amount: string;
   currency: string;
@@ -215,9 +233,7 @@ function TransactionRow({
   tradeTimeLabel: string;
 }) {
   const fullAddress = address?.trim() ?? "";
-  const explorerUrl = fullAddress
-    ? `${SOLANA_EXPLORER_ADDRESS_BASE}${fullAddress}`
-    : null;
+  const explorerUrl = getExplorerAddressUrl(chain ?? undefined, fullAddress);
 
   const handleOpenExplorer = () => {
     if (!explorerUrl) return;
