@@ -2,7 +2,7 @@ import { createConfig, http, fallback } from "wagmi";
 import { bsc } from "wagmi/chains";
 import { injected, walletConnect } from "wagmi/connectors";
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID?.trim();
 
 const DEFAULT_DAPP_ORIGIN = "https://aulong.australianlobster.xyz";
 
@@ -21,6 +21,23 @@ function getDappOrigin(): string {
 
 const dappOrigin = getDappOrigin();
 
+const connectors = [
+  injected(),
+  ...(projectId
+    ? [
+        walletConnect({
+          projectId,
+          metadata: {
+            name: "Aulong",
+            description: "Aulong",
+            url: dappOrigin,
+            icons: [`${dappOrigin}/icon.png`],
+          },
+        }),
+      ]
+    : []),
+];
+
 export const config = createConfig({
   chains: [bsc],
   transports: {
@@ -30,17 +47,6 @@ export const config = createConfig({
       http(),
     ]),
   },
-  connectors: [
-    injected(),
-    walletConnect({
-      projectId: projectId ?? "",
-      metadata: {
-        name: "Aulong",
-        description: "Aulong",
-        url: dappOrigin,
-        icons: [`${dappOrigin}/icon.png`],
-      },
-    }),
-  ],
+  connectors,
   ssr: true,
 });

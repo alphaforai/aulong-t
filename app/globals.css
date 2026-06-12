@@ -100,4 +100,25 @@ html[lang="ms-MY"] [class*="font-noto-sc-black"] {
       animation: none;
     }
   }
+
+  /* Android 9+：固定 pb-4；支持 env() 的设备追加 safe-area */
+  .pb-safe-compat {
+    padding-bottom: 16px;
+  }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .pb-safe-compat {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+  }
+
+  .pb-safe-compat-lg {
+    padding-bottom: 20px;
+  }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .pb-safe-compat-lg {
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+  }
 }

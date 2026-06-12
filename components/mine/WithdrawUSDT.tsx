@@ -27,6 +27,7 @@ import { formatEther, maxUint256, parseEther } from "viem";
 import { toast } from "sonner";
 import { AulContract } from "@/lib/abis/aul";
 import { QuickswapContract } from "@/lib/abis/quickswap";
+import { WithdrawalRecordPanel } from "./WithdrawalRecordPanel";
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
@@ -80,6 +81,7 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
   const walletAddress = useUserInfoStore((state) => state.userInfo.walletAddress);
   const [entered, setEntered] = React.useState(false);
   const [amount, setAmount] = React.useState("");
+  const [showRecords, setShowRecords] = React.useState(false);
   const [isWithdrawTxActive, setIsWithdrawTxActive] = React.useState(false);
   const txStepRef = React.useRef<WithdrawTxStep>("idle");
   const pendingFeeAulWeiRef = React.useRef(BigInt(0));
@@ -466,10 +468,10 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
             </h1>
             <button
               type="button"
-              onClick={() => toast.success(t("common.notOpen"))}
+              onClick={() => setShowRecords(true)}
               className="absolute right-3 text-sm leading-[26px] text-[#272727]"
             >
-              {t("mine.withdrawRules")}
+              {t("mine.withdrawRecordBtn")}
             </button>
           </header>
 
@@ -586,6 +588,10 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
           </div>
         </div>
       </div>
+      <WithdrawalRecordPanel
+        open={showRecords}
+        onClose={() => setShowRecords(false)}
+      />
     </div>
   );
 }

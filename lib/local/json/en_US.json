@@ -289,7 +289,19 @@
     "withdrawFee": "Fee",
     "withdrawExceedLimit": "Exceeds withdrawable limit",
     "withdrawSubmit": "Withdraw now",
-    "withdrawSuccess": "Withdrawal submitted"
+    "withdrawSuccess": "Withdrawal submitted",
+    "withdrawRecordTitle": "Withdrawal history",
+    "withdrawRecordBtn": "History",
+    "withdrawRecordFilterTime": "Time",
+    "withdrawRecordFilterStatus": "Status",
+    "withdrawRecordStatusAll": "All",
+    "withdrawRecordStatusPending": "Pending review",
+    "withdrawRecordStatusSuccess": "Success",
+    "withdrawRecordStatusRejected": "Rejected",
+    "withdrawRecordRejectReason": "Reason: {reason}",
+    "withdrawRecordFee": "Fee",
+    "withdrawRecordEmpty": "No withdrawal records",
+    "withdrawRecordLoadFailed": "Failed to load withdrawal records"
   },
   "earnings": {
     "totalEarnings": "Total AI Agent Earnings (USDT)",
