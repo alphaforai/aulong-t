@@ -48,21 +48,21 @@ export function EarningsSummaryCard() {
     enabled: Boolean(walletAddress),
   });
 
-  const totalIncomeUsdt = userAssetsResponse?.data?.totalIncomeUsdt ?? 0;
+  const totalIncomeUsdt = userAssetsResponse?.data?.stakeTotalUsdtIncome ?? 0;
   const totalIncomeLabel = userAssetsPending
     ? t("common.loadingDots")
     : formatIncome(totalIncomeUsdt);
 
-  const usdtBalance = userAssetsResponse?.data?.usdtBalance ?? 0;
+  const usdtBalance = userAssetsResponse?.data?.stakeUsdtIncome ?? 0;
   const usdtBalanceLabel = userAssetsPending
     ? t("common.loadingDots")
     : formatIncome(usdtBalance);
 
-  const xcoinReleasedBalance =
-    userAssetsResponse?.data?.xCoinReleasedBalance ?? 0;
+  const lastUsdtIncome =
+    userAssetsResponse?.data?.lastUsdtIncome ?? 0;
   const xcoinReleasedBalanceLabel = userAssetsPending
     ? t("common.loadingDots")
-    : formatIncome(xcoinReleasedBalance);
+    : formatIncome(lastUsdtIncome);
 
   return (
     <>
