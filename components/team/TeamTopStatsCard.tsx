@@ -18,14 +18,18 @@ export type TeamTopStatsCardProps = {
   smallAreaStake?: number;
   directValidUserCount?: number;
   personalStake?: number;
+  teamIncome?: number;
+  referralIncome?: number;
 };
 
-/** 顶部三列统计 — Figma 535:6506 */
+/** 顶部三列统计 + 团队/推荐奖励 — Figma 811:645 */
 export function TeamTopStatsCard({
   isPending,
   smallAreaStake,
   directValidUserCount,
   personalStake,
+  teamIncome,
+  referralIncome,
 }: TeamTopStatsCardProps) {
   const { t } = useTranslation();
   const loadingLabel = t("common.loadingDots");
@@ -60,13 +64,13 @@ export function TeamTopStatsCard({
   ];
 
   return (
-    <section className="relative h-[134px] w-full shrink-0 overflow-hidden rounded-[12px] border border-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+    <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
       <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
         <AppImage
           src={teamAssets.statsPanelBg}
           alt=""
           width={371}
-          height={154}
+          height={228}
           className="absolute max-w-none"
           style={{
             height: "114.93%",
@@ -77,13 +81,38 @@ export function TeamTopStatsCard({
         />
       </div>
 
-      <div className="relative flex h-full items-center justify-between px-3">
-        {topStats.map((stat, index) => (
-          <Fragment key={stat.label}>
-            {index > 0 ? <StatDivider /> : null}
-            <StatColumn {...stat} loadingLabel={loadingLabel} />
-          </Fragment>
-        ))}
+      <div className="relative flex flex-col gap-3 px-3 py-4">
+        <div className="flex items-center justify-between">
+          {topStats.map((stat, index) => (
+            <Fragment key={stat.label}>
+              {index > 0 ? <StatDivider /> : null}
+              <StatColumn {...stat} loadingLabel={loadingLabel} />
+            </Fragment>
+          ))}
+        </div>
+
+        <div className="flex gap-3">
+          <RewardCard
+            label={t("team.teamIncome")}
+            value={displayTeamValue(
+              isPending,
+              formatAmount(teamIncome),
+              loadingLabel,
+            )}
+            iconSrc={teamAssets.rewardTeamIcon}
+            loadingLabel={loadingLabel}
+          />
+          <RewardCard
+            label={t("team.referralIncome")}
+            value={displayTeamValue(
+              isPending,
+              formatAmount(referralIncome),
+              loadingLabel,
+            )}
+            iconSrc={teamAssets.rewardReferralIcon}
+            loadingLabel={loadingLabel}
+          />
+        </div>
       </div>
     </section>
   );
@@ -147,6 +176,55 @@ function StatColumn({
         <p className="w-full text-sm leading-normal tracking-[0.24px] text-[rgba(0,0,0,0.6)]">
           {unit}
         </p>
+      </div>
+    </div>
+  );
+}
+
+function RewardCard({
+  label,
+  value,
+  iconSrc,
+  loadingLabel,
+}: {
+  label: string;
+  value: string;
+  iconSrc: string;
+  loadingLabel: string;
+}) {
+  return (
+    <div className="relative flex min-w-0 flex-1 items-center overflow-hidden rounded-[8px] border border-white bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 py-3.5 pl-2 pr-[52px]">
+        <p className="text-xs leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
+        <p className="whitespace-nowrap text-[0px] text-[#333]">
+          <span
+            className={`font-mulish text-base font-medium leading-normal ${
+              value === loadingLabel ? "text-[#8b8b8b]" : "text-[#333]"
+            }`}
+          >
+            {value}{" "}
+          </span>
+          <span className="font-mulish text-[10px] leading-normal text-[#333]">
+            USDT
+          </span>
+        </p>
+      </div>
+
+      <div className="pointer-events-none absolute right-[6px] top-1/2 size-11 -translate-y-1/2">
+        <AppImage
+          src={teamAssets.subCardIconGlow}
+          alt=""
+          width={44}
+          height={44}
+          className="absolute inset-0 size-full max-w-none"
+        />
+        <AppImage
+          src={iconSrc}
+          alt=""
+          width={34}
+          height={34}
+          className="absolute left-1/2 top-1/2 size-[34px] -translate-x-1/2 -translate-y-1/2 max-w-none object-contain"
+        />
       </div>
     </div>
   );

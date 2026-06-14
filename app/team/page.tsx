@@ -33,6 +33,8 @@ type TeamOverview = {
   bigAreaStakeChangeRate?: number;
   teamTotalStakeYesterdayDelta?: number;
   teamTotalStakeChangeRate?: number;
+  teamIncome?: number;
+  referralIncome?: number;
 };
 
 export default function TeamPage() {
@@ -68,6 +70,8 @@ export default function TeamPage() {
         smallAreaStake={overview?.smallAreaStake}
         directValidUserCount={overview?.directValidUserCount}
         personalStake={overview?.personalStake}
+        teamIncome={overview?.teamIncome}
+        referralIncome={overview?.referralIncome}
       />
       <TeamPerformanceCard
         isPending={isPending}

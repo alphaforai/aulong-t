@@ -209,7 +209,9 @@
     "directPaginationAria": "直推详情分页",
     "smallAreaPerformanceCard": "小区业绩",
     "directReferralCard": "直推委托",
-    "personalEntrustCountCard": "个人委托"
+    "personalEntrustCountCard": "个人委托",
+    "teamIncome": "团队奖励",
+    "referralIncome": "推荐奖励"
   },
   "mine": {
     "totalAssets": "总资产(USDT)",
@@ -281,8 +283,8 @@
     "withdrawRules": "提现规则",
     "withdrawCurrency": "币种",
     "withdrawAmount": "数量",
-    "withdrawAmountPlaceholder": "最少1 USDT",
-    "withdrawAulAmountPlaceholder": "最少1 AUL",
+    "withdrawAmountPlaceholder": "最少 {min} USDT",
+    "withdrawAulAmountPlaceholder": "最少 {min} AUL",
     "withdrawAll": "全部",
     "withdrawableUsdt": "可提余额 USDT",
     "withdrawableAul": "可提余额 AUL",
@@ -290,6 +292,8 @@
     "availableAul": "可用余额 AUL",
     "withdrawFee": "手续费",
     "withdrawExceedLimit": "超过可提现额度",
+    "withdrawAmountInvalid": "请输入大于 0 的提现金额",
+    "withdrawInsufficientAulFee": "AUL 余额不足以支付手续费",
     "withdrawClosed": "提现已关闭",
     "withdrawUsdtClosed": "USDT提现已关闭",
     "withdrawUsdtBelowMin": "提现金额不能低于 {min} USDT",

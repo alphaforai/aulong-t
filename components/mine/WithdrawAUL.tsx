@@ -7,7 +7,7 @@ import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { getPlatformConfig } from "@/lib/api/platformConfig";
-import { applyWithdrawal, getUserAssets } from "@/lib/api/users";
+import { applyWithdrawal, getUserAssets, getWithdrawalPreview } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import {
   sidePanelOverlayFrame,
@@ -162,31 +162,39 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
   }, [open, walletAddress, refetchUserAssets]);
 
   const parsedAmount = parseAmountInput(amount);
-  const exceedsLimit =
-    !userAssetsPending &&
+  const hasInput = amount.trim().length > 0;
+  const notPositive =
+    hasInput && (parsedAmount == null || parsedAmount <= 0);
+
+  const singleWithdrawMaxLimit =
+    maxWithdrawAmountX > 0
+      ? Math.min(maxWithdrawAmountX, withdrawableAul)
+      : withdrawableAul;
+
+  const exceedsMaxLimit =
     parsedAmount != null &&
-    parsedAmount > withdrawableAul;
+    parsedAmount > 0 &&
+    parsedAmount > singleWithdrawMaxLimit;
+
   const belowMin =
     parsedAmount != null &&
     parsedAmount > 0 &&
     minWithdrawAmountX > 0 &&
     parsedAmount < minWithdrawAmountX;
-  const aboveMax =
-    parsedAmount != null &&
-    parsedAmount > 0 &&
-    maxWithdrawAmountX > 0 &&
-    parsedAmount > maxWithdrawAmountX;
-  const hasAmount = parsedAmount != null && parsedAmount > 0;
+
+  const hasValidationError =
+    notPositive || exceedsMaxLimit || belowMin;
+
   const canSubmit =
     !userAssetsPending &&
     !withdrawConfigPending &&
     aulWithdrawEnabled &&
     withdrawFeeRateX > 0 &&
     !isSubmitting &&
-    hasAmount &&
-    !exceedsLimit &&
-    !belowMin &&
-    !aboveMax;
+    hasInput &&
+    parsedAmount != null &&
+    parsedAmount > 0 &&
+    !hasValidationError;
 
   const withdrawableAulLabel = userAssetsPending
     ? t("common.loadingDots")
@@ -202,36 +210,29 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
       ? t("common.loadingDots")
       : formatBalance(feeAul);
 
+  const amountPlaceholder = withdrawConfigPending
+    ? t("common.loadingDots")
+    : t("mine.withdrawAulAmountPlaceholder", {
+        min: formatBalance(minWithdrawAmountX),
+      });
+
   const handleSubmit = async () => {
-    if (parsedAmount == null || isSubmitting || withdrawConfigPending) return;
+    if (!canSubmit || isSubmitting || parsedAmount == null || withdrawConfigPending) {
+      return;
+    }
 
     if (!aulWithdrawEnabled) {
       toast.error(t("mine.withdrawClosed"));
       return;
     }
 
-    if (minWithdrawAmountX > 0 && parsedAmount < minWithdrawAmountX) {
-      toast.error(
-        t("mine.withdrawAulBelowMin", {
-          min: formatBalance(minWithdrawAmountX),
-        }),
-      );
-      return;
-    }
-
-    if (maxWithdrawAmountX > 0 && parsedAmount > maxWithdrawAmountX) {
-      toast.error(
-        t("mine.withdrawAulAboveMax", {
-          max: formatBalance(maxWithdrawAmountX),
-        }),
-      );
-      return;
-    }
-
-    if (!canSubmit) return;
-
     setIsSubmitting(true);
     try {
+      await getWithdrawalPreview({
+        currency: "AUL",
+        amount: parsedAmount,
+        txHash: "",
+      });
       await applyWithdrawal({
         currency: "AUL",
         amount: parsedAmount,
@@ -329,13 +330,15 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
                 <div className="flex flex-col gap-2">
                   <div
                     className={`flex h-12 items-center justify-between rounded-[6px] bg-[#eff0f1] px-[11px] py-1 ${
-                      exceedsLimit ? "border border-red-500" : "border border-transparent"
+                      hasValidationError
+                        ? "border border-red-500"
+                        : "border border-transparent"
                     }`}
                   >
                     <input
                       type="text"
                       inputMode="decimal"
-                      placeholder={t("mine.withdrawAulAmountPlaceholder")}
+                      placeholder={amountPlaceholder}
                       value={amount}
                       onChange={(e) =>
                         setAmount(sanitizeAmountInput(e.target.value))
@@ -364,15 +367,27 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    {exceedsLimit ? (
+                    {notPositive ? (
+                      <p className="text-sm tracking-[0.18px] text-[#ea4747]">
+                        {t("mine.withdrawAmountInvalid")}
+                      </p>
+                    ) : null}
+                    {exceedsMaxLimit ? (
                       <p className="text-sm tracking-[0.18px] text-[#ea4747]">
                         {t("mine.withdrawExceedLimit")}
+                      </p>
+                    ) : null}
+                    {belowMin ? (
+                      <p className="text-sm tracking-[0.18px] text-[#ea4747]">
+                        {t("mine.withdrawAulBelowMin", {
+                          min: formatBalance(minWithdrawAmountX),
+                        })}
                       </p>
                     ) : null}
 
                     <InfoRow
                       label={
-                        exceedsLimit
+                        exceedsMaxLimit
                           ? t("mine.availableAul")
                           : t("mine.withdrawableAul")
                       }

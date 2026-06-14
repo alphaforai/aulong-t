@@ -209,7 +209,9 @@
     "directPaginationAria": "直紹介詳細ページネーション",
     "smallAreaPerformanceCard": "小区業績",
     "directReferralCard": "直紹介",
-    "personalEntrustCountCard": "個人委託"
+    "personalEntrustCountCard": "個人委託",
+    "teamIncome": "チーム報酬",
+    "referralIncome": "紹介報酬"
   },
   "mine": {
     "totalAssets": "総資産(USDT)",
@@ -281,8 +283,8 @@
     "withdrawRules": "出金ルール",
     "withdrawCurrency": "通貨",
     "withdrawAmount": "数量",
-    "withdrawAmountPlaceholder": "最低1 USDT",
-    "withdrawAulAmountPlaceholder": "最低1 AUL",
+    "withdrawAmountPlaceholder": "最低{min} USDT",
+    "withdrawAulAmountPlaceholder": "最低{min} AUL",
     "withdrawAll": "すべて",
     "withdrawableUsdt": "出金可能残高 USDT",
     "withdrawableAul": "出金可能残高 AUL",
@@ -290,6 +292,8 @@
     "availableAul": "利用可能残高 AUL",
     "withdrawFee": "手数料",
     "withdrawExceedLimit": "出金可能額を超えています",
+    "withdrawAmountInvalid": "0より大きい出金額を入力してください",
+    "withdrawInsufficientAulFee": "手数料を支払うAUL残高が不足しています",
     "withdrawClosed": "出金は停止中です",
     "withdrawUsdtClosed": "USDT出金は停止中です",
     "withdrawUsdtBelowMin": "出金額は {min} USDT 以上である必要があります",

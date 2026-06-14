@@ -209,7 +209,9 @@
     "directPaginationAria": "Penomboran butiran rujukan langsung",
     "smallAreaPerformanceCard": "Prestasi kecil",
     "directReferralCard": "Rujukan langsung",
-    "personalEntrustCountCard": "Amanah peribadi"
+    "personalEntrustCountCard": "Amanah peribadi",
+    "teamIncome": "Ganjaran pasukan",
+    "referralIncome": "Ganjaran rujukan"
   },
   "mine": {
     "totalAssets": "Jumlah aset (USDT)",
@@ -281,8 +283,8 @@
     "withdrawRules": "Peraturan pengeluaran",
     "withdrawCurrency": "Mata wang",
     "withdrawAmount": "Jumlah",
-    "withdrawAmountPlaceholder": "Minimum 1 USDT",
-    "withdrawAulAmountPlaceholder": "Minimum 1 AUL",
+    "withdrawAmountPlaceholder": "Minimum {min} USDT",
+    "withdrawAulAmountPlaceholder": "Minimum {min} AUL",
     "withdrawAll": "Semua",
     "withdrawableUsdt": "Baki boleh keluar USDT",
     "withdrawableAul": "Baki boleh keluar AUL",
@@ -290,6 +292,8 @@
     "availableAul": "Baki tersedia AUL",
     "withdrawFee": "Yuran",
     "withdrawExceedLimit": "Melebihi had pengeluaran",
+    "withdrawAmountInvalid": "Masukkan jumlah pengeluaran lebih daripada 0",
+    "withdrawInsufficientAulFee": "Baki AUL tidak mencukupi untuk bayaran yuran",
     "withdrawClosed": "Pengeluaran ditutup",
     "withdrawUsdtClosed": "Pengeluaran USDT ditutup",
     "withdrawUsdtBelowMin": "Jumlah pengeluaran tidak boleh kurang daripada {min} USDT",

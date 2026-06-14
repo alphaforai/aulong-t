@@ -209,7 +209,9 @@
     "directPaginationAria": "Direct referral pagination",
     "smallAreaPerformanceCard": "Community",
     "directReferralCard": "Direct",
-    "personalEntrustCountCard": "Personal"
+    "personalEntrustCountCard": "Personal",
+    "teamIncome": "Team rewards",
+    "referralIncome": "Referral rewards"
   },
   "mine": {
     "totalAssets": "Total assets (USDT)",
@@ -281,8 +283,8 @@
     "withdrawRules": "Withdrawal rules",
     "withdrawCurrency": "Currency",
     "withdrawAmount": "Amount",
-    "withdrawAmountPlaceholder": "Minimum 1 USDT",
-    "withdrawAulAmountPlaceholder": "Minimum 1 AUL",
+    "withdrawAmountPlaceholder": "Minimum {min} USDT",
+    "withdrawAulAmountPlaceholder": "Minimum {min} AUL",
     "withdrawAll": "All",
     "withdrawableUsdt": "Withdrawable balance USDT",
     "withdrawableAul": "Withdrawable balance AUL",
@@ -290,6 +292,8 @@
     "availableAul": "Available balance AUL",
     "withdrawFee": "Fee",
     "withdrawExceedLimit": "Exceeds withdrawable limit",
+    "withdrawAmountInvalid": "Enter an amount greater than 0",
+    "withdrawInsufficientAulFee": "Insufficient AUL balance for the fee",
     "withdrawClosed": "Withdrawals are closed",
     "withdrawUsdtClosed": "USDT withdrawals are closed",
     "withdrawUsdtBelowMin": "Amount must be at least {min} USDT",

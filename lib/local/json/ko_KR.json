@@ -209,7 +209,9 @@
     "directPaginationAria": "직추천 상세 페이지네이션",
     "smallAreaPerformanceCard": "소구역 실적",
     "directReferralCard": "직추천",
-    "personalEntrustCountCard": "개인 위탁"
+    "personalEntrustCountCard": "개인 위탁",
+    "teamIncome": "팀 보상",
+    "referralIncome": "추천 보상"
   },
   "mine": {
     "totalAssets": "총 자산(USDT)",
@@ -281,8 +283,8 @@
     "withdrawRules": "출금 규칙",
     "withdrawCurrency": "통화",
     "withdrawAmount": "수량",
-    "withdrawAmountPlaceholder": "최소 1 USDT",
-    "withdrawAulAmountPlaceholder": "최소 1 AUL",
+    "withdrawAmountPlaceholder": "최소 {min} USDT",
+    "withdrawAulAmountPlaceholder": "최소 {min} AUL",
     "withdrawAll": "전체",
     "withdrawableUsdt": "출금 가능 잔액 USDT",
     "withdrawableAul": "출금 가능 잔액 AUL",
@@ -290,6 +292,8 @@
     "availableAul": "사용 가능 잔액 AUL",
     "withdrawFee": "수수료",
     "withdrawExceedLimit": "출금 한도 초과",
+    "withdrawAmountInvalid": "0보다 큰 출금 금액을 입력하세요",
+    "withdrawInsufficientAulFee": "수수료를 지불할 AUL 잔액이 부족합니다",
     "withdrawClosed": "출금이 중단되었습니다",
     "withdrawUsdtClosed": "USDT 출금이 중단되었습니다",
     "withdrawUsdtBelowMin": "출금 금액은 {min} USDT 이상이어야 합니다",
