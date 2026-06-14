@@ -209,7 +209,9 @@
     "directPaginationAria": "Direct referral pagination",
     "smallAreaPerformanceCard": "Community",
     "directReferralCard": "Direct",
-    "personalEntrustCountCard": "Personal"
+    "personalEntrustCountCard": "Personal",
+    "teamIncome": "Team rewards",
+    "referralIncome": "Referral rewards"
   },
   "mine": {
     "totalAssets": "Total assets (USDT)",

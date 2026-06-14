@@ -8,6 +8,8 @@ export const teamAssets = {
   statIconCommunity: "/assets/team/stat-icon-community.png",
   statIconReferral: "/assets/team/stat-icon-referral.png",
   statIconPersonal: "/assets/team/stat-icon-personal.png",
+  rewardTeamIcon: "/assets/team/reward-team-icon.png",
+  rewardReferralIcon: "/assets/team/reward-referral-icon.png",
   statsPanelBg: "/assets/team/stats-panel-bg.png",
   performanceCardBg: "/assets/team/performance-card-bg.png",
   performanceDeco: "/assets/team/performance-deco.png",

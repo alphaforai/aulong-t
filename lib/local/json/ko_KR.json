@@ -209,7 +209,9 @@
     "directPaginationAria": "직추천 상세 페이지네이션",
     "smallAreaPerformanceCard": "소구역 실적",
     "directReferralCard": "직추천",
-    "personalEntrustCountCard": "개인 위탁"
+    "personalEntrustCountCard": "개인 위탁",
+    "teamIncome": "팀 보상",
+    "referralIncome": "추천 보상"
   },
   "mine": {
     "totalAssets": "총 자산(USDT)",

@@ -209,7 +209,9 @@
     "directPaginationAria": "直推详情分页",
     "smallAreaPerformanceCard": "小区业绩",
     "directReferralCard": "直推委托",
-    "personalEntrustCountCard": "个人委托"
+    "personalEntrustCountCard": "个人委托",
+    "teamIncome": "团队奖励",
+    "referralIncome": "推荐奖励"
   },
   "mine": {
     "totalAssets": "总资产(USDT)",

@@ -209,7 +209,9 @@
     "directPaginationAria": "直紹介詳細ページネーション",
     "smallAreaPerformanceCard": "小区業績",
     "directReferralCard": "直紹介",
-    "personalEntrustCountCard": "個人委託"
+    "personalEntrustCountCard": "個人委託",
+    "teamIncome": "チーム報酬",
+    "referralIncome": "紹介報酬"
   },
   "mine": {
     "totalAssets": "総資産(USDT)",

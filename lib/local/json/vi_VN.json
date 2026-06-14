@@ -209,7 +209,9 @@
     "directPaginationAria": "Phân trang chi tiết giới thiệu trực tiếp",
     "smallAreaPerformanceCard": "Khu vực nhỏ",
     "directReferralCard": "Trực tiếp",
-    "personalEntrustCountCard": "Cá nhân"
+    "personalEntrustCountCard": "Cá nhân",
+    "teamIncome": "Thưởng nhóm",
+    "referralIncome": "Thưởng giới thiệu"
   },
   "mine": {
     "totalAssets": "Tổng tài sản (USDT)",

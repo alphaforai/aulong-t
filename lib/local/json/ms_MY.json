@@ -209,7 +209,9 @@
     "directPaginationAria": "Penomboran butiran rujukan langsung",
     "smallAreaPerformanceCard": "Prestasi kecil",
     "directReferralCard": "Rujukan langsung",
-    "personalEntrustCountCard": "Amanah peribadi"
+    "personalEntrustCountCard": "Amanah peribadi",
+    "teamIncome": "Ganjaran pasukan",
+    "referralIncome": "Ganjaran rujukan"
   },
   "mine": {
     "totalAssets": "Jumlah aset (USDT)",
