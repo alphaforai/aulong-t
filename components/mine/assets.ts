@@ -2,17 +2,9 @@
 export const mineAssets = {
   assetCardBg: "/assets/mine/asset-card-bg.png",
   actionUsdt: "/assets/mine/action-usdt.png",
-  actionAul: "/assets/mine/action-aul.png",
+  actionX: "/assets/mine/action-x-icon.png",
   actionInvest: "/assets/mine/action-invest.png",
   inviteBannerBg: "/assets/mine/invite-banner-bg.png",
-  swapBannerBg: "/assets/mine/swap-banner-bg.png",
-  /** Figma 943:1561 原图，容器内百分比裁切 */
-  swapHeroBgSource: "/assets/mine/swap-hero-bg-source.png",
-  swapHeroIp: "/assets/mine/swap-hero-ip.png",
-  swapFillMax: "/assets/mine/swap-fill-max.svg",
-  swapToggle: "/assets/mine/swap-toggle.png",
-  swapAulToken: "/assets/mine/swap-aul-token.png",
-  swapUsdtToken: "/assets/mine/swap-usdt-token.svg",
   inviteSheetIllustration: "/assets/mine/invite-sheet-illustration.png",
   inviteSheetQr: "/assets/mine/invite-sheet-qr.png",
   inviteSheetCopy: "/assets/mine/invite-sheet-copy.svg",
@@ -25,7 +17,4 @@ export const mineAssets = {
   pageChevronLeft: "/assets/mine/page-chevron-left.svg",
   pageChevronRight: "/assets/mine/page-chevron-right.svg",
   pageEllipsis: "/assets/mine/page-ellipsis.svg",
-  withdrawUsdtIcon: "/assets/mine/withdraw-usdt-icon.svg",
-  withdrawAulIcon: "/assets/mine/withdraw-aul-icon.png",
-  withdrawInputDivider: "/assets/mine/withdraw-input-divider.svg",
 } as const;

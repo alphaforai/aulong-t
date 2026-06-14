@@ -2,38 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 0 72% 51%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 72% 51%;
-    --radius: 0.5rem;
-  }
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
 }
 
@@ -75,50 +52,4 @@ html[lang="vi-VN"] [class*="font-noto-sc-black"],
 html[lang="ms-MY"] [class*="font-noto-sc-black"] {
   font-family: var(--font-noto-sans), "Segoe UI", sans-serif;
   font-synthesis: none;
-}
-
-@keyframes realtime-dot-blink {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.35;
-    transform: scale(0.88);
-  }
-}
-
-@layer utilities {
-  .animate-realtime-dot {
-    animation: realtime-dot-blink 1.2s ease-in-out infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-realtime-dot {
-      animation: none;
-    }
-  }
-
-  /* Android 9+：固定 pb-4；支持 env() 的设备追加 safe-area */
-  .pb-safe-compat {
-    padding-bottom: 16px;
-  }
-
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .pb-safe-compat {
-      padding-bottom: env(safe-area-inset-bottom, 16px);
-    }
-  }
-
-  .pb-safe-compat-lg {
-    padding-bottom: 20px;
-  }
-
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .pb-safe-compat-lg {
-      padding-bottom: env(safe-area-inset-bottom, 20px);
-    }
-  }
 }
