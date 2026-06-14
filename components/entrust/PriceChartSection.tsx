@@ -14,11 +14,9 @@ import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
 import { getUserAssets, getXcoinPrice, getXpriceOverview } from "@/lib/api/users";
 import { useChartLocale } from "@/lib/hooks/useChartLocale";
-import {
-  mapOverviewToChart,
-  type PriceGranularity,
-  XPRICE_OVERVIEW_CACHE_MS,
-} from "./priceChartUtils";
+import { mapOverviewToChart, type PriceGranularity } from "./priceChartUtils";
+
+const PRICE_CHART_POLL_INTERVAL_MS = 2000;
 
 function formatAmount(value: unknown, fractionDigits = 2) {
   const num = Number(value);
@@ -68,13 +66,15 @@ export function PriceChartSection() {
     queryKey: ["userAssets", userInfo.walletAddress],
     queryFn: () => getUserAssets(),
     enabled: Boolean(userInfo.walletAddress),
+    refetchInterval: PRICE_CHART_POLL_INTERVAL_MS,
+    refetchOnWindowFocus: false,
   });
-
-//   console.log("assetsResponse", assetsResponse);
 
   const { data: xcoinPriceResponse } = useQuery({
     queryKey: ["xcoinPrice"],
     queryFn: () => getXcoinPrice(),
+    refetchInterval: PRICE_CHART_POLL_INTERVAL_MS,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -84,14 +84,19 @@ export function PriceChartSection() {
   } = useQuery({
     queryKey: ["xpriceOverview", granularity],
     queryFn: () => getXpriceOverview({ granularity }),
-    staleTime: XPRICE_OVERVIEW_CACHE_MS,
-    gcTime: XPRICE_OVERVIEW_CACHE_MS,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: false,
   });
 
   const assets = assetsResponse?.data;
   const xcoinBalance = assets?.xCoinUnreleasedBalance ?? 0;
   const currentPrice = xcoinPriceResponse?.data?.currentPrice ?? 0;
   const dailyRate = xcoinPriceResponse?.data?.defaultDailyRate ?? 0;
+  const dailyRateNum = Number(dailyRate);
+  const isDailyRateNegative =
+    Number.isFinite(dailyRateNum) && dailyRateNum < 0;
+  const dailyRatePrefix =
+    Number.isFinite(dailyRateNum) && dailyRateNum > 0 ? "+" : "";
   const holdingsUsd = Number(xcoinBalance) * Number(currentPrice);
 
   const chartData = useMemo(
@@ -99,7 +104,8 @@ export function PriceChartSection() {
     [overviewResponse, granularity, bcp47],
   );
 
-  const showChart = chartData.length > 0 && !chartPending && !chartError;
+  const chartInitialLoading = chartPending && !overviewResponse;
+  const showChart = chartData.length > 0 && !chartInitialLoading && !chartError;
   const lastPrice = chartData[chartData.length - 1]?.xPrice ?? currentPrice;
 
   return (
@@ -109,8 +115,13 @@ export function PriceChartSection() {
           <div className="flex min-w-0 flex-1 flex-col px-[18px] pt-2">
             <p className="text-sm text-[#5c5c5c]">{t("entrust.aulPrice")}</p>
             <AmountWithUnit amount={formatAmount(currentPrice)} unit="USDT" />
-            <p className="mt-1 text-sm leading-normal text-[#16b86f]">
-              +{formatAmount(dailyRate)}%
+            <p
+              className={`mt-1 text-sm leading-normal ${
+                isDailyRateNegative ? "text-[#e90000]" : "text-[#16b86f]"
+              }`}
+            >
+              {dailyRatePrefix}
+              {formatAmount(dailyRate)}%
             </p>
           </div>
 
@@ -145,7 +156,7 @@ export function PriceChartSection() {
       </div>
 
       <div className="relative h-[144px] w-full min-h-[144px] min-w-0 shrink-0">
-        {chartPending ? (
+        {chartInitialLoading ? (
           <div className="flex h-full items-center justify-center text-sm text-[#8b8b8b]">
             {t("entrust.chartLoading")}
           </div>

@@ -4,29 +4,49 @@ import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { teamAssets } from "./assets";
 import { TeamSectionTitle } from "./TeamSectionTitle";
-import { displayTeamValue, formatAmount } from "./format";
+import { displayTeamValue, formatAmount, formatSignedAmount, formatSignedPercent } from "./format";
 
 export type TeamPerformanceCardProps = {
   isPending?: boolean;
+  smallAreaStakeYesterdayDelta?: number;
+  smallAreaStakeChangeRate?: number;
+  todayTotalStake?: number;
+  teamTotalStake?: number;
 };
 
-/** 团队业绩数据 — Figma 535:6355（接口暂无对应字段，先展示占位 0） */
-export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
+/** 团队业绩数据 — Figma 535:6355 */
+export function TeamPerformanceCard({
+  isPending,
+  smallAreaStakeYesterdayDelta,
+  smallAreaStakeChangeRate,
+  todayTotalStake,
+  teamTotalStake,
+}: TeamPerformanceCardProps) {
   const { t } = useTranslation();
   const loadingLabel = t("common.loadingDots");
   const deltaValue = displayTeamValue(
     isPending,
-    `+${formatAmount(0)}`,
+    formatSignedAmount(smallAreaStakeYesterdayDelta),
     loadingLabel,
   );
   const deltaPctValue = displayTeamValue(
     isPending,
-    `+${formatAmount(0)}%`,
+    formatSignedPercent(smallAreaStakeChangeRate),
     loadingLabel,
   );
 
   return (
-    <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white bg-white/61 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+    <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]" aria-hidden>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={teamAssets.performanceCardBg}
+          alt=""
+          className="absolute inset-0 size-full max-w-none rounded-[12px] object-fill"
+        />
+        <div className="absolute inset-0 rounded-[12px] bg-[rgba(255,255,255,0.61)] backdrop-blur-[7px]" />
+      </div>
+
       <div className="relative px-2.5 pt-2.5">
         <TeamSectionTitle title={t("team.teamPerformance")} />
 
@@ -71,7 +91,11 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
           <PerformanceSubCard
             icon={teamAssets.perfIconToday}
             label={t("team.todayStakeTotal")}
-            value={displayTeamValue(isPending, formatAmount(0), loadingLabel)}
+            value={displayTeamValue(
+              isPending,
+              formatAmount(todayTotalStake),
+              loadingLabel,
+            )}
             unit="USDT"
             isPending={isPending}
             loadingLabel={loadingLabel}
@@ -79,7 +103,11 @@ export function TeamPerformanceCard({ isPending }: TeamPerformanceCardProps) {
           <PerformanceSubCard
             icon={teamAssets.perfIconTeam}
             label={t("team.teamStakeTotal")}
-            value={displayTeamValue(isPending, formatAmount(0), loadingLabel)}
+            value={displayTeamValue(
+              isPending,
+              formatAmount(teamTotalStake),
+              loadingLabel,
+            )}
             unit="USDT"
             isPending={isPending}
             loadingLabel={loadingLabel}

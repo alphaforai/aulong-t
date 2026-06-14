@@ -1,22 +1,88 @@
 "use client";
 
 import { entrustAssets } from "@/components/entrust/assets";
-import { BannerCard } from "@/components/entrust/BannerCard";
+import { Announcement } from "@/components/entrust/Announcement";
+import { AnnouncementList } from "@/components/entrust/AnnouncementList";
+import { AnnouncementDetail } from "@/components/entrust/AnnouncementDetail";
+import type { ArticleItem } from "@/components/entrust/announcementTypes";
+import { ProjectBannerCard } from "@/components/entrust/ProjectBannerCard";
+import { StartAiBannerCard } from "@/components/entrust/StartAiBannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
+import {
+  DeployAgent,
+  type DeployStrategy,
+} from "@/components/entrust/DeployAgent";
 import { TicketCard } from "@/components/entrust/TicketCard";
 import { ProjectsInfo } from "@/components/entrust/ProjectsInfo";
+import { AIStrategy } from "@/components/entrust/AIStrategy";
 import { AulongPageShell } from "@/components/AulongPageShell";
+import { getStakePlans } from "@/lib/api/users";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { useQuery } from "@tanstack/react-query";
 import { TicketSalesContract } from "@/lib/abis/ticketsales";
-import { useUserInfoStore } from "@/lib/store";
-import { toast } from "sonner";
+import { useEntrustUiStore, useUserInfoStore } from "@/lib/store";
 import { useReadContract } from "wagmi";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+type StakePlan = {
+  id: number;
+  name: string;
+  planImageUrl: string;
+  planIntro: string;
+  displayApr: string;
+  displayAprMin: number;
+  displayAprMax: number;
+  periodDays: number;
+  dailyRate: number;
+  dailyStakeLimit: number;
+  accountMaxAmount: number;
+  apr: number;
+  status?: number;
+};
+
+function toDeployStrategy(plan: StakePlan): DeployStrategy {
+  const aprEstimate =
+    plan.displayApr ||
+    (plan.displayAprMin != null && plan.displayAprMax != null
+      ? `${plan.displayAprMin}%-${plan.displayAprMax}%`
+      : "");
+
+  return {
+    id: plan.id,
+    iconSrc: plan.planImageUrl || entrustAssets.strategyTrend,
+    title: plan.name || "",
+    description: plan.planIntro || "",
+    apr: plan.apr != null ? String(plan.apr) : "",
+    aprEstimate,
+    period: plan.periodDays != null ? String(plan.periodDays) : "",
+    periodDays: plan.periodDays ?? 0,
+  };
+}
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { locale } = useTranslation();
   const [showProjectsInfo, setShowProjectsInfo] = useState(false);
+  const [showAIStrategy, setShowAIStrategy] = useState(false);
+  const pendingOpenAIStrategy = useEntrustUiStore(
+    (state) => state.pendingOpenAIStrategy,
+  );
+  const clearPendingOpenAIStrategy = useEntrustUiStore(
+    (state) => state.clearPendingOpenAIStrategy,
+  );
+
+  useEffect(() => {
+    if (!pendingOpenAIStrategy) return;
+    setShowAIStrategy(true);
+    clearPendingOpenAIStrategy();
+  }, [pendingOpenAIStrategy, clearPendingOpenAIStrategy]);
+  const [showAnnouncementList, setShowAnnouncementList] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(
+    null,
+  );
+  const [deployStrategy, setDeployStrategy] = useState<DeployStrategy | null>(
+    null,
+  );
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
@@ -31,79 +97,97 @@ export default function HomePage() {
     },
   });
 
+  const { data: stakePlansResponse } = useQuery({
+    queryKey: ["stakePlans", 1, locale],
+    queryFn: () =>
+      getStakePlans({
+        page: 0,
+        limit: undefined,
+        searchCount: false,
+        lastId: undefined,
+        name: undefined,
+        status: 1,
+        planType: 1,
+      }),
+  });
+
+
+  const strategies = useMemo(() => {
+    const raw = stakePlansResponse?.data;
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .filter((plan) => {
+        const status = (plan as StakePlan).status;
+        return status === undefined || status === 1;
+      })
+      .map((plan) => toDeployStrategy(plan as StakePlan));
+  }, [stakePlansResponse]);
+
   const hasPurchased = Boolean(purchasesData?.[0]);
   const showTicketCard = !hasPurchased;
-
-  const strategies = [
-    {
-      iconSrc: entrustAssets.strategyTrend,
-      title: t("entrust.strategyTrendTitle"),
-      description: t("entrust.strategyTrendDesc"),
-      apr: "238",
-      period: "7",
-    },
-    {
-      iconSrc: entrustAssets.strategyArbitrage,
-      title: t("entrust.strategyArbitrageTitle"),
-      description: t("entrust.strategyArbitrageDesc"),
-      apr: "310",
-      period: "90",
-    },
-    {
-      iconSrc: entrustAssets.strategyHedge,
-      iconSize: 34,
-      title: t("entrust.strategyHedgeTitle"),
-      description: t("entrust.strategyHedgeDesc"),
-      apr: "388",
-      period: "360",
-    },
-  ] as const;
 
   return (
     <AulongPageShell panelClassName="bg-white">
       {showTicketCard && <TicketCard />}
 
-      <BannerCard
-        imageSrc={entrustAssets.projectBanner}
-        variant="project"
+      <Announcement onClick={() => setShowAnnouncementList(true)} />
+
+      <ProjectBannerCard
         onClick={() => {
           setShowProjectsInfo(true);
         }}
-        title={
-          <>
-            <span>{t("entrust.projectPart1")}</span>
-            <span className="text-[#ec0000]">{t("entrust.projectPart2")}</span>
-          </>
-        }
-        description={t("entrust.projectBannerDescCard")}
       />
 
       <PriceChartSection />
 
-      <BannerCard
-        imageSrc={entrustAssets.startAiBanner}
-        variant="startAi"
-        onClick={() => {
-          toast.success(t("common.notOpen"));
-        }}
-        title={
-          <>
-            <span>{t("entrust.startAiPart1")}</span>
-            <span className="text-[#ec0000]">{t("entrust.startAiPart2")}</span>
-          </>
-        }
-        description={t("entrust.startAiDescCard")}
-      />
+      <StartAiBannerCard onClick={() => setShowAIStrategy(true)} />
 
       <div className="flex flex-col gap-3">
-        {strategies.map((strategy, index) => (
-          <StrategyCard key={index} {...strategy} />
+        {strategies.map((strategy) => (
+          <StrategyCard
+            key={strategy.id}
+            iconSrc={strategy.iconSrc}
+            iconSize={strategy.iconSize}
+            title={strategy.title}
+            description={strategy.description}
+            apr={strategy.apr}
+            period={strategy.period}
+            onStart={() => setDeployStrategy(strategy)}
+          />
         ))}
       </div>
+
+      <DeployAgent
+        open={deployStrategy !== null}
+        strategy={deployStrategy}
+        strategies={strategies}
+        onClose={() => setDeployStrategy(null)}
+        onDeploySuccess={() => setShowAIStrategy(true)}
+      />
+
+      <AIStrategy
+        open={showAIStrategy}
+        onClose={() => setShowAIStrategy(false)}
+      />
 
       <ProjectsInfo
         open={showProjectsInfo}
         onClose={() => setShowProjectsInfo(false)}
+      />
+
+      <AnnouncementList
+        open={showAnnouncementList}
+        onClose={() => {
+          setShowAnnouncementList(false);
+          setSelectedArticle(null);
+        }}
+        onSelectArticle={setSelectedArticle}
+      />
+
+      <AnnouncementDetail
+        open={selectedArticle !== null}
+        article={selectedArticle}
+        onClose={() => setSelectedArticle(null)}
       />
     </AulongPageShell>
   );

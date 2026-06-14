@@ -17,11 +17,23 @@ function isSvg(src: string) {
   return src.endsWith(".svg");
 }
 
+/** 本地 entrust 图标等：跳过 next/image 缓存，避免替换资源后仍显示旧图 */
+function shouldUnoptimize(src: string) {
+  return (
+    src.includes("logo") ||
+    src.includes("/assets/entrust/") ||
+    src.includes("/assets/mine/") ||
+    src.includes("/assets/team/")
+  );
+}
+
 /** CSS 改尺寸时不用 next/image，避免宽高比警告 */
 function shouldUseNativeImg(style?: CSSProperties, className?: string) {
   if (
     typeof style?.width === "string" ||
-    typeof style?.height === "string"
+    typeof style?.height === "string" ||
+    typeof style?.width === "number" ||
+    typeof style?.height === "number"
   ) {
     return true;
   }
@@ -29,6 +41,14 @@ function shouldUseNativeImg(style?: CSSProperties, className?: string) {
     if (/\b[hw]-\[[^\]]+%\]/.test(className)) return true;
     // Figma 裁切：size / inset 百分比定位
     if (/\b(size|left|top|right|bottom)-\[[^\]]*%\]/.test(className)) {
+      return true;
+    }
+    // Tailwind 固定尺寸（size-8 / size-[22px] / w-8 / h-8 等）及撑满容器（h-full / w-full）
+    if (
+      /\b(size-\d+|size-\[|w-\d+|w-\[|h-\d+|h-\[|h-full|w-full|size-full|max-h-full|max-w-full)\b/.test(
+        className,
+      )
+    ) {
       return true;
     }
   }
@@ -82,7 +102,7 @@ export function AppImage({
         style={style}
         sizes={sizes ?? "(max-width: 375px) 100vw, 375px"}
         priority={priority}
-        unoptimized={src.includes("logo")}
+        unoptimized={shouldUnoptimize(src)}
       />
     );
   }
@@ -110,7 +130,7 @@ export function AppImage({
       className={className}
       style={style}
       priority={priority}
-      unoptimized={src.includes("logo")}
+      unoptimized={shouldUnoptimize(src)}
     />
   );
 }

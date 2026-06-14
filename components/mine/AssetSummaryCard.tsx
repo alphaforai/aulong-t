@@ -1,16 +1,38 @@
 "use client";
 
+import React from "react";
 import type { ButtonHTMLAttributes } from "react";
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useUserInfoStore } from "@/lib/store";
 import { mineAssets } from "./assets";
-import { toast } from "sonner";
+import { WithdrawAUL } from "./WithdrawAUL";
+import { WithdrawUSDT } from "./WithdrawUSDT";
+import { FinancialManagement } from "./FinancialManagement2";
+import { useQuery } from "@tanstack/react-query";
+import { getUserAssets } from "@/lib/api/users";
 
 /** 总资产卡片 — 背景 Figma 550:7512，内容 Figma 514:6035 */
 export function AssetSummaryCard() {
   const { t } = useTranslation();
   const userInfo = useUserInfoStore((state) => state.userInfo);
+  const [showWithdrawUsdt, setShowWithdrawUsdt] = React.useState(false);
+  const [showWithdrawAul, setShowWithdrawAul] = React.useState(false);
+  const [showFinancialManagement, setShowFinancialManagement] =
+    React.useState(false);
+
+
+  // getUserAssets
+  const { data: userAssetsResponse } = useQuery({
+    queryKey: ["userAssets", userInfo.walletAddress],
+    queryFn: () => getUserAssets(),
+    enabled: Boolean(userInfo.walletAddress),
+  });
+
+  const userAssets = userAssetsResponse?.data;
+  const totalAssets = userAssets?.totalBalance ?? 0;
+  const usdtBalance = userAssets?.usdtBalance ?? 0;
+  const xcoinBalance = userAssets?.xCoinBalance ?? 0;
 
   return (
     <section className="relative h-[258px] w-full shrink-0">
@@ -24,12 +46,12 @@ export function AssetSummaryCard() {
           <WhitelistBadge hasTicket={userInfo.hasTicket} />
         </div>
         <p className="font-mulish text-[32px] font-bold leading-normal text-black">
-          0.00
+          {totalAssets}
         </p>
       </div>
 
       <div className="absolute inset-x-4 top-[120px] z-10 flex items-center gap-2 text-sm">
-        <StatColumn label={t("mine.totalEarnings")} value="0.00" trailingSpace />
+        <StatColumn label={t("mine.totalEarnings")} value={usdtBalance} trailingSpace />
         <div className="flex h-7 w-0 shrink-0 items-center justify-center">
           <div className="rotate-90">
             <AppImage
@@ -41,38 +63,42 @@ export function AssetSummaryCard() {
             />
           </div>
         </div>
-        <StatColumn label={t("mine.totalRelease")} value="0.00" trailingSpace />
+        <StatColumn label={t("mine.totalRelease")} value={xcoinBalance} trailingSpace />
       </div>
 
       <div className="absolute inset-x-0 top-[177px] z-10 flex items-center justify-center gap-3">
         <ActionButton
           icon={mineAssets.actionUsdt}
-          iconClassName="left-[-8.14%] top-[-8.14%] size-[116.28%]"
-          label={t("mine.usdtBtn")}
+          label={t("mine.usdtWithdraw")}
           variant="light"
-          onClick={() => {
-            toast.success(t("common.notOpen"));
-          }}
+          onClick={() => setShowWithdrawUsdt(true)}
         />
         <ActionButton
-          icon={mineAssets.actionX}
-          iconClassName="left-[-25.68%] top-[-25.68%] size-[151.37%]"
-          label={t("mine.xBtn")}
+          icon={mineAssets.actionAul}
+          label={t("mine.aulWithdraw")}
           variant="light"
-          onClick={() => {
-            toast.success(t("common.notOpen"));
-          }}
+          onClick={() => setShowWithdrawAul(true)}
         />
         <ActionButton
           icon={mineAssets.actionInvest}
-          iconClassName="left-0 top-0 size-[90%]"
           label={t("mine.goInvest")}
           variant="primary"
-          onClick={() => {
-            toast.success(t("common.notOpen"));
-          }}
+          onClick={() => setShowFinancialManagement(true)}
         />
       </div>
+
+      <WithdrawUSDT
+        open={showWithdrawUsdt}
+        onClose={() => setShowWithdrawUsdt(false)}
+      />
+      <WithdrawAUL
+        open={showWithdrawAul}
+        onClose={() => setShowWithdrawAul(false)}
+      />
+      <FinancialManagement
+        open={showFinancialManagement}
+        onClose={() => setShowFinancialManagement(false)}
+      />
     </section>
   );
 }
@@ -152,14 +178,12 @@ function StatColumn({
 
 function ActionButton({
   icon,
-  iconClassName,
   label,
   variant,
   className = "",
   ...props
 }: {
   icon: string;
-  iconClassName: string;
   label: string;
   variant: "light" | "primary";
 } & ButtonHTMLAttributes<HTMLButtonElement>) {
@@ -168,7 +192,7 @@ function ActionButton({
   return (
     <button
       type="button"
-      className={`relative flex h-[66px] min-w-0 flex-1 basis-0 select-none flex-col items-center justify-center rounded-[12px] border border-white px-1.5 py-2 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
+      className={`relative flex h-[70px] min-w-0 flex-1 basis-0 select-none flex-col items-center justify-center rounded-[12px] border border-white px-1.5 py-1.5 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
         isPrimary
           ? "gap-[3px] shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
           : "gap-0.5 bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
@@ -181,15 +205,14 @@ function ActionButton({
           <span className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]" />
         </>
       ) : null}
-      <div className="relative z-10 size-8.5 shrink-0 overflow-hidden">
-        <AppImage
-          src={icon}
-          alt=""
-          width={34}
-          height={34}
-          className={`absolute max-w-none ${iconClassName}`}
-        />
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={icon}
+        alt=""
+        width={42}
+        height={42}
+        className="relative z-10 size-[42px] shrink-0 object-contain"
+      />
       <span
         className={`relative z-10 max-w-full text-center text-xs leading-tight font-medium ${
           isPrimary ? "text-white" : "text-[#e43b3b]"

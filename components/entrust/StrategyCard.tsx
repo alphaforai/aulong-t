@@ -4,8 +4,6 @@ import { entrustAssets } from "./assets";
 import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
 import { useTranslation } from "@/lib/hooks/useTranslation";
-import { toast } from "sonner";
-
 type StrategyCardProps = {
   iconSrc: string;
   iconSize?: number;
@@ -13,6 +11,7 @@ type StrategyCardProps = {
   description: string;
   apr?: string;
   period?: string;
+  onStart?: () => void;
 };
 
 export function StrategyCard({
@@ -22,6 +21,7 @@ export function StrategyCard({
   description,
   apr = "45.23",
   period = "30",
+  onStart,
 }: StrategyCardProps) {
   const { t } = useTranslation();
 
@@ -34,7 +34,8 @@ export function StrategyCard({
             alt=""
             width={iconSize}
             height={iconSize}
-            className="shrink-0"
+            className="shrink-0 object-contain"
+            style={{ width: iconSize, height: iconSize }}
           />
           <div className="min-w-0">
             <h3 className="text-base font-semibold leading-normal text-black">
@@ -83,9 +84,7 @@ export function StrategyCard({
       <div className="absolute right-3 top-[84px]">
         <ImageButton
           variant="start"
-          onClick={() => {
-            toast.success(t("common.notOpen"));
-          }}
+          onClick={() => onStart?.()}
         >
           {t("entrust.start")}
         </ImageButton>
