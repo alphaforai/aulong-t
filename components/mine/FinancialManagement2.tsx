@@ -542,16 +542,16 @@ export function FinancialManagement({
             <p className="mt-4 text-base font-medium text-[#333]">
               {t("entrust.deployCustodyAmount")}
             </p>
-            <div className="mt-1.5 flex h-[50px] items-center justify-between rounded-[8px] bg-white/70 px-4">
+            <div className="mt-1.5 flex h-[50px] w-full items-stretch rounded-[8px] bg-white/70 px-4">
               <input
                 type="text"
                 inputMode="decimal"
                 placeholder={t("entrust.deployAmountPlaceholder")}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="min-w-0 flex-1 bg-transparent text-base text-[#333] placeholder:text-[rgba(51,51,51,0.3)] outline-none"
+                className="min-w-0 flex-1 self-stretch border-0 bg-transparent py-0 text-base leading-normal text-[#333] placeholder:text-[rgba(51,51,51,0.3)] outline-none"
               />
-              <div className="flex shrink-0 items-center gap-3 text-sm">
+              <div className="flex shrink-0 items-center gap-3 text-base">
                 <span className="text-[#333]">{CUSTODY_ASSET}</span>
                 <button
                   type="button"

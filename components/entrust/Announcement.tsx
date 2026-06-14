@@ -7,6 +7,7 @@ import { useTranslation } from "@/lib/hooks/useTranslation";
 import { getArticleList } from "@/lib/api/users";
 import { entrustAssets } from "./assets";
 import type { ArticleItem } from "./announcementTypes";
+import { getArticleHeadline, hasArticleDisplayContent, resolveArticlesForLocale } from "./announcementLocale";
 import { toast } from "sonner";
 
 const ROTATE_MS = 3000;
@@ -61,7 +62,7 @@ function AnnouncementCarousel({
         {articles.map((article) => (
           <AnnouncementTitleRow
             key={article.id}
-            title={article.title!.trim()}
+            title={getArticleHeadline(article)}
           />
         ))}
       </div>
@@ -91,10 +92,10 @@ export function Announcement({ onClick }: AnnouncementProps) {
   const articles = React.useMemo(() => {
     const raw = articleListResponse?.data;
     if (!Array.isArray(raw)) return [];
-    return (raw as ArticleItem[]).filter((article) =>
-      Boolean(article.title?.trim()),
+    return resolveArticlesForLocale(raw as ArticleItem[], locale).filter(
+      hasArticleDisplayContent,
     );
-  }, [articleListResponse]);
+  }, [articleListResponse, locale]);
 
   React.useEffect(() => {
     setIndex(0);
@@ -108,10 +109,13 @@ export function Announcement({ onClick }: AnnouncementProps) {
     return () => window.clearInterval(timer);
   }, [articles.length]);
 
-  const displayTitle =
+  const currentArticle =
     articles.length > 0
-      ? articles[Math.min(index, articles.length - 1)]!.title!.trim()
-      : t("entrust.announcementText");
+      ? articles[Math.min(index, articles.length - 1)]!
+      : null;
+  const displayTitle = currentArticle
+    ? getArticleHeadline(currentArticle, t("entrust.announcementText"))
+    : t("entrust.announcementText");
 
   return (
     <button
@@ -125,7 +129,10 @@ export function Announcement({ onClick }: AnnouncementProps) {
           <AnnouncementTitleRow
             title={
               articles.length === 1
-                ? articles[0].title!.trim()
+                ? getArticleHeadline(
+                    articles[0],
+                    t("entrust.announcementText"),
+                  )
                 : t("entrust.announcementText")
             }
           />

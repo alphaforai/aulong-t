@@ -11,6 +11,7 @@ import {
 } from "@/lib/mobileShell";
 import { withImageUrlPrefix } from "@/lib/imageUrl";
 import type { ArticleItem } from "./announcementTypes";
+import { resolveArticleForLocale } from "./announcementLocale";
 import {
   ARTICLE_PLAIN_TEXT_CLASS,
   ARTICLE_RICH_TEXT_CLASS,
@@ -40,8 +41,13 @@ export function AnnouncementDetail({
   article,
   onClose,
 }: AnnouncementDetailProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [entered, setEntered] = React.useState(false);
+
+  const resolvedArticle = React.useMemo(
+    () => (article ? resolveArticleForLocale(article, locale) : null),
+    [article, locale],
+  );
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -69,13 +75,17 @@ export function AnnouncementDetail({
   }, [open, closePanel]);
 
   const { sanitizedHtml, plainBody } = React.useMemo(
-    () => getArticleBodyContent(article?.content, article?.summary),
-    [article?.content, article?.summary],
+    () =>
+      getArticleBodyContent(
+        resolvedArticle?.content,
+        resolvedArticle?.summary,
+      ),
+    [resolvedArticle?.content, resolvedArticle?.summary],
   );
 
-  if (!open || !article) return null;
+  if (!open || !resolvedArticle) return null;
 
-  const coverSrc = withImageUrlPrefix(article.picUrl);
+  const coverSrc = withImageUrlPrefix(resolvedArticle.picUrl);
 
   return (
     <div
@@ -140,11 +150,13 @@ export function AnnouncementDetail({
                   coverSrc ? "mt-4" : ""
                 }`}
               >
-                {article.title || "—"}
+                {resolvedArticle.title || "—"}
               </h2>
 
               <p className="mt-2 text-sm leading-normal text-[#5a5a5a]">
-                {formatArticleTime(article.createdAt || article.updatedAt)}
+                {formatArticleTime(
+                  resolvedArticle.createdAt || resolvedArticle.updatedAt,
+                )}
               </p>
 
               {sanitizedHtml ? (

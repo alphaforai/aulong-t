@@ -9,6 +9,7 @@ import { getArticleList } from "@/lib/api/users";
 import { useAuthStore, useUserInfoStore } from "@/lib/store";
 import { shellMaxWidth, shellMdPaddingY } from "@/lib/mobileShell";
 import type { ArticleItem } from "./announcementTypes";
+import { hasArticleDisplayContent, resolveArticleForLocale } from "./announcementLocale";
 import {
   ARTICLE_PLAIN_TEXT_CLASS,
   ARTICLE_RICH_TEXT_CLASS,
@@ -104,8 +105,13 @@ export function AnnouncementWindow() {
   const topArticles = React.useMemo(() => {
     const raw = articleListResponse?.data;
     if (!Array.isArray(raw)) return [];
-    return sortTopArticles((raw as ArticleItem[]).filter(isTopArticle));
-  }, [articleListResponse]);
+    return sortTopArticles(
+      (raw as ArticleItem[])
+        .filter(isTopArticle)
+        .map((article) => resolveArticleForLocale(article, locale))
+        .filter(hasArticleDisplayContent),
+    );
+  }, [articleListResponse, locale]);
 
   const currentArticle = topArticles[index] ?? null;
   const hasNext = index < topArticles.length - 1;

@@ -13,6 +13,7 @@ import {
   sidePanelOverlayRoot,
 } from "@/lib/mobileShell";
 import type { ArticleItem } from "./announcementTypes";
+import { resolveArticlesForLocale, hasArticleDisplayContent } from "./announcementLocale";
 
 export type AnnouncementListProps = {
   open: boolean;
@@ -100,8 +101,10 @@ export function AnnouncementList({
   const articles = React.useMemo(() => {
     const raw = articleListResponse?.data;
     if (!Array.isArray(raw)) return [];
-    return raw as ArticleItem[];
-  }, [articleListResponse]);
+    return resolveArticlesForLocale(raw as ArticleItem[], locale).filter(
+      hasArticleDisplayContent,
+    );
+  }, [articleListResponse, locale]);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);

@@ -11,5 +11,5 @@ export type ArticleItem = {
   sort?: number;
   status?: number;
   isTop?: number;
-  i18n?: Record<string, unknown>;
+  i18n?: Record<string, unknown> | unknown[];
 };
