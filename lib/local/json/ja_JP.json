@@ -301,6 +301,7 @@
     "withdrawRecordTitle": "出金履歴",
     "withdrawRecordBtn": "出金履歴",
     "withdrawRecordFilterTime": "時間",
+    "withdrawRecordFilterClear": "クリア",
     "withdrawRecordFilterStatus": "状態",
     "withdrawRecordStatusAll": "すべて",
     "withdrawRecordStatusPending": "審査待ち",

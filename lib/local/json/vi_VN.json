@@ -301,6 +301,7 @@
     "withdrawRecordTitle": "Lịch sử rút tiền",
     "withdrawRecordBtn": "Lịch sử",
     "withdrawRecordFilterTime": "Thời gian",
+    "withdrawRecordFilterClear": "Xóa",
     "withdrawRecordFilterStatus": "Trạng thái",
     "withdrawRecordStatusAll": "Tất cả",
     "withdrawRecordStatusPending": "Chờ duyệt",

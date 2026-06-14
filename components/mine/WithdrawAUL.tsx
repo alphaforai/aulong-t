@@ -138,6 +138,7 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
       setEntered(false);
       setAmount("");
       setIsSubmitting(false);
+      setShowRecords(false);
       return;
     }
     const frame = requestAnimationFrame(() => {
@@ -251,9 +252,11 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
     setAmount(String(withdrawableAul));
   };
 
-  if (!open) return null;
+  const recordsOpen = open && showRecords;
 
   return (
+    <>
+      {open ? (
     <div
       className={`${sidePanelOverlayRoot} z-80`}
       role="dialog"
@@ -404,11 +407,13 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
           </div>
         </div>
       </div>
+    </div>
+      ) : null}
       <WithdrawalRecordPanel
-        open={showRecords}
+        open={recordsOpen}
         onClose={() => setShowRecords(false)}
       />
-    </div>
+    </>
   );
 }
 

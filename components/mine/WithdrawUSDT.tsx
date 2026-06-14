@@ -256,6 +256,7 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     if (!open) {
       setEntered(false);
       setAmount("");
+      setShowRecords(false);
       return;
     }
     const frame = requestAnimationFrame(() => {
@@ -519,9 +520,11 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     setAmount(String(withdrawableUsdt));
   };
 
-  if (!open) return null;
+  const recordsOpen = open && showRecords;
 
   return (
+    <>
+      {open ? (
     <div
       className={`${sidePanelOverlayRoot} z-80`}
       role="dialog"
@@ -697,11 +700,13 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
           </div>
         </div>
       </div>
+    </div>
+      ) : null}
       <WithdrawalRecordPanel
-        open={showRecords}
+        open={recordsOpen}
         onClose={() => setShowRecords(false)}
       />
-    </div>
+    </>
   );
 }
 

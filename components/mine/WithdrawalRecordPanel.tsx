@@ -142,7 +142,7 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
   const { t, locale } = useTranslation();
   const walletAddress = useUserInfoStore((state) => state.userInfo.walletAddress);
   const [entered, setEntered] = React.useState(false);
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [activeSheet, setActiveSheet] = React.useState<FilterSheetId | null>(null);
   const [selectedStatus, setSelectedStatus] =
     React.useState<WithdrawalStatusFilter>(ALL_STATUS);
@@ -158,9 +158,15 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
   }, [onClose]);
 
   const resetFilters = React.useCallback(() => {
-    setPage(0);
+    setPage(1);
     setActiveSheet(null);
     setSelectedStatus(ALL_STATUS);
+    setTimeFilterMode("all");
+    setStartDate(new Date());
+    setEndDate(new Date());
+  }, []);
+
+  const clearTimeFilter = React.useCallback(() => {
     setTimeFilterMode("all");
     setStartDate(new Date());
     setEndDate(new Date());
@@ -172,6 +178,7 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
       resetFilters();
       return;
     }
+    resetFilters();
     const frame = requestAnimationFrame(() => {
       requestAnimationFrame(() => setEntered(true));
     });
@@ -188,7 +195,7 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
   }, [open, closePanel]);
 
   React.useEffect(() => {
-    setPage(0);
+    setPage(1);
   }, [walletAddress, selectedStatus, timeFilterMode, startDate, endDate]);
 
   const createdAtStart =
@@ -281,14 +288,17 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
     ? Math.max(0, Math.trunc(totalRaw))
     : 0;
   const totalPages = totalSafe === 0 ? 1 : Math.ceil(totalSafe / PAGE_SIZE);
-  const canPrev = page > 0;
-  const canNext = totalSafe > 0 && page + 1 < totalPages;
+  const canPrev = page > 1;
+  const canNext = totalSafe > 0 && page < totalPages;
   const listPending = isPending || isFetching;
 
-  const goToPage = React.useCallback((nextPage: number) => {
-    setPage(Math.max(0, nextPage));
-    scrollToTop(listScrollRef.current);
-  }, []);
+  const goToPage = React.useCallback(
+    (nextPage: number) => {
+      setPage(Math.max(1, Math.min(nextPage, totalPages)));
+      scrollToTop(listScrollRef.current);
+    },
+    [totalPages],
+  );
 
   const statusLabel =
     statusOptions.find((item) => item.value === selectedStatus)?.label ??
@@ -355,6 +365,9 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
                         : timeLabel
                     }
                     onClick={() => setActiveSheet("time")}
+                    showClear={timeFilterMode === "range"}
+                    clearLabel={t("mine.withdrawRecordFilterClear")}
+                    onClear={clearTimeFilter}
                   />
                   <FilterButton
                     label={
@@ -449,25 +462,46 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
 function FilterButton({
   label,
   onClick,
+  showClear,
+  clearLabel,
+  onClear,
 }: {
   label: string;
   onClick: () => void;
+  showClear?: boolean;
+  clearLabel?: string;
+  onClear?: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex min-w-0 items-center space-x-1 text-sm leading-normal text-[#333]`}
-    >
-      <span className="truncate">{label}</span>
-      <AppImage
-        src={mineAssets.chevronDown}
-        alt=""
-        width={12}
-        height={12}
-        className="block h-3 w-3 shrink-0"
-      />
-    </button>
+    <div className="flex min-w-0 items-center">
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex min-w-0 items-center space-x-1 text-sm leading-normal text-[#333]"
+      >
+        <span className="truncate">{label}</span>
+        <AppImage
+          src={mineAssets.chevronDown}
+          alt=""
+          width={12}
+          height={12}
+          className="block h-3 w-3 shrink-0"
+        />
+      </button>
+      {showClear && onClear ? (
+        <button
+          type="button"
+          aria-label={clearLabel}
+          onClick={(event) => {
+            event.stopPropagation();
+            onClear();
+          }}
+          className="ml-1 flex size-4 shrink-0 items-center justify-center rounded-full text-xs leading-none text-[#949494]"
+        >
+          ×
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -869,12 +903,12 @@ function buildPageRange(
 ): Array<number | "ellipsis"> {
   if (total <= 0) return [];
   if (total <= 7) {
-    return Array.from({ length: total }, (_, index) => index);
+    return Array.from({ length: total }, (_, index) => index + 1);
   }
 
-  const indices = new Set<number>([0, total - 1]);
+  const indices = new Set<number>([1, total]);
   for (let i = current - 1; i <= current + 1; i++) {
-    if (i >= 0 && i < total) indices.add(i);
+    if (i >= 1 && i <= total) indices.add(i);
   }
 
   const sorted = [...indices].sort((a, b) => a - b);
@@ -939,7 +973,7 @@ function FundPagination({
                 : "w-5 border-[0.5px] border-white bg-white px-2 py-0.5 text-black/90"
             }`}
           >
-            {item + 1}
+            {item}
           </button>
         ),
       )}

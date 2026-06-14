@@ -301,6 +301,7 @@
     "withdrawRecordTitle": "提现记录",
     "withdrawRecordBtn": "提现记录",
     "withdrawRecordFilterTime": "时间",
+    "withdrawRecordFilterClear": "清除",
     "withdrawRecordFilterStatus": "状态",
     "withdrawRecordStatusAll": "全部",
     "withdrawRecordStatusPending": "待审核",

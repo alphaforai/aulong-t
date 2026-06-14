@@ -301,6 +301,7 @@
     "withdrawRecordTitle": "Rekod pengeluaran",
     "withdrawRecordBtn": "Rekod",
     "withdrawRecordFilterTime": "Masa",
+    "withdrawRecordFilterClear": "Kosongkan",
     "withdrawRecordFilterStatus": "Status",
     "withdrawRecordStatusAll": "Semua",
     "withdrawRecordStatusPending": "Menunggu semakan",

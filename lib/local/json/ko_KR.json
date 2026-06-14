@@ -301,6 +301,7 @@
     "withdrawRecordTitle": "출금 기록",
     "withdrawRecordBtn": "출금 기록",
     "withdrawRecordFilterTime": "시간",
+    "withdrawRecordFilterClear": "지우기",
     "withdrawRecordFilterStatus": "상태",
     "withdrawRecordStatusAll": "전체",
     "withdrawRecordStatusPending": "심사 대기",

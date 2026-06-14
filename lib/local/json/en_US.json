@@ -301,6 +301,7 @@
     "withdrawRecordTitle": "Withdrawal history",
     "withdrawRecordBtn": "History",
     "withdrawRecordFilterTime": "Time",
+    "withdrawRecordFilterClear": "Clear",
     "withdrawRecordFilterStatus": "Status",
     "withdrawRecordStatusAll": "All",
     "withdrawRecordStatusPending": "Pending review",
