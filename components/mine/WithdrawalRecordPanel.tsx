@@ -157,17 +157,26 @@ export function WithdrawalRecordPanel({ open, onClose }: WithdrawalRecordPanelPr
     window.setTimeout(() => onClose(), 300);
   }, [onClose]);
 
+  const resetFilters = React.useCallback(() => {
+    setPage(0);
+    setActiveSheet(null);
+    setSelectedStatus(ALL_STATUS);
+    setTimeFilterMode("all");
+    setStartDate(new Date());
+    setEndDate(new Date());
+  }, []);
+
   React.useEffect(() => {
     if (!open) {
       setEntered(false);
+      resetFilters();
       return;
     }
-    setPage(0);
     const frame = requestAnimationFrame(() => {
       requestAnimationFrame(() => setEntered(true));
     });
     return () => cancelAnimationFrame(frame);
-  }, [open]);
+  }, [open, resetFilters]);
 
   React.useEffect(() => {
     if (!open) return;
