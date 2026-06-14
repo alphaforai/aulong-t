@@ -40,7 +40,6 @@ const DISABLED_OVERLAY =
   "pointer-events-none absolute inset-0 rounded-[33px] bg-[rgba(241,241,241,0.57)]";
 
 type WithdrawPlatformConfig = {
-  aulWithdrawEnabled?: boolean;
   maxWithdrawAmountX?: number;
   minWithdrawAmountX?: number;
   withdrawFeeRateX?: number;
@@ -96,37 +95,30 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
 
   // withdrawConfig example:
 //   {
-//     aulAutoDisburseThreshold: 1,          
-//     aulWithdrawEnabled: true,            // 是否开启AUL提现
+//     aulAutoDisburseThreshold: 1,
 //     feeUsdtRatio: 10,                    // USDT提现中USDT手续费比例
 //     feeXRatio: 5,                         // USDT提现中AUL手续费占比
 //     maxWithdrawAmount: 0,                  // USDT提现单笔最大提现金额，0表示不限制
 //     maxWithdrawAmountX: 0,                 // AUL提现单笔最大提现金额，0表示不限制
 //     minWithdrawAmount: 5,                  // USDT提现单笔最小提现金额
 //     minWithdrawAmountX: 0,                 // AUL提现单笔最小提现金额
-//     usdtAutoDisburseThreshold: 1,
-//     usdtWithdrawEnabled: true,           // 是否开启USDT提现
-//     withdrawFeeRate: 15,                 // USDT提现总手续费比例
+  //     usdtAutoDisburseThreshold: 1,
+  //     withdrawFeeRate: 15,                 // USDT提现总手续费比例
 //     withdrawFeeRateX: 15,                // AUL提现总手续费比例
 // }
 
-  const {
-    aulWithdrawEnabled,
-    minWithdrawAmountX,
-    maxWithdrawAmountX,
-    withdrawFeeRateX,
-  } = React.useMemo(() => {
-    const config = withdrawConfig as WithdrawPlatformConfig | undefined;
-    const min = Number(config?.minWithdrawAmountX);
-    const max = Number(config?.maxWithdrawAmountX);
-    const feeRate = Number(config?.withdrawFeeRateX);
-    return {
-      aulWithdrawEnabled: config?.aulWithdrawEnabled === true,
-      minWithdrawAmountX: Number.isFinite(min) ? min : 0,
-      maxWithdrawAmountX: Number.isFinite(max) ? max : 0,
-      withdrawFeeRateX: Number.isFinite(feeRate) ? feeRate : 0,
-    };
-  }, [withdrawConfig]);
+  const { minWithdrawAmountX, maxWithdrawAmountX, withdrawFeeRateX } =
+    React.useMemo(() => {
+      const config = withdrawConfig as WithdrawPlatformConfig | undefined;
+      const min = Number(config?.minWithdrawAmountX);
+      const max = Number(config?.maxWithdrawAmountX);
+      const feeRate = Number(config?.withdrawFeeRateX);
+      return {
+        minWithdrawAmountX: Number.isFinite(min) ? min : 0,
+        maxWithdrawAmountX: Number.isFinite(max) ? max : 0,
+        withdrawFeeRateX: Number.isFinite(feeRate) ? feeRate : 0,
+      };
+    }, [withdrawConfig]);
 
   const closePanel = React.useCallback(() => {
     setEntered(false);
@@ -188,7 +180,6 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
   const canSubmit =
     !userAssetsPending &&
     !withdrawConfigPending &&
-    aulWithdrawEnabled &&
     withdrawFeeRateX > 0 &&
     !isSubmitting &&
     hasInput &&
@@ -218,11 +209,6 @@ export function WithdrawAUL({ open, onClose }: WithdrawAULProps) {
 
   const handleSubmit = async () => {
     if (!canSubmit || isSubmitting || parsedAmount == null || withdrawConfigPending) {
-      return;
-    }
-
-    if (!aulWithdrawEnabled) {
-      toast.error(t("mine.withdrawClosed"));
       return;
     }
 
