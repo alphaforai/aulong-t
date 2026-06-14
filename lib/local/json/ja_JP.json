@@ -124,7 +124,7 @@
       "noRecords": "記録がありません"
     },
     "aulPrice": "AULコイン価格",
-    "holdAul": "保有AUL価値",
+    "holdAul": "解放待ち AUL",
     "chartLoading": "読み込み中…",
     "chartLoadFailed": "データの読み込みに失敗しました。後でもう一度お試しください",
     "chartNoData": "{range}データがありません",

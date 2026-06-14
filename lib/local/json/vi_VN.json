@@ -124,7 +124,7 @@
       "noRecords": "Chưa có bản ghi"
     },
     "aulPrice": "Giá coin AUL",
-    "holdAul": "Giá trị AUL nắm giữ",
+    "holdAul": "AUL chờ giải phóng",
     "chartLoading": "Đang tải…",
     "chartLoadFailed": "Tải dữ liệu thất bại, vui lòng thử lại sau",
     "chartNoData": "Chưa có dữ liệu {range}",

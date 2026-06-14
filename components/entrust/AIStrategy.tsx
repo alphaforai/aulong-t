@@ -131,11 +131,9 @@ type StakeStatusLabels = {
 };
 
 function resolveStakeStatusLabel(
-  stake: StakeItem,
   status: StakeStatus,
   labels: StakeStatusLabels,
 ) {
-  if (stake.statusLabel) return stake.statusLabel;
   switch (status) {
     case 1:
       return labels.deployed;
@@ -172,7 +170,7 @@ function mapStakeToCard(
     depositedAmount: formatAmount(stake.amount),
     cumulativeEarnings: formatAmount(stake.accumulatedEarnings),
     cumulativeEarningsUnit: stake.planType === 2 ? "AUL" : "USDT",
-    statusLabel: resolveStakeStatusLabel(stake, status, statusLabels),
+    statusLabel: resolveStakeStatusLabel(status, statusLabels),
     isActive,
     strategyName: stake.planName || fallbackTitle,
     startTime: stake.startedAt || "—",

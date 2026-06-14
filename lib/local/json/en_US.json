@@ -124,7 +124,7 @@
       "noRecords": "No records yet"
     },
     "aulPrice": "AUL price",
-    "holdAul": "Held AUL value",
+    "holdAul": "Pending release AUL",
     "chartLoading": "Loading…",
     "chartLoadFailed": "Failed to load data, please try again later",
     "chartNoData": "No {range} data available",

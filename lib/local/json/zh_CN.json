@@ -124,7 +124,7 @@
       "noRecords": "暂无记录"
     },
     "aulPrice": "AUL 币价格",
-    "holdAul": "持有 AUL 价值",
+    "holdAul": "待释放 AUL",
     "chartLoading": "加载中…",
     "chartLoadFailed": "数据加载失败，请稍后重试",
     "chartNoData": "暂无{range}数据",

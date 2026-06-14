@@ -124,7 +124,7 @@
       "noRecords": "Tiada rekod buat masa ini"
     },
     "aulPrice": "Harga syiling AUL",
-    "holdAul": "Nilai pegangan AUL",
+    "holdAul": "AUL menunggu pelepasan",
     "chartLoading": "Memuatkan…",
     "chartLoadFailed": "Gagal memuatkan data, sila cuba lagi kemudian",
     "chartNoData": "Tiada data {range}",

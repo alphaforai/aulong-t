@@ -124,7 +124,7 @@
       "noRecords": "기록이 없습니다"
     },
     "aulPrice": "AUL 코인 가격",
-    "holdAul": "보유 AUL 가치",
+    "holdAul": "해제 대기 AUL",
     "chartLoading": "로딩 중…",
     "chartLoadFailed": "데이터 로드 실패, 나중에 다시 시도해 주세요",
     "chartNoData": "{range} 데이터 없음",
