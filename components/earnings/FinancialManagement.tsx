@@ -219,15 +219,17 @@ export function FinancialManagement({
     },
   );
 
+  const stakeUsdtIncomeBalance = React.useMemo(() => {
+    const num = Number(userAssetsResponse?.data?.stakeUsdtIncome ?? 0);
+    return Number.isFinite(num) ? num : 0;
+  }, [userAssetsResponse]);
+
   const availableBalance = React.useMemo(() => {
-    const balance = userAssetsResponse?.data?.usdtBalance;
-    const num = Number(balance);
-    if (!Number.isFinite(num)) return "0.00";
-    return num.toLocaleString("en-US", {
+    return stakeUsdtIncomeBalance.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-  }, [userAssetsResponse]);
+  }, [stakeUsdtIncomeBalance]);
 
   React.useEffect(() => {
     if (!open) return;
@@ -263,10 +265,8 @@ export function FinancialManagement({
 
   const handleMax = () => {
     if (userAssetsPending || isSubmitting) return;
-    const balance = userAssetsResponse?.data?.usdtBalance;
-    const num = Number(balance);
-    if (!Number.isFinite(num) || num <= 0) return;
-    setAmount(String(num));
+    if (stakeUsdtIncomeBalance <= 0) return;
+    setAmount(String(stakeUsdtIncomeBalance));
   };
 
   const handleLaunch = async () => {
@@ -291,8 +291,7 @@ export function FinancialManagement({
       return;
     }
 
-    const balance = Number(userAssetsResponse?.data?.usdtBalance ?? 0);
-    if (Number.isFinite(balance) && parsedAmount > balance) {
+    if (parsedAmount > stakeUsdtIncomeBalance) {
       toast.error(t("entrust.deployInsufficientBalance"));
       return;
     }

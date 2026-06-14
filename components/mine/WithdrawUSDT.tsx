@@ -54,7 +54,6 @@ type WithdrawPlatformConfig = {
   feeXRatio?: number;
   maxWithdrawAmount?: number;
   minWithdrawAmount?: number;
-  usdtWithdrawEnabled?: boolean;
 };
 
 function formatBalance(value: number): string {
@@ -126,7 +125,6 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
   // withdrawConfig example:
   //   {
   //     aulAutoDisburseThreshold: 1,
-  //     aulWithdrawEnabled: true,            // 是否开启AUL提现
   //     feeUsdtRatio: 10,                    // USDT提现中USDT手续费比例
   //     feeXRatio: 5,                         // USDT提现中AUL手续费占比
   //     maxWithdrawAmount: 0,                  // USDT提现单笔最大提现金额，0表示不限制
@@ -134,31 +132,24 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
   //     minWithdrawAmount: 5,                  // USDT提现单笔最小提现金额
   //     minWithdrawAmountX: 0,                 // AUL提现单笔最小提现金额
   //     usdtAutoDisburseThreshold: 1,
-  //     usdtWithdrawEnabled: true,           // 是否开启USDT提现
   //     withdrawFeeRate: 15,                 // USDT提现总手续费比例
   //     withdrawFeeRateX: 15,                // AUL提现总手续费比例
   // }
 
-  const {
-    usdtWithdrawEnabled,
-    minWithdrawAmount,
-    maxWithdrawAmount,
-    feeUsdtRatio,
-    feeXRatio,
-  } = React.useMemo(() => {
-    const config = withdrawConfig as WithdrawPlatformConfig | undefined;
-    const min = Number(config?.minWithdrawAmount);
-    const max = Number(config?.maxWithdrawAmount);
-    const usdtFee = Number(config?.feeUsdtRatio);
-    const xFee = Number(config?.feeXRatio);
-    return {
-      usdtWithdrawEnabled: config?.usdtWithdrawEnabled === true,
-      minWithdrawAmount: Number.isFinite(min) ? min : 0,
-      maxWithdrawAmount: Number.isFinite(max) ? max : 0,
-      feeUsdtRatio: Number.isFinite(usdtFee) ? usdtFee : 0,
-      feeXRatio: Number.isFinite(xFee) ? xFee : 0,
-    };
-  }, [withdrawConfig]);
+  const { minWithdrawAmount, maxWithdrawAmount, feeUsdtRatio, feeXRatio } =
+    React.useMemo(() => {
+      const config = withdrawConfig as WithdrawPlatformConfig | undefined;
+      const min = Number(config?.minWithdrawAmount);
+      const max = Number(config?.maxWithdrawAmount);
+      const usdtFee = Number(config?.feeUsdtRatio);
+      const xFee = Number(config?.feeXRatio);
+      return {
+        minWithdrawAmount: Number.isFinite(min) ? min : 0,
+        maxWithdrawAmount: Number.isFinite(max) ? max : 0,
+        feeUsdtRatio: Number.isFinite(usdtFee) ? usdtFee : 0,
+        feeXRatio: Number.isFinite(xFee) ? xFee : 0,
+      };
+    }, [withdrawConfig]);
 
   const wallet = walletAddress as `0x${string}` | undefined;
   const chainReadEnabled = open && Boolean(wallet);
@@ -389,7 +380,6 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
     !aulBalancePending &&
     !xcoinPricePending &&
     !withdrawConfigPending &&
-    usdtWithdrawEnabled &&
     feeXRatio > 0 &&
     !isTxBusy &&
     hasInput &&
@@ -427,11 +417,6 @@ export function WithdrawUSDT({ open, onClose }: WithdrawUSDTProps) {
 
   const handleSubmit = async () => {
     if (!canSubmit || isTxBusy || parsedAmount == null || withdrawConfigPending) {
-      return;
-    }
-
-    if (!usdtWithdrawEnabled) {
-      toast.error(t("mine.withdrawUsdtClosed"));
       return;
     }
 
