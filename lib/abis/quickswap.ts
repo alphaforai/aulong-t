@@ -1,5 +1,5 @@
 const quickswapAddress = process.env
-  .NEXT_PUBLIC_QUICKSWAPTEST_CONTRACT_ADDRESS as `0x${string}`;
+  .NEXT_PUBLIC_QUICKSWAP_CONTRACT_ADDRESS as `0x${string}`;
 
 export const QuickswapContract = {
   address: quickswapAddress,
