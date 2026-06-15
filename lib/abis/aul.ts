@@ -1,6 +1,6 @@
 const aulAddress = process.env
-  .NEXT_PUBLIC_AUL_TEST_CONTRACT_ADDRESS as `0x${string}`;
-
+  .NEXT_PUBLIC_AUL_TOKEN_CONTRACT_ADDRESS as `0x${string}`;
+  
 export const AulContract = {
   address: aulAddress,
   abi: [
