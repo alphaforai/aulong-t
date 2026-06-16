@@ -11,6 +11,7 @@ import { WithdrawUSDT } from "./WithdrawUSDT";
 import { FinancialManagement } from "./FinancialManagement2";
 import { useQuery } from "@tanstack/react-query";
 import { getUserAssets } from "@/lib/api/users";
+import { rowX1, stackY1_5 } from "@/lib/mobileCompat";
 
 /** 总资产卡片 — 背景 Figma 550:7512，内容 Figma 514:6035 */
 export function AssetSummaryCard() {
@@ -60,24 +61,28 @@ export function AssetSummaryCard() {
   console.log(userAssets);
   const summaryCards = [
     {
+      id: "entrust",
       label: t("mine.totalEntrustUsdt"),
       value: stakeUsdt,
       unit: "USDT",
       icon: mineAssets.summaryTotalEntrust,
     },
     {
+      id: "unreleased",
       label: t("mine.totalUnreleasedAul"),
       value: xcoinUnreleasedBalance,
       unit: "AUL",
       icon: mineAssets.summaryAulUnreleased,
     },
     {
+      id: "usdt-withdrawable",
       label: t("mine.totalEarnings"),
       value: usdtBalance,
       unit: "USDT",
       icon: mineAssets.summaryUsdtWithdrawable,
     },
     {
+      id: "aul-withdrawable",
       label: t("mine.totalRelease"),
       value: xcoinBalance,
       unit: "AUL",
@@ -86,11 +91,11 @@ export function AssetSummaryCard() {
   ];
 
   return (
-    <section className="relative h-[360px] w-full shrink-0">
+    <section className="relative h-[345px] w-full shrink-0">
       <AssetCardBackground />
 
-      <div className="absolute inset-x-10 top-[27px] z-10 flex flex-col items-center gap-1.5">
-        <div className="flex items-center justify-center gap-1">
+      <div className={`absolute inset-x-10 top-[27px] z-10 ${stackY1_5} items-center`}>
+        <div className={`${rowX1} justify-center`}>
           <p className="max-w-[180px] truncate text-sm font-extrabold leading-normal text-black/70">
             {t("mine.totalAssets")}
           </p>
@@ -101,40 +106,49 @@ export function AssetSummaryCard() {
         </p>
       </div>
 
-      <div className="absolute left-1/2 top-[114px] z-10 grid w-[359px] -translate-x-1/2 grid-cols-2 gap-2">
-        {summaryCards.map((card) => (
-          <StatColumn
-            key={card.label}
-            label={card.label}
-            value={card.value}
-            unit={card.unit}
-            icon={card.icon}
-          />
+      <div className="absolute left-1/2 top-[114px] z-10 flex w-[359px] -translate-x-1/2 flex-wrap">
+        {summaryCards.map((card, index) => (
+          <div
+            key={card.id}
+            className={`w-1/2 box-border ${index % 2 === 0 ? "pr-1" : "pl-1"} ${
+              index < 2 ? "mb-2" : ""
+            }`}
+          >
+            <StatColumn
+              label={card.label}
+              value={card.value}
+              unit={card.unit}
+              icon={card.icon}
+            />
+          </div>
         ))}
       </div>
 
-      <div className="absolute left-1/2 top-[260px] z-10 flex w-full max-w-[343px] -translate-x-1/2 items-center justify-center gap-2 px-4 pb-2">
-        <ActionButton
-          icon={mineAssets.actionUsdt}
-          label={t("mine.usdtWithdraw")}
-          variant="light"
-          onClick={() => setShowWithdrawUsdt(true)}
-          className="flex-1"
-        />
-        <ActionButton
-          icon={mineAssets.actionAul}
-          label={t("mine.aulWithdraw")}
-          variant="light"
-          onClick={() => setShowWithdrawAul(true)}
-          className="flex-1"
-        />
-        <ActionButton
-          icon={mineAssets.actionInvest}
-          label={t("mine.goInvest")}
-          variant="primary"
-          onClick={() => setShowFinancialManagement(true)}
-          className="flex-1"
-        />
+      <div className="absolute left-1/2 top-[274px] z-10 flex w-[359px] -translate-x-1/2">
+        <div className="box-border w-1/3 pr-1">
+          <ActionButton
+            icon={mineAssets.actionUsdt}
+            label={t("mine.usdtWithdraw")}
+            variant="light"
+            onClick={() => setShowWithdrawUsdt(true)}
+          />
+        </div>
+        <div className="box-border w-1/3 px-1">
+          <ActionButton
+            icon={mineAssets.actionAul}
+            label={t("mine.aulWithdraw")}
+            variant="light"
+            onClick={() => setShowWithdrawAul(true)}
+          />
+        </div>
+        <div className="box-border w-1/3 pl-1">
+          <ActionButton
+            icon={mineAssets.actionInvest}
+            label={t("mine.goInvest")}
+            variant="primary"
+            onClick={() => setShowFinancialManagement(true)}
+          />
+        </div>
       </div>
 
       <WithdrawUSDT
@@ -217,16 +231,16 @@ function StatColumn({
   });
 
   return (
-    <div className="relative h-[65px] w-full overflow-hidden rounded-[8px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-      <div className="absolute left-2 top-[12.5px] flex w-[112px] flex-col gap-0.5">
-        <p className="w-full truncate whitespace-nowrap text-[13px] leading-normal text-black/70">
+    <div className="relative h-[72px] w-full overflow-hidden rounded-[8px] bg-[rgba(255,255,255,0.92)] shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+      <div className="absolute left-2.5 top-[14px] flex w-[118px] flex-col space-y-0.5">
+        <p className="w-full truncate whitespace-nowrap text-[14px] leading-normal text-black/70">
           {label}
         </p>
         <p className="inline-flex items-baseline whitespace-nowrap leading-none text-[#333]">
           <span className="font-mulish text-base font-semibold leading-normal">
             {displayValue}
           </span>
-          <span className="ml-1 font-mulish text-[10px] leading-normal">
+          <span className="ml-1 font-mulish text-[11px] leading-normal">
             {unit}
           </span>
         </p>
@@ -234,9 +248,9 @@ function StatColumn({
       <AppImage
         src={icon}
         alt=""
-        width={44}
-        height={44}
-        className="pointer-events-none absolute right-[6px] top-[11px] size-11 object-contain"
+        width={48}
+        height={48}
+        className="pointer-events-none absolute right-[5px] top-[12px] size-12 object-contain"
       />
     </div>
   );
@@ -258,33 +272,35 @@ function ActionButton({
   return (
     <button
       type="button"
-      className={`relative flex h-auto min-h-[75px] shrink-0 select-none flex-col items-center justify-center rounded-xl border border-white px-2 py-2 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
+      className={`relative box-border h-[60px] w-full select-none rounded-lg border border-white transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
         isPrimary
-          ? "gap-1.5 shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
-          : "gap-1 bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
+          ? "shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
+          : "bg-[rgba(255,255,255,0.92)] shadow-[0_5px_5px_rgba(51,51,51,0.08)]"
       } ${className}`}
       {...props}
     >
       {isPrimary ? (
-        <>
-          <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
-          <span className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]" />
-        </>
+        <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg" aria-hidden>
+          <span className="absolute inset-0 bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
+          <span className="absolute inset-0 shadow-[inset_0_-3px_3px_rgba(255,254,227,0.55)]" />
+        </span>
       ) : null}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={icon}
-        alt=""
-        width={36}
-        height={36}
-        className="relative z-10 size-9 shrink-0 object-contain"
-      />
-      <span
-        className={`relative z-10 w-full truncate whitespace-nowrap px-1 text-center text-sm leading-normal font-medium ${
-          isPrimary ? "text-white" : "text-[#e43b3b]"
-        }`}
-      >
-        {label}
+      <span className="relative z-10 flex h-full flex-col items-center justify-center px-1">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={icon}
+          alt=""
+          width={28}
+          height={28}
+          className="block size-7 shrink-0 object-contain"
+        />
+        <span
+          className={`mt-0.5 block w-full truncate whitespace-nowrap text-center text-xs leading-none font-medium ${
+            isPrimary ? "text-white" : "text-[#e43b3b]"
+          }`}
+        >
+          {label}
+        </span>
       </span>
     </button>
   );
