@@ -19,7 +19,7 @@
     "connectFirstBtn": "Sambung"
   },
   "nav": {
-    "entrust": "Amanah",
+    "entrust": "Jagaan",
     "earnings": "Pendapatan",
     "mine": "Saya",
     "team": "Pasukan"
@@ -202,6 +202,12 @@
     "peopleCount": "Bilangan orang",
     "communityPerfYesterday": "Prestasi kawasan kecil (perubahan semalam)",
     "todayStakeTotal": "Jumlah amanah hari ini",
+    "todayExperienceStrategy": "Strategi pengalaman hari ini",
+    "totalExperienceStrategy": "Jumlah strategi pengalaman",
+    "todayAdvancedStrategy": "Strategi lanjutan hari ini",
+    "totalAdvancedStrategy": "Jumlah strategi lanjutan",
+    "todayStableStrategy": "Strategi stabil hari ini",
+    "totalStableStrategy": "Jumlah strategi stabil",
     "teamTotalRegister": "Jumlah pendaftaran pasukan",
     "teamTotalWhitelist": "Jumlah senarai putih pasukan",
     "teamTotalStakers": "Jumlah ahli amanah pasukan",
@@ -217,6 +223,8 @@
     "totalAssets": "Jumlah aset (USDT)",
     "totalEarnings": "Baki boleh keluar USDT",
     "totalRelease": "Baki boleh keluar AUL",
+    "totalEntrustUsdt": "Jumlah amanah (USDT)",
+    "totalUnreleasedAul": "AUL menunggu pelepasan",
     "usdtWithdraw": "Keluarkan USDT",
     "aulWithdraw": "Keluarkan AUL",
     "xWithdraw": "Keluarkan X",

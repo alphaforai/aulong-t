@@ -19,7 +19,7 @@
     "connectFirstBtn": "接続"
   },
   "nav": {
-    "entrust": "委託",
+    "entrust": "預託",
     "earnings": "収益",
     "mine": "マイ",
     "team": "チーム"
@@ -202,6 +202,12 @@
     "peopleCount": "人数",
     "communityPerfYesterday": "小区業績（昨日の変化）",
     "todayStakeTotal": "本日の委託総額",
+    "todayExperienceStrategy": "本日の体験戦略",
+    "totalExperienceStrategy": "体験戦略累計",
+    "todayAdvancedStrategy": "本日の上級戦略",
+    "totalAdvancedStrategy": "上級戦略累計",
+    "todayStableStrategy": "本日の堅実戦略",
+    "totalStableStrategy": "堅実戦略累計",
     "teamTotalRegister": "チーム総登録人数",
     "teamTotalWhitelist": "チーム総ホワイトリスト数",
     "teamTotalStakers": "チーム総委託人数",
@@ -217,6 +223,8 @@
     "totalAssets": "総資産(USDT)",
     "totalEarnings": "USDT出金可能残高",
     "totalRelease": "AUL出金可能残高",
+    "totalEntrustUsdt": "総委託(USDT)",
+    "totalUnreleasedAul": "解放待ち(AUL)",
     "usdtWithdraw": "USDT出金",
     "aulWithdraw": "AUL出金",
     "xWithdraw": "X出金",

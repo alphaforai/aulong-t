@@ -19,7 +19,7 @@
     "connectFirstBtn": "先连钱包"
   },
   "nav": {
-    "entrust": "委托",
+    "entrust": "托管",
     "earnings": "收益",
     "mine": "我的",
     "team": "团队"
@@ -202,6 +202,12 @@
     "peopleCount": "人数",
     "communityPerfYesterday": "小区业绩(昨日变化)",
     "todayStakeTotal": "今日委托总额",
+    "todayExperienceStrategy": "今日体验策略",
+    "totalExperienceStrategy": "累计体验策略",
+    "todayAdvancedStrategy": "今日进阶策略",
+    "totalAdvancedStrategy": "累计进阶策略",
+    "todayStableStrategy": "今日稳健策略",
+    "totalStableStrategy": "稳健累计策略",
     "teamTotalRegister": "团队总注册人数",
     "teamTotalWhitelist": "团队总白名单数",
     "teamTotalStakers": "团队总委托人数",
@@ -217,6 +223,8 @@
     "totalAssets": "总资产(USDT)",
     "totalEarnings": "USDT可提余额",
     "totalRelease": "AUL可提余额",
+    "totalEntrustUsdt": "总委托(USDT)",
+    "totalUnreleasedAul": "待释放(AUL)",
     "usdtWithdraw": "USDT提取",
     "aulWithdraw": "AUL提取",
     "xWithdraw": "X提取",

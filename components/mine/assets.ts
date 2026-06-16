@@ -28,4 +28,8 @@ export const mineAssets = {
   withdrawUsdtIcon: "/assets/mine/withdraw-usdt-icon.svg",
   withdrawAulIcon: "/assets/mine/withdraw-aul-icon.png",
   withdrawInputDivider: "/assets/mine/withdraw-input-divider.svg",
+  summaryUsdtWithdrawable: "/assets/mine/summary-usdt-withdrawable.png",
+  summaryAulWithdrawable: "/assets/mine/summary-aul-withdrawable.png",
+  summaryTotalEntrust: "/assets/mine/summary-total-entrust.png",
+  summaryAulUnreleased: "/assets/mine/summary-aul-unreleased.png",
 } as const;

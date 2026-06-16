@@ -35,6 +35,20 @@ type TeamOverview = {
   teamTotalStakeChangeRate?: number;
   teamIncome?: number;
   referralIncome?: number;
+  planDailyStakeSummary?: {
+    startDate?: string;
+    endDate?: string;
+    items?: Array<{
+      planId?: number;
+      planName?: string;
+      periodDays?: number;
+      metricCode?: string;
+      rangeTotal?: number;
+      todayAmount?: number;
+      yesterdayAmount?: number;
+      todayDelta?: number;
+    }>;
+  };
 };
 
 export default function TeamPage() {
@@ -55,6 +69,8 @@ export default function TeamPage() {
   }, [isError, t]);
 
   const overview = teamOverviewResponse?.data as TeamOverview | undefined;
+
+  console.log(overview);
 
   return (
     <AulongPageShell panelClassName="bg-white">
@@ -79,6 +95,7 @@ export default function TeamPage() {
         smallAreaStakeChangeRate={overview?.smallAreaStakeChangeRate}
         todayTotalStake={overview?.todayTotalStake}
         teamTotalStake={overview?.teamTotalStake}
+        planDailyStakeSummaryItemList={overview?.planDailyStakeSummary?.items ?? []}
       />
       <MemberStatsCard
         isPending={isPending}

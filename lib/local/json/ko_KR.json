@@ -19,7 +19,7 @@
     "connectFirstBtn": "지갑 연결"
   },
   "nav": {
-    "entrust": "위탁",
+    "entrust": "보관",
     "earnings": "수익",
     "mine": "내 정보",
     "team": "팀"
@@ -202,6 +202,12 @@
     "peopleCount": "인원",
     "communityPerfYesterday": "소구역 실적(어제 변화)",
     "todayStakeTotal": "오늘 위탁 총액",
+    "todayExperienceStrategy": "오늘 체험 전략",
+    "totalExperienceStrategy": "체험 전략 누적",
+    "todayAdvancedStrategy": "오늘 고급 전략",
+    "totalAdvancedStrategy": "고급 전략 누적",
+    "todayStableStrategy": "오늘 안정 전략",
+    "totalStableStrategy": "안정 전략 누적",
     "teamTotalRegister": "팀 총 가입 인원",
     "teamTotalWhitelist": "팀 총 화이트리스트 수",
     "teamTotalStakers": "팀 총 위탁 인원",
@@ -217,6 +223,8 @@
     "totalAssets": "총 자산(USDT)",
     "totalEarnings": "USDT 출금 가능 잔액",
     "totalRelease": "AUL 출금 가능 잔액",
+    "totalEntrustUsdt": "총 위탁(USDT)",
+    "totalUnreleasedAul": "해제 대기(AUL)",
     "usdtWithdraw": "USDT 출금",
     "aulWithdraw": "AUL 출금",
     "xWithdraw": "X 출금",

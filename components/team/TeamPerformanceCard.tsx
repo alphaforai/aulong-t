@@ -12,6 +12,10 @@ export type TeamPerformanceCardProps = {
   smallAreaStakeChangeRate?: number;
   todayTotalStake?: number;
   teamTotalStake?: number;
+  planDailyStakeSummaryItemList?: Array<{
+    todayAmount?: number;
+    rangeTotal?: number;
+  }>;
 };
 
 /** 团队业绩数据 — Figma 535:6355 */
@@ -21,6 +25,7 @@ export function TeamPerformanceCard({
   smallAreaStakeChangeRate,
   todayTotalStake,
   teamTotalStake,
+  planDailyStakeSummaryItemList,
 }: TeamPerformanceCardProps) {
   const { t } = useTranslation();
   const loadingLabel = t("common.loadingDots");
@@ -34,6 +39,51 @@ export function TeamPerformanceCard({
     formatSignedPercent(smallAreaStakeChangeRate),
     loadingLabel,
   );
+  const item1 = planDailyStakeSummaryItemList?.[0];
+  const item2 = planDailyStakeSummaryItemList?.[1];
+  const item3 = planDailyStakeSummaryItemList?.[2];
+  const strategyCards = [
+    {
+      label: t("team.todayStakeTotal"),
+      value: todayTotalStake,
+      icon: teamAssets.perfIconToday,
+    },
+    {
+      label: t("team.teamStakeTotal"),
+      value: teamTotalStake,
+      icon: teamAssets.perfIconTeam,
+    },
+    {
+      label: t("team.todayExperienceStrategy"),
+      value: item1?.todayAmount,
+      icon: teamAssets.perfIconToday,
+    },
+    {
+      label: t("team.totalExperienceStrategy"),
+      value: item1?.rangeTotal,
+      icon: teamAssets.perfIconTeam,
+    },
+    {
+      label: t("team.todayAdvancedStrategy"),
+      value: item2?.todayAmount,
+      icon: teamAssets.perfIconToday,
+    },
+    {
+      label: t("team.totalAdvancedStrategy"),
+      value: item2?.rangeTotal,
+      icon: teamAssets.perfIconTeam,
+    },
+    {
+      label: t("team.todayStableStrategy"),
+      value: item3?.todayAmount,
+      icon: teamAssets.perfIconToday,
+    },
+    {
+      label: t("team.totalStableStrategy"),
+      value: item3?.rangeTotal,
+      icon: teamAssets.perfIconTeam,
+    },
+  ];
 
   return (
     <section className="relative w-full shrink-0 overflow-hidden rounded-[12px] border border-white shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
@@ -87,31 +137,22 @@ export function TeamPerformanceCard({
       </div>
 
       <div className="mt-1 rounded-b-[12px] bg-white/80 px-2.5 pb-2.5 pt-2 backdrop-blur-[7px]">
-        <div className="flex gap-3">
-          <PerformanceSubCard
-            icon={teamAssets.perfIconToday}
-            label={t("team.todayStakeTotal")}
-            value={displayTeamValue(
-              isPending,
-              formatAmount(todayTotalStake),
-              loadingLabel,
-            )}
-            unit="USDT"
-            isPending={isPending}
-            loadingLabel={loadingLabel}
-          />
-          <PerformanceSubCard
-            icon={teamAssets.perfIconTeam}
-            label={t("team.teamStakeTotal")}
-            value={displayTeamValue(
-              isPending,
-              formatAmount(teamTotalStake),
-              loadingLabel,
-            )}
-            unit="USDT"
-            isPending={isPending}
-            loadingLabel={loadingLabel}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          {strategyCards.map((card) => (
+            <PerformanceSubCard
+              key={card.label}
+              icon={card.icon}
+              label={card.label}
+              value={displayTeamValue(
+                isPending,
+                formatAmount(card.value),
+                loadingLabel,
+              )}
+              unit="USDT"
+              isPending={isPending}
+              loadingLabel={loadingLabel}
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -140,7 +181,7 @@ function PerformanceSubCard({
           {label}
         </p>
         <p
-          className={`font-mulish text-lg font-medium leading-normal ${
+          className={`font-mulish inline-flex items-baseline whitespace-nowrap text-lg font-medium leading-normal ${
             isPending || value === loadingLabel
               ? "text-[#8b8b8b]"
               : "text-[#333]"
@@ -148,7 +189,7 @@ function PerformanceSubCard({
         >
           {value}
           {!isPending && value !== loadingLabel ? (
-            <span className="text-xs font-normal"> {unit}</span>
+            <span className="ml-1 text-xs font-normal">{unit}</span>
           ) : null}
         </p>
       </div>

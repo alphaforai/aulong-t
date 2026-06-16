@@ -19,7 +19,7 @@
     "connectFirstBtn": "Connect"
   },
   "nav": {
-    "entrust": "Entrust",
+    "entrust": "Custody",
     "earnings": "Earnings",
     "mine": "Mine",
     "team": "Team"
@@ -202,6 +202,12 @@
     "peopleCount": "Members",
     "communityPerfYesterday": "Community performance (yesterday change)",
     "todayStakeTotal": "Today's total entrust",
+    "todayExperienceStrategy": "Today's Experience Strategy",
+    "totalExperienceStrategy": "Total Experience Strategy",
+    "todayAdvancedStrategy": "Today's Advanced Strategy",
+    "totalAdvancedStrategy": "Total Advanced Strategy",
+    "todayStableStrategy": "Today's Stable Strategy",
+    "totalStableStrategy": "Total Stable Strategy",
     "teamTotalRegister": "Team total registrations",
     "teamTotalWhitelist": "Team total whitelist",
     "teamTotalStakers": "Team total entrust members",
@@ -217,6 +223,8 @@
     "totalAssets": "Total assets (USDT)",
     "totalEarnings": "USDT withdrawable balance",
     "totalRelease": "AUL withdrawable balance",
+    "totalEntrustUsdt": "Total Entrust (USDT)",
+    "totalUnreleasedAul": "Pending Release (AUL)",
     "usdtWithdraw": "Withdraw USDT",
     "aulWithdraw": "Withdraw AUL",
     "xWithdraw": "Withdraw X",

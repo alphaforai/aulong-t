@@ -21,6 +21,26 @@ export function AssetSummaryCard() {
   const [showFinancialManagement, setShowFinancialManagement] =
     React.useState(false);
 
+    //
+    // 响应示例
+// {
+// 	"code": 0,
+// 	"msg": "",
+// 	"data": {
+// 		"totalBalance": 0,
+// 		"totalIncomeUsdt": 0,
+// 		"usdtBalance": 0,
+// 		"stakeTotalUsdtIncome": 0,
+// 		"stakeUsdtIncome": 0,
+// 		"lastUsdtIncome": 0,
+// 		"stakeUsdt": 0,
+// 		"miningUsdt": 0,
+// 		"xcoinUnreleasedBalance": 0,
+// 		"xcoinReleasedBalance": 0,
+// 		"xcoinBalance": 0
+// 	},
+// 	"success": true
+// }
 
   // getUserAssets
   const { data: userAssetsResponse } = useQuery({
@@ -29,13 +49,43 @@ export function AssetSummaryCard() {
     enabled: Boolean(userInfo.walletAddress),
   });
 
+
   const userAssets = userAssetsResponse?.data;
   const totalAssets = userAssets?.totalBalance ?? 0;
   const usdtBalance = userAssets?.usdtBalance ?? 0;
   const xcoinBalance = userAssets?.xCoinBalance ?? 0;
+  const stakeUsdt = userAssets?.stakeUsdt ?? 0;
+  const xcoinUnreleasedBalance = userAssets?.xcoinUnreleasedBalance ?? 0;
+
+  const summaryCards = [
+    {
+      label: t("mine.totalEntrustUsdt"),
+      value: stakeUsdt,
+      unit: "USDT",
+      icon: mineAssets.summaryTotalEntrust,
+    },
+    {
+      label: t("mine.totalUnreleasedAul"),
+      value: xcoinUnreleasedBalance,
+      unit: "AUL",
+      icon: mineAssets.summaryAulUnreleased,
+    },
+    {
+      label: t("mine.totalEarnings"),
+      value: usdtBalance,
+      unit: "USDT",
+      icon: mineAssets.summaryUsdtWithdrawable,
+    },
+    {
+      label: t("mine.totalRelease"),
+      value: xcoinBalance,
+      unit: "AUL",
+      icon: mineAssets.summaryAulWithdrawable,
+    },
+  ];
 
   return (
-    <section className="relative h-[258px] w-full shrink-0">
+    <section className="relative h-[340px] w-full shrink-0">
       <AssetCardBackground />
 
       <div className="absolute inset-x-10 top-[27px] z-10 flex flex-col items-center gap-1.5">
@@ -50,23 +100,19 @@ export function AssetSummaryCard() {
         </p>
       </div>
 
-      <div className="absolute inset-x-4 top-[120px] z-10 flex items-center gap-2 text-sm">
-        <StatColumn label={t("mine.totalEarnings")} value={usdtBalance} trailingSpace />
-        <div className="flex h-7 w-0 shrink-0 items-center justify-center">
-          <div className="rotate-90">
-            <AppImage
-              src={mineAssets.statDividerV}
-              alt=""
-              width={28}
-              height={1}
-              className="h-px w-7 max-w-none"
-            />
-          </div>
-        </div>
-        <StatColumn label={t("mine.totalRelease")} value={xcoinBalance} trailingSpace />
+      <div className="absolute left-1/2 top-[114px] z-10 grid w-[336px] -translate-x-1/2 grid-cols-2 gap-2">
+        {summaryCards.map((card) => (
+          <StatColumn
+            key={card.label}
+            label={card.label}
+            value={card.value}
+            unit={card.unit}
+            icon={card.icon}
+          />
+        ))}
       </div>
 
-      <div className="absolute inset-x-0 top-[177px] z-10 flex items-center justify-center gap-3">
+      <div className="absolute left-1/2 top-[260px] z-10 flex w-[343px] -translate-x-1/2 items-center justify-center gap-3">
         <ActionButton
           icon={mineAssets.actionUsdt}
           label={t("mine.usdtWithdraw")}
@@ -153,25 +199,39 @@ function WhitelistBadge({ hasTicket }: { hasTicket: number }) {
 function StatColumn({
   label,
   value,
-  trailingSpace = false,
+  unit,
+  icon,
 }: {
   label: string;
-  value: string;
-  trailingSpace?: boolean;
+  value: number;
+  unit: string;
+  icon: string;
 }) {
+  const displayValue = Number(value).toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+  });
+
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
-      <p className="text-center text-xs font-bold leading-normal text-black/70">{label}</p>
-      <p className="text-center leading-none text-black">
-        <span className="font-mulish text-base font-semibold leading-normal">
-          {value}
-        </span>
-        {trailingSpace ? (
-          <span className="font-mulish text-sm font-semibold leading-normal">
-            {" "}
+    <div className="relative h-[65px] w-40 shrink-0 overflow-hidden rounded-[8px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <div className="absolute left-2 top-[12.5px] flex w-[97px] flex-col gap-0.5">
+        <p className="text-sm leading-normal text-black/70">{label}</p>
+        <p className="inline-flex items-baseline whitespace-nowrap leading-none text-[#333]">
+          <span className="font-mulish text-base font-semibold leading-normal">
+            {displayValue}
           </span>
-        ) : null}
-      </p>
+          <span className="ml-1 font-mulish text-[10px] leading-normal">
+            {unit}
+          </span>
+        </p>
+      </div>
+      <AppImage
+        src={icon}
+        alt=""
+        width={44}
+        height={44}
+        className="pointer-events-none absolute right-[6px] top-[11px] size-11 object-contain"
+      />
     </div>
   );
 }
@@ -192,10 +252,10 @@ function ActionButton({
   return (
     <button
       type="button"
-      className={`relative flex h-[70px] min-w-0 flex-1 basis-0 select-none flex-col items-center justify-center rounded-[12px] border border-white px-1.5 py-1.5 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
+      className={`relative flex h-[66px] w-[98px] shrink-0 select-none flex-col items-center justify-center rounded-[12px] border border-white p-[10px] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
         isPrimary
           ? "gap-[3px] shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
-          : "gap-0.5 bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
+          : "gap-[2px] bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
       } ${className}`}
       {...props}
     >
@@ -209,12 +269,12 @@ function ActionButton({
       <img
         src={icon}
         alt=""
-        width={42}
-        height={42}
-        className="relative z-10 size-[42px] shrink-0 object-contain"
+        width={34}
+        height={34}
+        className="relative z-10 size-[34px] shrink-0 object-contain"
       />
       <span
-        className={`relative z-10 max-w-full text-center text-xs leading-tight font-medium ${
+        className={`relative z-10 max-w-full whitespace-nowrap text-center text-[14px] leading-normal font-normal ${
           isPrimary ? "text-white" : "text-[#e43b3b]"
         }`}
       >

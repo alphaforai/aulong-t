@@ -19,7 +19,7 @@
     "connectFirstBtn": "Kết nối"
   },
   "nav": {
-    "entrust": "thác",
+    "entrust": "Ký quỹ",
     "earnings": "Thu",
     "mine": "Của",
     "team": "Đội"
@@ -202,6 +202,12 @@
     "peopleCount": "Số người",
     "communityPerfYesterday": "Hiệu suất khu vực nhỏ (thay đổi hôm qua)",
     "todayStakeTotal": "Tổng ủy thác hôm nay",
+    "todayExperienceStrategy": "Chiến lược trải nghiệm hôm nay",
+    "totalExperienceStrategy": "Lũy kế chiến lược trải nghiệm",
+    "todayAdvancedStrategy": "Chiến lược nâng cao hôm nay",
+    "totalAdvancedStrategy": "Lũy kế chiến lược nâng cao",
+    "todayStableStrategy": "Chiến lược ổn định hôm nay",
+    "totalStableStrategy": "Lũy kế chiến lược ổn định",
     "teamTotalRegister": "Tổng số đăng ký đội",
     "teamTotalWhitelist": "Tổng whitelist đội",
     "teamTotalStakers": "Tổng số người ủy thác đội",
@@ -217,6 +223,8 @@
     "totalAssets": "Tổng tài sản (USDT)",
     "totalEarnings": "Số dư có thể rút USDT",
     "totalRelease": "Số dư có thể rút AUL",
+    "totalEntrustUsdt": "Tổng ủy thác (USDT)",
+    "totalUnreleasedAul": "AUL chờ giải phóng",
     "usdtWithdraw": "Rút USDT",
     "aulWithdraw": "Rút AUL",
     "xWithdraw": "Rút X",
