@@ -340,7 +340,8 @@
     "totalEarningsCard": "总收益(USDT)",
     "earningsRecordCard": "收益记录",
     "pendingEarningsCard": "待发放收益",
-    "lastPeriodEarningsCard": "上期收益"
+    "lastPeriodEarningsCard": "上期收益",
+    "lastPeriodHelpAria": "上期收益说明"
   },
   "toast": {
     "copiedInviteCode": "已复制邀请码",

@@ -7,6 +7,7 @@ export const earningsAssets = {
   summaryAiDeco: "/assets/earnings/summary-ai-deco.png",
   statPendingIcon: "/assets/earnings/stat-pending-icon.png",
   statLastPeriodIcon: "/assets/earnings/stat-last-period-icon.png",
+  statHelpIcon: "/assets/earnings/stat-help-icon.png",
   recordArrow: "/assets/earnings/record-arrow.svg",
   summaryDividerH: "/assets/earnings/summary-divider-h.svg",
   summaryDividerV: "/assets/earnings/summary-divider-v.svg",

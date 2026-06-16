@@ -340,7 +340,8 @@
     "totalEarningsCard": "Tổng (USDT)",
     "earningsRecordCard": "Lịch sử",
     "pendingEarningsCard": "Chờ phát",
-    "lastPeriodEarningsCard": "Kỳ trước"
+    "lastPeriodEarningsCard": "Kỳ trước",
+    "lastPeriodHelpAria": "Chi tiết thu nhập kỳ trước"
   },
   "toast": {
     "copiedInviteCode": "Đã sao chép mã mời",

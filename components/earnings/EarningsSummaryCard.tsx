@@ -102,7 +102,7 @@ export function EarningsSummaryCard() {
 
   return (
     <>
-      <section className="relative flex h-[221px] w-full shrink-0 flex-col overflow-hidden rounded-[12px] bg-white/80 px-3 pb-3 pt-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <section className="relative flex h-[221px] w-full shrink-0 flex-col overflow-visible rounded-[12px] bg-white/80 px-3 pb-3 pt-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
         <SummaryBackground />
         <AiDecoration />
 
@@ -113,21 +113,33 @@ export function EarningsSummaryCard() {
           </p>
         </div>
 
-        <div className="relative z-10 mt-5 flex gap-3">
-          <StatCard
-            label={copy.pending}
-            value={usdtBalanceLabel}
-            icon={earningsAssets.statPendingIcon}
-            iconClassName="left-[-33.2%] top-[-30.15%] size-[166.53%]"
-          />
-          <StatCard
-            label={copy.lastPeriod}
-            value={xcoinReleasedBalanceLabel}
-            icon={earningsAssets.statLastPeriodIcon}
-            iconClassName="left-[-30.11%] top-[-27.96%] size-[160.22%]"
-            helpOnClick={walletAddress ? handleLastPeriodHelp : undefined}
-            helpValue={lastUsdtIncome}
-            helpAriaLabel="Last period help"
+        <div className={`relative mt-5 ${helpOpen ? "z-30" : "z-10"}`}>
+          <div className="flex gap-3">
+            <StatCard
+              label={copy.pending}
+              value={usdtBalanceLabel}
+              icon={earningsAssets.statPendingIcon}
+              iconClassName="left-[-33.2%] top-[-30.15%] size-[166.53%]"
+            />
+            <StatCard
+              label={copy.lastPeriod}
+              value={xcoinReleasedBalanceLabel}
+              icon={earningsAssets.statLastPeriodIcon}
+              iconClassName="left-[-30.11%] top-[-27.96%] size-[160.22%]"
+              helpOnClick={walletAddress ? handleLastPeriodHelp : undefined}
+              helpValue={lastUsdtIncome}
+              helpAriaLabel={t("earnings.lastPeriodHelpAria")}
+            />
+          </div>
+
+          <LastPeriodHelpTooltip
+            open={helpOpen}
+            pending={helpPending}
+            error={helpError}
+            rows={helpRows}
+            loadingLabel={t("common.loadingDots")}
+            noRecordsLabel={t("common.noRecords")}
+            onClose={() => setHelpOpen(false)}
           />
         </div>
 
@@ -143,16 +155,6 @@ export function EarningsSummaryCard() {
       <FinancialManagement
         open={deployOpen}
         onClose={() => setDeployOpen(false)}
-      />
-
-      <LastPeriodHelpSheet
-        open={helpOpen}
-        pending={helpPending}
-        error={helpError}
-        rows={helpRows}
-        loadingLabel={t("common.loadingDots")}
-        noRecordsLabel={t("common.noRecords")}
-        onClose={() => setHelpOpen(false)}
       />
     </>
   );
@@ -248,12 +250,8 @@ function StatCard({
 
   return (
     <div className="relative flex h-[65px] min-w-0 flex-1 overflow-hidden rounded-[8px] bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-      <div
-        className={`relative z-[1] flex min-w-0 flex-1 flex-col justify-center gap-0.5 py-3 pl-2 ${
-          showHelp ? "pr-[64px]" : "pr-[52px]"
-        }`}
-      >
-        <div className="flex min-w-0 items-center">
+      <div className="relative z-[1] flex min-w-0 flex-1 flex-col justify-center gap-0.5 py-3 pl-2 pr-[52px]">
+        <div className="flex min-w-0 items-center gap-0.5">
           <p className="min-w-0 truncate text-sm leading-normal text-black/70">
             {label}
           </p>
@@ -262,9 +260,15 @@ function StatCard({
               type="button"
               aria-label={helpAriaLabel ?? "Help"}
               onClick={helpOnClick}
-              className="relative z-[2] ml-1 flex size-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px] font-bold leading-none text-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              className="relative z-[2] flex size-5 shrink-0 items-center justify-center"
             >
-              ?
+              <AppImage
+                src={earningsAssets.statHelpIcon}
+                alt=""
+                width={20}
+                height={20}
+                className="size-5"
+              />
             </button>
           ) : null}
         </div>
@@ -288,7 +292,8 @@ function StatCard({
   );
 }
 
-function LastPeriodHelpSheet({
+/** 上期收益说明浮层 — 对齐 Figma 1221:830 */
+function LastPeriodHelpTooltip({
   open,
   pending,
   error,
@@ -317,67 +322,49 @@ function LastPeriodHelpSheet({
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-80 flex items-center justify-center px-3"
-      role="dialog"
-      aria-modal="true"
-    >
+    <>
       <button
         type="button"
         aria-label="Close"
-        className="absolute inset-0 bg-black/40"
+        className="fixed inset-0 z-40"
         onClick={onClose}
       />
 
       <div
-        className="relative w-[320px] max-w-[calc(100%-48px)] rounded-[12px] bg-white px-4 pb-4 pt-4 shadow-[0_8px_24px_rgba(0,0,0,0.15)]"
+        role="dialog"
+        aria-modal="true"
+        className="absolute left-12 top-[34px] z-50 w-[269px] max-w-[calc(100%-12px)] rounded-[11px] bg-[rgba(5,5,5,0.75)] px-2.5 py-2 backdrop-blur-[3.35px]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold leading-normal text-[#333]">
-            说明
-          </h2>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onClose}
-            className="flex size-7 items-center justify-center rounded-full bg-[#f5f5f5] text-[#666]"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="mt-3">
-          {pending ? (
-            <p className="py-6 text-center text-sm text-black/50">
-              {loadingLabel}
-            </p>
-          ) : error ? (
-            <p className="py-6 text-center text-sm text-[#e43b3b]">{error}</p>
-          ) : rows.length === 0 ? (
-            <p className="py-6 text-center text-sm text-black/50">
-              {noRecordsLabel}
-            </p>
-          ) : (
-            <div className="flex flex-col space-y-2">
-              {rows.slice(0, 3).map((row, idx) => (
-                <div
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`${row.label}-${idx}`}
-                  className="flex items-center"
-                >
-                  <span className="min-w-0 flex-1 truncate text-sm leading-normal text-[#333]">
-                    {row.label}
-                  </span>
-                  <span className="ml-3 shrink-0 text-sm font-semibold leading-normal text-[#333]">
-                    {row.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {pending ? (
+          <p className="py-2 text-center text-base leading-[25px] text-white/70">
+            {loadingLabel}
+          </p>
+        ) : error ? (
+          <p className="py-2 text-center text-base leading-[25px] text-[#ff8a8a]">
+            {error}
+          </p>
+        ) : rows.length === 0 ? (
+          <p className="py-2 text-center text-base leading-[25px] text-white/70">
+            {noRecordsLabel}
+          </p>
+        ) : (
+          <div className="flex flex-col">
+            {rows.slice(0, 3).map((row, idx) => (
+              <div
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${row.label}-${idx}`}
+                className="flex items-start justify-between gap-3 text-base leading-[25px] text-white"
+              >
+                <span className="min-w-0 shrink-0">{row.label}</span>
+                <span className="shrink-0 font-mulish font-semibold">
+                  {row.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }

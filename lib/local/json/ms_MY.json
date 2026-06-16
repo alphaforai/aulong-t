@@ -340,7 +340,8 @@
     "totalEarningsCard": "Jumlah (USDT)",
     "earningsRecordCard": "Rekod",
     "pendingEarningsCard": "Belum bayar",
-    "lastPeriodEarningsCard": "Tempoh lepas"
+    "lastPeriodEarningsCard": "Tempoh lepas",
+    "lastPeriodHelpAria": "Butiran pendapatan tempoh lepas"
   },
   "toast": {
     "copiedInviteCode": "Kod jemputan disalin",

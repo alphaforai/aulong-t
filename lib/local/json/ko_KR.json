@@ -340,7 +340,8 @@
     "totalEarningsCard": "총 수익(USDT)",
     "earningsRecordCard": "수익 기록",
     "pendingEarningsCard": "미지급",
-    "lastPeriodEarningsCard": "전기 수익"
+    "lastPeriodEarningsCard": "전기 수익",
+    "lastPeriodHelpAria": "전기 수익 상세"
   },
   "toast": {
     "copiedInviteCode": "초대 코드가 복사되었습니다",

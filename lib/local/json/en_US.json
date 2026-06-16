@@ -340,7 +340,8 @@
     "totalEarningsCard": "Total (USDT)",
     "earningsRecordCard": "History",
     "pendingEarningsCard": "Pending",
-    "lastPeriodEarningsCard": "Last period"
+    "lastPeriodEarningsCard": "Last period",
+    "lastPeriodHelpAria": "Last period earnings breakdown"
   },
   "toast": {
     "copiedInviteCode": "Invite code copied",

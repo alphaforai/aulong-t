@@ -340,7 +340,8 @@
     "totalEarningsCard": "総収益(USDT)",
     "earningsRecordCard": "収益記録",
     "pendingEarningsCard": "未配布",
-    "lastPeriodEarningsCard": "前期"
+    "lastPeriodEarningsCard": "前期",
+    "lastPeriodHelpAria": "前期収益の内訳"
   },
   "toast": {
     "copiedInviteCode": "招待コードをコピーしました",
