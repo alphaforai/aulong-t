@@ -195,10 +195,10 @@ function RewardCard({
   return (
     <div className="relative flex min-w-0 flex-1 items-center overflow-hidden rounded-[8px] border border-white bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex min-w-0 flex-1 flex-col gap-0.5 py-3.5 pl-2 pr-[52px]">
-        <p className="text-xs leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
+        <p className="text-xs font-semibold leading-normal text-[rgba(51,51,51,0.8)]">{label}</p>
         <p className="whitespace-nowrap text-[0px] text-[#333]">
           <span
-            className={`font-mulish text-base font-medium leading-normal ${
+            className={`font-mulish text-base font-semibold leading-normal ${
               value === loadingLabel ? "text-[#8b8b8b]" : "text-[#333]"
             }`}
           >
