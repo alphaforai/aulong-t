@@ -333,7 +333,7 @@ function LastPeriodHelpTooltip({
       <div
         role="dialog"
         aria-modal="true"
-        className="absolute left-12 top-[34px] z-50 w-[269px] max-w-[calc(100%-12px)] rounded-[11px] bg-[rgba(5,5,5,0.75)] px-2.5 py-2 backdrop-blur-[3.35px]"
+        className="absolute left-2 right-2 top-[34px] z-50 rounded-[11px] bg-[rgba(5,5,5,0.75)] px-3 py-2 backdrop-blur-[3.35px]"
         onClick={(e) => e.stopPropagation()}
       >
         {pending ? (
