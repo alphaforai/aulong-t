@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import type { Locale } from "@/lib/local";
-import { getUserAssets } from "@/lib/api/users";
+import { getLastPeriodEarningsHelp, getUserAssets } from "@/lib/api/users";
 import { useUserInfoStore } from "@/lib/store";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { earningsAssets } from "./assets";
 import { FinancialManagement } from "./FinancialManagement";
 
@@ -42,6 +43,13 @@ export function EarningsSummaryCard() {
   const [deployOpen, setDeployOpen] = useState(false);
   const walletAddress = useUserInfoStore((state) => state.userInfo.walletAddress);
 
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [helpPending, setHelpPending] = useState(false);
+  const [helpError, setHelpError] = useState<string | null>(null);
+  const [helpRows, setHelpRows] = useState<Array<{ label: string; value: string }>>(
+    [],
+  );
+
   const { data: userAssetsResponse, isPending: userAssetsPending } = useQuery({
     queryKey: ["userAssets", walletAddress],
     queryFn: () => getUserAssets(),
@@ -63,6 +71,34 @@ export function EarningsSummaryCard() {
   const xcoinReleasedBalanceLabel = userAssetsPending
     ? t("common.loadingDots")
     : formatIncome(lastUsdtIncome);
+
+  const handleLastPeriodHelp = async () => {
+    // 只有“已登录/已连接钱包”的情况下才请求后端
+    if (!walletAddress) return;
+
+    setHelpError(null);
+    setHelpPending(true);
+    setHelpOpen(true);
+
+    try {
+      const resp = await getLastPeriodEarningsHelp();
+      const list = Array.isArray((resp as any)?.data) ? (resp as any).data : [];
+
+      setHelpRows(
+        list.slice(0, 3).map((item: any) => ({
+          label: String(item?.label ?? "").trim(),
+          value: String(item?.value ?? "").trim(),
+        })),
+      );
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : t("common.operationFailed");
+      setHelpError(msg);
+      setHelpRows([]);
+      toast.error(msg);
+    } finally {
+      setHelpPending(false);
+    }
+  };
 
   return (
     <>
@@ -89,6 +125,8 @@ export function EarningsSummaryCard() {
             value={xcoinReleasedBalanceLabel}
             icon={earningsAssets.statLastPeriodIcon}
             iconClassName="left-[-30.11%] top-[-27.96%] size-[160.22%]"
+            helpOnClick={handleLastPeriodHelp}
+            helpAriaLabel="Last period help"
           />
         </div>
 
@@ -104,6 +142,16 @@ export function EarningsSummaryCard() {
       <FinancialManagement
         open={deployOpen}
         onClose={() => setDeployOpen(false)}
+      />
+
+      <LastPeriodHelpSheet
+        open={helpOpen}
+        pending={helpPending}
+        error={helpError}
+        rows={helpRows}
+        loadingLabel={t("common.loadingDots")}
+        noRecordsLabel={t("common.noRecords")}
+        onClose={() => setHelpOpen(false)}
       />
     </>
   );
@@ -183,16 +231,32 @@ function StatCard({
   value,
   icon,
   iconClassName,
+  helpOnClick,
+  helpAriaLabel,
 }: {
   label: string;
   value: string;
   icon: string;
   iconClassName: string;
+  helpOnClick?: () => void;
+  helpAriaLabel?: string;
 }) {
   return (
     <div className="relative flex h-[65px] min-w-0 flex-1 overflow-hidden rounded-[8px] bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 py-3">
-        <p className="truncate text-sm leading-normal text-black/70">{label}</p>
+        <div className="flex min-w-0 items-center">
+          <p className="truncate text-sm leading-normal text-black/70">{label}</p>
+          {helpOnClick ? (
+            <button
+              type="button"
+              aria-label={helpAriaLabel ?? "Help"}
+              onClick={helpOnClick}
+              className="ml-1 flex size-5 shrink-0 items-center justify-center rounded-full bg-white/80 text-[11px] font-bold leading-none text-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+            >
+              ?
+            </button>
+          ) : null}
+        </div>
         <p className="truncate leading-none text-[#333]">
           <span className="font-mulish text-base font-bold leading-normal">
             {value}
@@ -208,6 +272,100 @@ function StatCard({
           height={44}
           className={`absolute max-w-none ${iconClassName}`}
         />
+      </div>
+    </div>
+  );
+}
+
+function LastPeriodHelpSheet({
+  open,
+  pending,
+  error,
+  rows,
+  loadingLabel,
+  noRecordsLabel,
+  onClose,
+}: {
+  open: boolean;
+  pending: boolean;
+  error: string | null;
+  rows: Array<{ label: string; value: string }>;
+  loadingLabel: string;
+  noRecordsLabel: string;
+  onClose: () => void;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-80 flex items-center justify-center px-3"
+      role="dialog"
+      aria-modal="true"
+    >
+      <button
+        type="button"
+        aria-label="Close"
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+      />
+
+      <div
+        className="relative w-[320px] max-w-[calc(100%-48px)] rounded-[12px] bg-white px-4 pb-4 pt-4 shadow-[0_8px_24px_rgba(0,0,0,0.15)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold leading-normal text-[#333]">
+            说明
+          </h2>
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            className="flex size-7 items-center justify-center rounded-full bg-[#f5f5f5] text-[#666]"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="mt-3">
+          {pending ? (
+            <p className="py-6 text-center text-sm text-black/50">
+              {loadingLabel}
+            </p>
+          ) : error ? (
+            <p className="py-6 text-center text-sm text-[#e43b3b]">{error}</p>
+          ) : rows.length === 0 ? (
+            <p className="py-6 text-center text-sm text-black/50">
+              {noRecordsLabel}
+            </p>
+          ) : (
+            <div className="flex flex-col space-y-2">
+              {rows.slice(0, 3).map((row, idx) => (
+                <div
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${row.label}-${idx}`}
+                  className="flex items-center"
+                >
+                  <span className="min-w-0 flex-1 truncate text-sm leading-normal text-[#333]">
+                    {row.label}
+                  </span>
+                  <span className="ml-3 shrink-0 text-sm font-semibold leading-normal text-[#333]">
+                    {row.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
