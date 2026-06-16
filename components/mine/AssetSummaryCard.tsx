@@ -58,7 +58,6 @@ export function AssetSummaryCard() {
   const stakeUsdt = (userAssets?.stakeUsdt ?? 0) + (userAssets?.miningUsdt ?? 0);
   const xcoinUnreleasedBalance = userAssets?.xCoinUnreleasedBalance ?? 0;
 
-  console.log(userAssets);
   const summaryCards = [
     {
       id: "entrust",
@@ -91,63 +90,65 @@ export function AssetSummaryCard() {
   ];
 
   return (
-    <section className="relative h-[345px] w-full shrink-0">
+    <section className="relative w-full shrink-0 overflow-hidden rounded-[12px]">
       <AssetCardBackground />
 
-      <div className={`absolute inset-x-10 top-[27px] z-10 ${stackY1_5} items-center`}>
-        <div className={`${rowX1} justify-center`}>
-          <p className="max-w-[180px] truncate text-sm font-extrabold leading-normal text-black/70">
-            {t("mine.totalAssets")}
+      <div className="relative z-10 flex flex-col px-3 pt-[27px] pb-3">
+        <div className={`${stackY1_5} items-center`}>
+          <div className={`${rowX1} justify-center`}>
+            <p className="max-w-[200px] truncate text-sm font-extrabold leading-normal text-black/70">
+              {t("mine.totalAssets")}
+            </p>
+            <WhitelistBadge hasTicket={userInfo.hasTicket} />
+          </div>
+          <p className="font-mulish text-[32px] font-bold leading-normal text-black">
+            {totalAssets}
           </p>
-          <WhitelistBadge hasTicket={userInfo.hasTicket} />
         </div>
-        <p className="font-mulish text-[32px] font-bold leading-normal text-black">
-          {totalAssets}
-        </p>
-      </div>
 
-      <div className="absolute left-1/2 top-[114px] z-10 flex w-[359px] -translate-x-1/2 flex-wrap">
-        {summaryCards.map((card, index) => (
-          <div
-            key={card.id}
-            className={`w-1/2 box-border ${index % 2 === 0 ? "pr-1" : "pl-1"} ${
-              index < 2 ? "mb-2" : ""
-            }`}
-          >
-            <StatColumn
-              label={card.label}
-              value={card.value}
-              unit={card.unit}
-              icon={card.icon}
+        <div className="mt-7 flex w-full flex-wrap">
+          {summaryCards.map((card, index) => (
+            <div
+              key={card.id}
+              className={`box-border w-1/2 ${index % 2 === 0 ? "pr-1" : "pl-1"} ${
+                index < 2 ? "mb-2" : ""
+              }`}
+            >
+              <StatColumn
+                label={card.label}
+                value={card.value}
+                unit={card.unit}
+                icon={card.icon}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-2 flex w-full">
+          <div className="box-border w-1/3 pr-1">
+            <ActionButton
+              icon={mineAssets.actionUsdt}
+              label={t("mine.usdtWithdraw")}
+              variant="light"
+              onClick={() => setShowWithdrawUsdt(true)}
             />
           </div>
-        ))}
-      </div>
-
-      <div className="absolute left-1/2 top-[274px] z-10 flex w-[359px] -translate-x-1/2">
-        <div className="box-border w-1/3 pr-1">
-          <ActionButton
-            icon={mineAssets.actionUsdt}
-            label={t("mine.usdtWithdraw")}
-            variant="light"
-            onClick={() => setShowWithdrawUsdt(true)}
-          />
-        </div>
-        <div className="box-border w-1/3 px-1">
-          <ActionButton
-            icon={mineAssets.actionAul}
-            label={t("mine.aulWithdraw")}
-            variant="light"
-            onClick={() => setShowWithdrawAul(true)}
-          />
-        </div>
-        <div className="box-border w-1/3 pl-1">
-          <ActionButton
-            icon={mineAssets.actionInvest}
-            label={t("mine.goInvest")}
-            variant="primary"
-            onClick={() => setShowFinancialManagement(true)}
-          />
+          <div className="box-border w-1/3 px-1">
+            <ActionButton
+              icon={mineAssets.actionAul}
+              label={t("mine.aulWithdraw")}
+              variant="light"
+              onClick={() => setShowWithdrawAul(true)}
+            />
+          </div>
+          <div className="box-border w-1/3 pl-1">
+            <ActionButton
+              icon={mineAssets.actionInvest}
+              label={t("mine.goInvest")}
+              variant="primary"
+              onClick={() => setShowFinancialManagement(true)}
+            />
+          </div>
         </div>
       </div>
 
@@ -231,12 +232,10 @@ function StatColumn({
   });
 
   return (
-    <div className="relative h-[72px] w-full overflow-hidden rounded-[8px] bg-[rgba(255,255,255,0.92)] shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
-      <div className="absolute left-2.5 top-[14px] flex w-[118px] flex-col space-y-0.5">
-        <p className="w-full truncate whitespace-nowrap text-[14px] leading-normal text-black/70">
-          {label}
-        </p>
-        <p className="inline-flex items-baseline whitespace-nowrap leading-none text-[#333]">
+    <div className="relative flex h-[72px] w-full items-center overflow-hidden rounded-[8px] bg-[rgba(255,255,255,0.92)] shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
+      <div className="flex min-w-0 flex-1 flex-col justify-center pl-2.5 pr-1">
+        <p className="truncate text-[13px] leading-snug text-black/70">{label}</p>
+        <p className="mt-0.5 inline-flex items-baseline whitespace-nowrap leading-none text-[#333]">
           <span className="font-mulish text-base font-semibold leading-normal">
             {displayValue}
           </span>
@@ -248,9 +247,9 @@ function StatColumn({
       <AppImage
         src={icon}
         alt=""
-        width={48}
-        height={48}
-        className="pointer-events-none absolute right-[5px] top-[12px] size-12 object-contain"
+        width={44}
+        height={44}
+        className="mr-1.5 size-11 shrink-0 object-contain"
       />
     </div>
   );
@@ -295,7 +294,7 @@ function ActionButton({
           className="block size-7 shrink-0 object-contain"
         />
         <span
-          className={`mt-0.5 block w-full truncate whitespace-nowrap text-center text-xs leading-none font-medium ${
+          className={`mt-0.5 block w-full truncate text-center text-[11px] leading-tight font-medium ${
             isPrimary ? "text-white" : "text-[#e43b3b]"
           }`}
         >

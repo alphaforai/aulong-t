@@ -221,8 +221,8 @@
   },
   "mine": {
     "totalAssets": "Total assets (USDT)",
-    "totalEarnings": "Withdrawable balance",
-    "totalRelease": "Withdrawable balance",
+    "totalEarnings": "Withdrawable",
+    "totalRelease": "Withdrawable",
     "totalEntrustUsdt": "Total Entrust",
     "totalUnreleasedAul": "Pending Release",
     "usdtWithdraw": "Withdraw USDT",
