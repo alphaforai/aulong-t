@@ -21,7 +21,7 @@ export function AssetSummaryCard() {
   const [showFinancialManagement, setShowFinancialManagement] =
     React.useState(false);
 
-    //
+
     // 响应示例
 // {
 // 	"code": 0,
@@ -35,7 +35,7 @@ export function AssetSummaryCard() {
 // 		"lastUsdtIncome": 0,
 // 		"stakeUsdt": 0,
 // 		"miningUsdt": 0,
-// 		"xcoinUnreleasedBalance": 0,
+// 		"xCoinUnreleasedBalance": 0,
 // 		"xcoinReleasedBalance": 0,
 // 		"xcoinBalance": 0
 // 	},
@@ -55,8 +55,9 @@ export function AssetSummaryCard() {
   const usdtBalance = userAssets?.usdtBalance ?? 0;
   const xcoinBalance = userAssets?.xCoinBalance ?? 0;
   const stakeUsdt = userAssets?.stakeUsdt ?? 0;
-  const xcoinUnreleasedBalance = userAssets?.xcoinUnreleasedBalance ?? 0;
+  const xcoinUnreleasedBalance = userAssets?.xCoinUnreleasedBalance ?? 0;
 
+  console.log(userAssets);
   const summaryCards = [
     {
       label: t("mine.totalEntrustUsdt"),
@@ -100,7 +101,7 @@ export function AssetSummaryCard() {
         </p>
       </div>
 
-      <div className="absolute left-1/2 top-[114px] z-10 grid w-[336px] -translate-x-1/2 grid-cols-2 gap-2">
+      <div className="absolute left-1/2 top-[114px] z-10 grid w-[359px] -translate-x-1/2 grid-cols-2 gap-2">
         {summaryCards.map((card) => (
           <StatColumn
             key={card.label}
@@ -112,7 +113,7 @@ export function AssetSummaryCard() {
         ))}
       </div>
 
-      <div className="absolute left-1/2 top-[260px] z-10 flex w-[343px] -translate-x-1/2 items-center justify-center gap-3">
+      <div className="absolute left-1/2 top-[260px] z-10 flex w-[343px] -translate-x-1/2 items-center justify-center gap-2">
         <ActionButton
           icon={mineAssets.actionUsdt}
           label={t("mine.usdtWithdraw")}
@@ -213,9 +214,11 @@ function StatColumn({
   });
 
   return (
-    <div className="relative h-[65px] w-40 shrink-0 overflow-hidden rounded-[8px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-      <div className="absolute left-2 top-[12.5px] flex w-[97px] flex-col gap-0.5">
-        <p className="text-sm leading-normal text-black/70">{label}</p>
+    <div className="relative h-[65px] w-full overflow-hidden rounded-[8px] bg-white/80 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
+      <div className="absolute left-2 top-[12.5px] flex w-[112px] flex-col gap-0.5">
+        <p className="w-full truncate whitespace-nowrap text-[13px] leading-normal text-black/70">
+          {label}
+        </p>
         <p className="inline-flex items-baseline whitespace-nowrap leading-none text-[#333]">
           <span className="font-mulish text-base font-semibold leading-normal">
             {displayValue}
@@ -252,10 +255,10 @@ function ActionButton({
   return (
     <button
       type="button"
-      className={`relative flex h-[66px] w-[98px] shrink-0 select-none flex-col items-center justify-center rounded-[12px] border border-white p-[10px] transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
+      className={`relative flex h-[66px] w-[105px] shrink-0 select-none flex-col items-center justify-center rounded-[12px] border border-white px-2 py-1 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
         isPrimary
-          ? "gap-[3px] shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
-          : "gap-[2px] bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
+          ? "gap-1 shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
+          : "gap-0.5 bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
       } ${className}`}
       {...props}
     >
@@ -269,12 +272,12 @@ function ActionButton({
       <img
         src={icon}
         alt=""
-        width={34}
-        height={34}
-        className="relative z-10 size-[34px] shrink-0 object-contain"
+        width={28}
+        height={28}
+        className="relative z-10 size-7 shrink-0 object-contain"
       />
       <span
-        className={`relative z-10 max-w-full whitespace-nowrap text-center text-[14px] leading-normal font-normal ${
+        className={`relative z-10 w-full truncate whitespace-nowrap px-1 text-center text-xs leading-normal font-normal ${
           isPrimary ? "text-white" : "text-[#e43b3b]"
         }`}
       >

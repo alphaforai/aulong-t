@@ -70,7 +70,6 @@ export default function TeamPage() {
 
   const overview = teamOverviewResponse?.data as TeamOverview | undefined;
 
-  console.log(overview);
 
   return (
     <AulongPageShell panelClassName="bg-white">
