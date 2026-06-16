@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { formatAmount } from "@/components/team/format";
 
 const PAGE_SIZE = 7;
-const TX_POLL_INTERVAL_MS = 2000;
+const TX_POLL_INTERVAL_MS = 5000;
 const TX_CURRENCY = "USDT";
 const SOLANA_EXPLORER_ADDRESS_BASE = "https://explorer.solana.com/address/";
 const BSC_EXPLORER_ADDRESS_BASE = "https://bscscan.com/address/";

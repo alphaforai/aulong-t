@@ -16,7 +16,7 @@ import { getUserAssets, getXcoinPrice, getXpriceOverview } from "@/lib/api/users
 import { useChartLocale } from "@/lib/hooks/useChartLocale";
 import { mapOverviewToChart, type PriceGranularity } from "./priceChartUtils";
 
-const PRICE_CHART_POLL_INTERVAL_MS = 2000;
+const PRICE_CHART_POLL_INTERVAL_MS = 5000;
 
 function formatAmount(value: unknown, fractionDigits = 2) {
   const num = Number(value);

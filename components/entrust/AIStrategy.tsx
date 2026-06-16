@@ -459,7 +459,7 @@ export function AIStrategy({ open, onClose }: AIStrategyProps) {
         maxStartTime: undefined,
       }),
     enabled: open && Boolean(walletAddress),
-    refetchInterval: open ? 2000 : false,
+    refetchInterval: open ? 5000 : false,
     refetchOnWindowFocus: false,
   });
 

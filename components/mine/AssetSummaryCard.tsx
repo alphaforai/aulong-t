@@ -54,7 +54,7 @@ export function AssetSummaryCard() {
   const totalAssets = userAssets?.totalBalance ?? 0;
   const usdtBalance = userAssets?.usdtBalance ?? 0;
   const xcoinBalance = userAssets?.xCoinBalance ?? 0;
-  const stakeUsdt = userAssets?.stakeUsdt ?? 0;
+  const stakeUsdt = userAssets?.stakeUsdt ?? 0 + userAssets?.miningUsdt ?? 0;
   const xcoinUnreleasedBalance = userAssets?.xCoinUnreleasedBalance ?? 0;
 
   console.log(userAssets);
@@ -113,24 +113,27 @@ export function AssetSummaryCard() {
         ))}
       </div>
 
-      <div className="absolute left-1/2 top-[260px] z-10 flex w-[343px] -translate-x-1/2 items-center justify-center gap-2">
+      <div className="absolute left-1/2 top-[260px] z-10 flex w-full max-w-[343px] -translate-x-1/2 items-center justify-center gap-2 px-4">
         <ActionButton
           icon={mineAssets.actionUsdt}
           label={t("mine.usdtWithdraw")}
           variant="light"
           onClick={() => setShowWithdrawUsdt(true)}
+          className="flex-1"
         />
         <ActionButton
           icon={mineAssets.actionAul}
           label={t("mine.aulWithdraw")}
           variant="light"
           onClick={() => setShowWithdrawAul(true)}
+          className="flex-1"
         />
         <ActionButton
           icon={mineAssets.actionInvest}
           label={t("mine.goInvest")}
           variant="primary"
           onClick={() => setShowFinancialManagement(true)}
+          className="flex-1"
         />
       </div>
 
@@ -255,16 +258,16 @@ function ActionButton({
   return (
     <button
       type="button"
-      className={`relative flex h-[66px] w-[105px] shrink-0 select-none flex-col items-center justify-center rounded-[12px] border border-white px-2 py-1 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
+      className={`relative flex h-auto min-h-[75px] shrink-0 select-none flex-col items-center justify-center rounded-xl border border-white px-2 py-2 transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
         isPrimary
-          ? "gap-1 shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
-          : "gap-0.5 bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
+          ? "gap-1.5 shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
+          : "gap-1 bg-[rgba(255,255,255,0.7)] shadow-[0_5px_5px_rgba(51,51,51,0.08)] backdrop-blur-[7px]"
       } ${className}`}
       {...props}
     >
       {isPrimary ? (
         <>
-          <span className="pointer-events-none absolute inset-0 rounded-[12px] bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
+          <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-[#ff4d00] via-[#ff3033] via-[53.846%] to-[#e90000]" />
           <span className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_-4px_4px_rgba(255,254,227,0.7),inset_0_8px_17px_#ffe5e5]" />
         </>
       ) : null}
@@ -272,12 +275,12 @@ function ActionButton({
       <img
         src={icon}
         alt=""
-        width={28}
-        height={28}
-        className="relative z-10 size-7 shrink-0 object-contain"
+        width={36}
+        height={36}
+        className="relative z-10 size-9 shrink-0 object-contain"
       />
       <span
-        className={`relative z-10 w-full truncate whitespace-nowrap px-1 text-center text-xs leading-normal font-normal ${
+        className={`relative z-10 w-full truncate whitespace-nowrap px-1 text-center text-sm leading-normal font-medium ${
           isPrimary ? "text-white" : "text-[#e43b3b]"
         }`}
       >
