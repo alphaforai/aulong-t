@@ -86,7 +86,7 @@ export function AssetSummaryCard() {
   ];
 
   return (
-    <section className="relative h-[340px] w-full shrink-0">
+    <section className="relative h-[360px] w-full shrink-0">
       <AssetCardBackground />
 
       <div className="absolute inset-x-10 top-[27px] z-10 flex flex-col items-center gap-1.5">
@@ -113,7 +113,7 @@ export function AssetSummaryCard() {
         ))}
       </div>
 
-      <div className="absolute left-1/2 top-[260px] z-10 flex w-full max-w-[343px] -translate-x-1/2 items-center justify-center gap-2 px-4">
+      <div className="absolute left-1/2 top-[260px] z-10 flex w-full max-w-[343px] -translate-x-1/2 items-center justify-center gap-2 px-4 pb-2">
         <ActionButton
           icon={mineAssets.actionUsdt}
           label={t("mine.usdtWithdraw")}
