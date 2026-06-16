@@ -234,7 +234,7 @@ function StatColumn({
   return (
     <div className="relative flex h-[72px] w-full items-center overflow-hidden rounded-[8px] bg-[rgba(255,255,255,0.92)] shadow-[0_5px_10px_rgba(51,51,51,0.08)]">
       <div className="flex min-w-0 flex-1 flex-col justify-center pl-2.5 pr-1">
-        <p className="truncate text-[13px] leading-snug text-black/70">{label}</p>
+        <p className="truncate text-[13px] leading-snug text-black/70 font-semibold">{label}</p>
         <p className="mt-0.5 inline-flex items-baseline whitespace-nowrap leading-none text-[#333]">
           <span className="font-mulish text-base font-semibold leading-normal">
             {displayValue}
@@ -271,7 +271,7 @@ function ActionButton({
   return (
     <button
       type="button"
-      className={`relative box-border h-[60px] w-full select-none rounded-lg border border-white transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
+      className={`relative box-border h-[70px] w-full select-none rounded-lg border border-white transition-[transform] duration-150 ease-out will-change-transform active:translate-y-1 active:scale-[0.92] ${
         isPrimary
           ? "shadow-[0_2px_3.5px_rgba(58,0,0,0.16)]"
           : "bg-[rgba(255,255,255,0.92)] shadow-[0_5px_5px_rgba(51,51,51,0.08)]"
@@ -289,12 +289,12 @@ function ActionButton({
         <img
           src={icon}
           alt=""
-          width={28}
-          height={28}
-          className="block size-7 shrink-0 object-contain"
+          width={38}
+          height={38}
+          className="block h-[38px] w-[38px] shrink-0 object-contain"
         />
         <span
-          className={`mt-0.5 block w-full truncate text-center text-[11px] leading-tight font-medium ${
+          className={`mt-0.5 block w-full truncate text-center text-[14px] leading-tight font-medium ${
             isPrimary ? "text-white" : "text-[#e43b3b]"
           }`}
         >
