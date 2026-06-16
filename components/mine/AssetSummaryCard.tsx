@@ -54,7 +54,7 @@ export function AssetSummaryCard() {
   const totalAssets = userAssets?.totalBalance ?? 0;
   const usdtBalance = userAssets?.usdtBalance ?? 0;
   const xcoinBalance = userAssets?.xCoinBalance ?? 0;
-  const stakeUsdt = userAssets?.stakeUsdt ?? 0 + userAssets?.miningUsdt ?? 0;
+  const stakeUsdt = (userAssets?.stakeUsdt ?? 0) + (userAssets?.miningUsdt ?? 0);
   const xcoinUnreleasedBalance = userAssets?.xCoinUnreleasedBalance ?? 0;
 
   console.log(userAssets);
