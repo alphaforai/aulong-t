@@ -125,7 +125,8 @@ export function EarningsSummaryCard() {
             value={xcoinReleasedBalanceLabel}
             icon={earningsAssets.statLastPeriodIcon}
             iconClassName="left-[-30.11%] top-[-27.96%] size-[160.22%]"
-            helpOnClick={handleLastPeriodHelp}
+            helpOnClick={walletAddress ? handleLastPeriodHelp : undefined}
+            helpValue={lastUsdtIncome}
             helpAriaLabel="Last period help"
           />
         </div>
@@ -232,6 +233,7 @@ function StatCard({
   icon,
   iconClassName,
   helpOnClick,
+  helpValue,
   helpAriaLabel,
 }: {
   label: string;
@@ -239,19 +241,28 @@ function StatCard({
   icon: string;
   iconClassName: string;
   helpOnClick?: () => void;
+  helpValue?: number;
   helpAriaLabel?: string;
 }) {
+  const showHelp = Boolean(helpOnClick) && Number(helpValue ?? 0) > 0;
+
   return (
     <div className="relative flex h-[65px] min-w-0 flex-1 overflow-hidden rounded-[8px] bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5 px-2 py-3">
+      <div
+        className={`relative z-[1] flex min-w-0 flex-1 flex-col justify-center gap-0.5 py-3 pl-2 ${
+          showHelp ? "pr-[64px]" : "pr-[52px]"
+        }`}
+      >
         <div className="flex min-w-0 items-center">
-          <p className="truncate text-sm leading-normal text-black/70">{label}</p>
-          {helpOnClick ? (
+          <p className="min-w-0 truncate text-sm leading-normal text-black/70">
+            {label}
+          </p>
+          {showHelp ? (
             <button
               type="button"
               aria-label={helpAriaLabel ?? "Help"}
               onClick={helpOnClick}
-              className="ml-1 flex size-5 shrink-0 items-center justify-center rounded-full bg-white/80 text-[11px] font-bold leading-none text-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
+              className="relative z-[2] ml-1 flex size-5 shrink-0 items-center justify-center rounded-full bg-white text-[11px] font-bold leading-none text-[#333] shadow-[0_2px_4px_rgba(0,0,0,0.12)]"
             >
               ?
             </button>
@@ -264,7 +275,7 @@ function StatCard({
           <span className="text-[10px] leading-normal"> USDT</span>
         </p>
       </div>
-      <div className="pointer-events-none absolute right-1.5 top-1/2 size-11 -translate-y-1/2 overflow-hidden">
+      <div className="pointer-events-none absolute right-1.5 top-1/2 z-0 size-11 -translate-y-1/2 overflow-hidden">
         <AppImage
           src={icon}
           alt=""
