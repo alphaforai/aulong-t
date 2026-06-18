@@ -61,6 +61,8 @@
   "entrust": {
     "buyTicket": "Beli tiket",
     "buyWhitelist": "Beli senarai putih",
+    "whitelistGateHint": "Beli akses senarai putih untuk menggunakan sistem. Anda akan masuk secara automatik selepas pembayaran.",
+    "whitelistPaying": "Mengesahkan pembayaran...",
     "ticketAirdropDesc": "Belanjakan {bnbAmount} BNB untuk menerima airdrop {usdtAmount} USDT",
     "projectPart1": "Projek",
     "projectPart2": "Mak",

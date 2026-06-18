@@ -59,6 +59,9 @@ export default function AulongHeader() {
   const setNeedsInviteRegister = useAuthStore(
     (state) => state.setNeedsInviteRegister,
   );
+  const requestWhitelistPurchase = useAuthStore(
+    (state) => state.requestWhitelistPurchase,
+  );
   const setUserInfo = useUserInfoStore((state) => state.setUserInfo);
   const resetUserInfo = useUserInfoStore((state) => state.resetUserInfo);
 
@@ -190,6 +193,8 @@ export default function AulongHeader() {
       }
       setNeedsInviteRegister(false);
       markWalletAuthed(address);
+      // 绑码完成即进入白名单支付流程，由 WhitelistGate 监听 trigger 并自动唤起钱包
+      requestWhitelistPurchase();
 
       toast.success(t("header.bindSuccess"));
       closeInviteSheet();

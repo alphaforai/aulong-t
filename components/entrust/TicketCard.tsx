@@ -4,161 +4,45 @@ import React from "react";
 import { entrustAssets } from "./assets";
 import { AppImage } from "@/components/AppImage";
 import { ImageButton } from "./ImageButton";
-
-import {
-  useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-} from "wagmi";
-import { TicketSalesContract } from "@/lib/abis/ticketsales";
+import { useWhitelistPurchase } from "@/lib/hooks/useWhitelistPurchase";
 import { useUserInfoStore } from "@/lib/store";
-import { toast } from "sonner";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import { formatEther } from "viem";
 import { getPlatformConfig } from "@/lib/api/platformConfig";
 import { useQuery } from "@tanstack/react-query";
-import { getUserInfo } from "@/lib/api/users";
-import { useTranslation } from "@/lib/hooks/useTranslation";
 
-function getErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof Error) {
-    const e = error as Error & { shortMessage?: string };
-    return e.shortMessage || e.message || fallback;
-  }
-  return fallback;
-}
-
+/** 首页白名单购买卡片（可选展示）；全站强制支付逻辑见 WhitelistGate */
 export function TicketCard() {
   const { t } = useTranslation();
-  const lastReadErrorRef = React.useRef<unknown>(null);
-  const lastTicketPriceErrorRef = React.useRef<unknown>(null);
-  const lastWriteErrorRef = React.useRef<unknown>(null);
-  const lastReceiptErrorRef = React.useRef<unknown>(null);
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
-  const readEnabled = Boolean(walletAddress);
 
   const {
-    data,
-    isPending: readIsPending,
-    error: readError,
-    refetch,
-  } = useReadContract({
-    ...TicketSalesContract,
-    functionName: "purchases",
-    args: readEnabled ? [walletAddress as `0x${string}`] : undefined,
-    query: {
-      enabled: readEnabled,
-    },
-  });
+    hasPurchased,
+    ticketPriceWei,
+    buyWhitelist,
+    isPaying,
+    isLoading,
+    canBuy,
+  } = useWhitelistPurchase(walletAddress);
 
-  const opFailed = t("common.operationFailed");
-
-  React.useEffect(() => {
-    if (!readError) {
-      lastReadErrorRef.current = null;
-      return;
-    }
-    if (lastReadErrorRef.current !== readError) {
-      lastReadErrorRef.current = readError;
-      toast.error(getErrorMessage(readError, opFailed));
-    }
-  }, [readError, opFailed]);
-
-  const hasPurchased = Boolean(data?.[0]);
-
-  const {
-    data: ticketPriceWei,
-    error: readTicketPriceError,
-    isPending: ticketPriceReadPending,
-  } = useReadContract({
-    ...TicketSalesContract,
-    functionName: "ticketPrice",
-  });
-
-  React.useEffect(() => {
-    if (!readTicketPriceError) {
-      lastTicketPriceErrorRef.current = null;
-      return;
-    }
-    if (lastTicketPriceErrorRef.current !== readTicketPriceError) {
-      lastTicketPriceErrorRef.current = readTicketPriceError;
-      toast.error(getErrorMessage(readTicketPriceError, opFailed));
-    }
-  }, [readTicketPriceError, opFailed]);
-
-  const {
-    data: hash,
-    error: writeError,
-    isPending: writeIsPending,
-    writeContract,
-  } = useWriteContract();
-
-  const handleBuyTicket = () => {
-    if (ticketPriceWei == null) return;
-    writeContract({
-      ...TicketSalesContract,
-      functionName: "buyTicket",
-      args: [],
-      value: ticketPriceWei,
-    });
-  };
-
-  const {
-    isLoading: writeIsConfirming,
-    isSuccess,
-    error: receiptError,
-  } = useWaitForTransactionReceipt({
-    hash,
-  });
-
- 
-  React.useEffect(() => {
-    if (isSuccess) {
-      refetch();
-      // 并调用getUserInfo接口更新用户信息
-      getUserInfo();
-    }
-  }, [isSuccess, refetch]);
-
-  React.useEffect(() => {
-    if (!writeError) {
-      lastWriteErrorRef.current = null;
-    } else if (lastWriteErrorRef.current !== writeError) {
-      lastWriteErrorRef.current = writeError;
-      toast.error(getErrorMessage(writeError, opFailed));
-    }
-
-    if (!receiptError) {
-      lastReceiptErrorRef.current = null;
-      return;
-    }
-    if (lastReceiptErrorRef.current !== receiptError) {
-      lastReceiptErrorRef.current = receiptError;
-      toast.error(getErrorMessage(receiptError, opFailed));
-    }
-  }, [receiptError, writeError, opFailed]);
-
-  const isButtonDisabled =
-    !walletAddress ||
-    readIsPending ||
-    ticketPriceReadPending ||
-    ticketPriceWei == null ||
-    writeIsPending ||
-    writeIsConfirming ||
-    hasPurchased;
-
-  // 获取平台配置
   const { data: platformConfig } = useQuery({
     queryKey: ["platformConfig"],
     queryFn: () => getPlatformConfig("base"),
   });
+
   const bnbAmount =
     ticketPriceWei != null ? formatEther(ticketPriceWei) : "—";
   const usdtAmount =
     platformConfig?.usdtAmount != null
       ? String(platformConfig.usdtAmount)
       : "—";
+
+  const readEnabled = Boolean(walletAddress);
+  const isButtonDisabled = !canBuy || hasPurchased;
+
+  if (hasPurchased) return null;
 
   return (
     <section className="relative h-[180px] w-full overflow-hidden rounded-[12px] border border-white bg-gradient-to-b from-white/45 to-white/90 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
@@ -190,9 +74,6 @@ export function TicketCard() {
             type="button"
             className="absolute right-0 top-1 flex w-[74px] items-center justify-end"
           >
-            {/* <span className="text-xs leading-[19px] text-[#ffe6d9]">
-              规则说明
-            </span> */}
             <AppImage
               src={entrustAssets.rulesArrow}
               alt=""
@@ -220,12 +101,16 @@ export function TicketCard() {
         <ImageButton
           variant="whitelist"
           className="mt-2"
-          onClick={handleBuyTicket}
+          onClick={() => void buyWhitelist()}
           disabled={isButtonDisabled}
         >
-          {readEnabled
-            ? t("entrust.buyWhitelist")
-            : t("common.connectFirstBtn")}
+          {isPaying
+            ? t("entrust.whitelistPaying")
+            : isLoading
+              ? t("common.loading")
+              : readEnabled
+                ? t("entrust.buyWhitelist")
+                : t("common.connectFirstBtn")}
         </ImageButton>
       </div>
 

@@ -61,6 +61,8 @@
   "entrust": {
     "buyTicket": "Mua vé",
     "buyWhitelist": "Mua whitelist",
+    "whitelistGateHint": "Mua whitelist để sử dụng hệ thống. Sau khi thanh toán sẽ tự động vào.",
+    "whitelistPaying": "Đang xác nhận thanh toán...",
     "ticketAirdropDesc": "Chi {bnbAmount} BNB để nhận airdrop {usdtAmount} USDT",
     "projectPart1": "Dự",
     "projectPart2": "Thông",

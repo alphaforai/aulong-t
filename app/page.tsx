@@ -13,16 +13,13 @@ import {
   DeployAgent,
   type DeployStrategy,
 } from "@/components/entrust/DeployAgent";
-import { TicketCard } from "@/components/entrust/TicketCard";
 import { ProjectsInfo } from "@/components/entrust/ProjectsInfo";
 import { AIStrategy } from "@/components/entrust/AIStrategy";
 import { AulongPageShell } from "@/components/AulongPageShell";
 import { getStakePlans } from "@/lib/api/users";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useQuery } from "@tanstack/react-query";
-import { TicketSalesContract } from "@/lib/abis/ticketsales";
-import { useEntrustUiStore, useUserInfoStore } from "@/lib/store";
-import { useReadContract } from "wagmi";
+import { useEntrustUiStore } from "@/lib/store";
 import { useEffect, useMemo, useState } from "react";
 
 type StakePlan = {
@@ -83,19 +80,6 @@ export default function HomePage() {
   const [deployStrategy, setDeployStrategy] = useState<DeployStrategy | null>(
     null,
   );
-  const walletAddress = useUserInfoStore(
-    (state) => state.userInfo.walletAddress,
-  );
-  const readEnabled = Boolean(walletAddress);
-
-  const { data: purchasesData } = useReadContract({
-    ...TicketSalesContract,
-    functionName: "purchases",
-    args: readEnabled ? [walletAddress as `0x${string}`] : undefined,
-    query: {
-      enabled: readEnabled,
-    },
-  });
 
   const { data: stakePlansResponse } = useQuery({
     queryKey: ["stakePlans", 1, locale],
@@ -123,13 +107,9 @@ export default function HomePage() {
       .map((plan) => toDeployStrategy(plan as StakePlan));
   }, [stakePlansResponse]);
 
-  const hasPurchased = Boolean(purchasesData?.[0]);
-  const showTicketCard = !hasPurchased;
-
+  // 白名单购买与全站拦截已移至 WhitelistGate（AulongPageShell）
   return (
     <AulongPageShell panelClassName="bg-white">
-      {showTicketCard && <TicketCard />}
-
       <Announcement onClick={() => setShowAnnouncementList(true)} />
 
       <ProjectBannerCard
