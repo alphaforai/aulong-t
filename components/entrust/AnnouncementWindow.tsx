@@ -83,17 +83,24 @@ export function AnnouncementWindow() {
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
+  const hasTicketFromBackend = useUserInfoStore(
+    (state) => Number(state.userInfo.hasTicket) === 1,
+  );
   const isLoggedIn = Boolean(accessToken && walletAddress);
 
   const { hasPurchased, purchasesPending } =
     useWhitelistPurchase(walletAddress);
 
+  // 与 WhitelistGate 一致：后端已标记有票时不必等链上 reads，避免已购用户公告延迟
+  const hasWhitelistAccess =
+    hasPurchased || (purchasesPending && hasTicketFromBackend);
+
   // 未购白名单（含链上状态确认中）不弹公告，避免盖住白名单支付流程
   const announcementEligible =
     isLoggedIn &&
     !needsInviteRegister &&
-    !purchasesPending &&
-    hasPurchased;
+    hasWhitelistAccess &&
+    (!purchasesPending || hasTicketFromBackend);
 
   const [open, setOpen] = React.useState(false);
   const [index, setIndex] = React.useState(0);

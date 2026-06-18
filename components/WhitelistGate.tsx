@@ -45,6 +45,10 @@ export function WhitelistGate({ children }: WhitelistGateProps) {
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
+  /** 登录接口返回的 hasTicket，用于链上 reads 完成前避免已购用户闪一下拦截层 */
+  const hasTicketFromBackend = useUserInfoStore(
+    (state) => Number(state.userInfo.hasTicket) === 1,
+  );
 
   const {
     hasPurchased,
@@ -54,6 +58,7 @@ export function WhitelistGate({ children }: WhitelistGateProps) {
     isLoading,
     canBuy,
     purchasesPending,
+    purchaseSyncing,
   } = useWhitelistPurchase(walletAddress);
 
   const { data: platformConfig } = useQuery({
@@ -73,9 +78,12 @@ export function WhitelistGate({ children }: WhitelistGateProps) {
     accessToken && !needsInviteRegister && isConnected,
   );
 
-  // 链上状态未确认或未购买时，保持全屏拦截
+  // 仅在链上明确未购买时拦截；pending 期间若后端已标记有票则不闪；支付同步中也不闪
   const gateActive =
-    whitelistCheckEnabled && (purchasesPending || !hasPurchased);
+    whitelistCheckEnabled &&
+    !hasPurchased &&
+    !purchaseSyncing &&
+    (!purchasesPending || !hasTicketFromBackend);
 
   const autoBuyAttemptedRef = useRef(false);
 

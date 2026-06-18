@@ -163,6 +163,8 @@ export function useWhitelistPurchase(walletAddress: string | undefined) {
   const isLoading = purchasesPending || ticketPricePending;
   const canBuy =
     readEnabled && ticketPriceWei != null && !hasPurchased && !isPaying;
+  /** 交易已确认、链上 purchases 仍在刷新时不应再弹拦截层 */
+  const purchaseSyncing = isSuccess && purchasesPending && !hasPurchased;
 
   return {
     hasPurchased,
@@ -172,5 +174,6 @@ export function useWhitelistPurchase(walletAddress: string | undefined) {
     isLoading,
     canBuy,
     purchasesPending,
+    purchaseSyncing,
   };
 }
