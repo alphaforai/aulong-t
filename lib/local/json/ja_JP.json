@@ -61,6 +61,8 @@
   "entrust": {
     "buyTicket": "チケット購入",
     "buyWhitelist": "ホワイトリスト購入",
+    "whitelistGateHint": "ホワイトリスト購入後にシステムをご利用いただけます。支払い完了後、自動的に入場します。",
+    "whitelistPaying": "支払い確認中...",
     "ticketAirdropDesc": "{bnbAmount} BNBを使用し、{usdtAmount} USDTのエアドロップを獲得",
     "projectPart1": "プロジェト",
     "projectPart2": "",

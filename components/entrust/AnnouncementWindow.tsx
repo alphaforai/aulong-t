@@ -6,6 +6,7 @@ import { AppImage } from "@/components/AppImage";
 import { entrustAssets } from "./assets";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { getArticleList } from "@/lib/api/users";
+import { useWhitelistPurchase } from "@/lib/hooks/useWhitelistPurchase";
 import { useAuthStore, useUserInfoStore } from "@/lib/store";
 import { shellMaxWidth, shellMdPaddingY } from "@/lib/mobileShell";
 import type { ArticleItem } from "./announcementTypes";
@@ -76,10 +77,30 @@ function AnnouncementWindowBody({ article }: { article: ArticleItem }) {
 export function AnnouncementWindow() {
   const { t, locale } = useTranslation();
   const accessToken = useAuthStore((state) => state.accessToken);
+  const needsInviteRegister = useAuthStore(
+    (state) => state.needsInviteRegister,
+  );
   const walletAddress = useUserInfoStore(
     (state) => state.userInfo.walletAddress,
   );
+  const hasTicketFromBackend = useUserInfoStore(
+    (state) => Number(state.userInfo.hasTicket) === 1,
+  );
   const isLoggedIn = Boolean(accessToken && walletAddress);
+
+  const { hasPurchased, purchasesPending } =
+    useWhitelistPurchase(walletAddress);
+
+  // 与 WhitelistGate 一致：后端已标记有票时不必等链上 reads，避免已购用户公告延迟
+  const hasWhitelistAccess =
+    hasPurchased || (purchasesPending && hasTicketFromBackend);
+
+  // 未购白名单（含链上状态确认中）不弹公告，避免盖住白名单支付流程
+  const announcementEligible =
+    isLoggedIn &&
+    !needsInviteRegister &&
+    hasWhitelistAccess &&
+    (!purchasesPending || hasTicketFromBackend);
 
   const [open, setOpen] = React.useState(false);
   const [index, setIndex] = React.useState(0);
@@ -99,7 +120,7 @@ export function AnnouncementWindow() {
         type: 1,
         status: undefined,
       }),
-    enabled: isLoggedIn,
+    enabled: announcementEligible,
   });
 
   const topArticles = React.useMemo(() => {
@@ -117,10 +138,12 @@ export function AnnouncementWindow() {
   const hasNext = index < topArticles.length - 1;
 
   React.useEffect(() => {
-    if (!isLoggedIn) {
+    if (!announcementEligible) {
       setOpen(false);
       setIndex(0);
-      shownForAddressRef.current = null;
+      if (!isLoggedIn) {
+        shownForAddressRef.current = null;
+      }
       return;
     }
 
@@ -134,7 +157,13 @@ export function AnnouncementWindow() {
       setOpen(true);
       shownForAddressRef.current = walletAddress;
     }
-  }, [isLoggedIn, isSuccess, topArticles.length, walletAddress]);
+  }, [
+    announcementEligible,
+    isLoggedIn,
+    isSuccess,
+    topArticles.length,
+    walletAddress,
+  ]);
 
   React.useEffect(() => {
     if (!open) {

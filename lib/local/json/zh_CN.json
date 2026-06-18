@@ -61,6 +61,8 @@
   "entrust": {
     "buyTicket": "购买门票",
     "buyWhitelist": "购买白名单",
+    "whitelistGateHint": "购买白名单后方可使用系统功能，支付完成后将自动进入。",
+    "whitelistPaying": "支付确认中...",
     "ticketAirdropDesc": "花费 {bnbAmount} BNB，获取价值 {usdtAmount} USDT 空投",
     "projectPart1": "项目",
     "projectPart2": "资料",

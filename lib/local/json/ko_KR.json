@@ -61,6 +61,8 @@
   "entrust": {
     "buyTicket": "티켓 구매",
     "buyWhitelist": "화이트리스트 구매",
+    "whitelistGateHint": "화이트리스트 구매 후 시스템을 이용할 수 있습니다. 결제 완료 후 자동으로 입장합니다.",
+    "whitelistPaying": "결제 확인 중...",
     "ticketAirdropDesc": "{bnbAmount} BNB를 사용하여 {usdtAmount} USDT 에어드롭 받기",
     "projectPart1": "프로",
     "projectPart2": "정보",

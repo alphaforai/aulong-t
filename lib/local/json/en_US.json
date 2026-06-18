@@ -61,6 +61,8 @@
   "entrust": {
     "buyTicket": "Buy ticket",
     "buyWhitelist": "Buy whitelist",
+    "whitelistGateHint": "Purchase whitelist access to use the app. You will enter automatically after payment.",
+    "whitelistPaying": "Confirming payment...",
     "ticketAirdropDesc": "Spend {bnbAmount} BNB to receive a {usdtAmount} USDT airdrop",
     "projectPart1": "Project",
     "projectPart2": "Info",
