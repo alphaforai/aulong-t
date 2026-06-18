@@ -177,7 +177,7 @@ function PerformanceSubCard({
   return (
     <div className="relative h-[80px] min-w-0 flex-1 overflow-hidden rounded-lg bg-white shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
       <div className="absolute left-2 top-3.5 flex w-[97px] flex-col gap-0.5">
-        <p className="line-clamp-2 text-xs font-bold leading-snug text-[rgba(51,51,51,0.8)]">
+        <p className="line-clamp-2 whitespace-pre-line text-xs font-bold leading-snug text-[rgba(51,51,51,0.8)]">
           {label}
         </p>
         <p
