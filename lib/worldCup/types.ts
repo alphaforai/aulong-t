@@ -160,7 +160,7 @@ export type WorldCupHoldingItem = {
   side: "YES" | "NO";
   selectedOutcome?: WorldCupOutcomeSide;
   betPrice: number;
-  positionStatus: WorldCupHoldingStatus;
+  payStatus: string;
   stakeAmount: number;
   stakeCurrency: string;
   estimatedProfit: number;
@@ -229,9 +229,14 @@ export function hasParticipateMarkets(
   );
 }
 
+/** 「全部」Tab 是否有效（可下注） */
+export function isEventValid(item: WorldCupPredictionItem): boolean {
+  return item.enabled && !item.closed;
+}
+
 /** 是否允许参与预测（已结束 / 已关闭 / 未开启不可下注） */
 export function canParticipateInEvent(item: WorldCupPredictionItem): boolean {
-  return item.enabled && !item.closed && item.status !== "ended";
+  return isEventValid(item) && item.status !== "ended";
 }
 
 export function canParticipateInDetail(detail: WorldCupParticipateDetail): boolean {

@@ -7,7 +7,7 @@ import type {
   WorldCupOutcomeSide,
   WorldCupPredictionItem,
 } from "@/lib/worldCup/types";
-import { hasOutcomeOptions, canParticipateInEvent } from "@/lib/worldCup/types";
+import { hasOutcomeOptions, canParticipateInEvent, isEventValid } from "@/lib/worldCup/types";
 
 const GRADIENT_BTN =
   "relative overflow-hidden rounded-[33px] border border-white shadow-[0_4px_6px_rgba(213,0,0,0.12)]";
@@ -19,9 +19,8 @@ const GRADIENT_INSET =
   "pointer-events-none absolute top-0 right-0 bottom-0 left-0 rounded-[inherit] shadow-[inset_0px_-4px_4px_0px_rgba(255,254,227,0.7),inset_0px_8px_17px_0px_#ffe5e5]";
 
 const STATUS_LABEL_KEYS = {
-  ongoing: "worldCup.statusOngoing",
-  ended: "worldCup.statusEnded",
-  upcoming: "worldCup.statusUpcoming",
+  valid: "worldCup.statusValid",
+  invalid: "worldCup.statusInvalid",
 } as const;
 
 function formatMatchTime(value: string) {
@@ -97,6 +96,7 @@ export function WorldCupPredictionCard({
   };
 
   const canParticipate = canParticipateInEvent(item);
+  const eventValid = isEventValid(item);
 
   return (
     <article className="rounded-[12px] border border-[#f0f1f3] bg-white p-[15px] shadow-[0_10px_14px_rgba(17,24,39,0.08)]">
@@ -115,8 +115,14 @@ export function WorldCupPredictionCard({
             {item.title}
           </h3>
         </div>
-        <span className="ml-2 shrink-0 rounded-[12px] bg-[#fff1f2] px-2 py-0.5 text-xs font-extrabold text-[#f0181e]">
-          {t(STATUS_LABEL_KEYS[item.status])}
+        <span
+          className={`ml-2 shrink-0 rounded-[12px] px-2 py-0.5 text-xs font-extrabold ${
+            eventValid
+              ? "bg-[#fff1f2] text-[#f0181e]"
+              : "bg-[#f4f4f4] text-[#707070]"
+          }`}
+        >
+          {t(STATUS_LABEL_KEYS[eventValid ? "valid" : "invalid"])}
         </span>
       </div>
 

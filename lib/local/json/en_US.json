@@ -359,6 +359,8 @@
     "statusOngoing": "Live",
     "statusEnded": "Ended",
     "statusUpcoming": "Soon",
+    "statusValid": "Valid",
+    "statusInvalid": "Invalid",
     "statusOrdering": "Pending",
     "outcomeDraw": "Draw",
     "outcomeHomeWin": "{team} Win",

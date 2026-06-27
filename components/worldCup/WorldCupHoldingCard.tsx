@@ -4,12 +4,6 @@ import { AppImage } from "@/components/AppImage";
 import type { WorldCupHoldingItem } from "@/lib/worldCup/types";
 import { resolveOrderOutcomeLabel } from "@/lib/worldCup/resolveOrderOutcomeLabel";
 
-const EVENT_STATUS_KEYS = {
-  ongoing: "worldCup.statusOngoing",
-  ended: "worldCup.statusEnded",
-  upcoming: "worldCup.statusUpcoming",
-} as const;
-
 type WorldCupHoldingCardProps = {
   item: WorldCupHoldingItem;
   t: (key: string, params?: Record<string, string | number>) => string;
@@ -27,6 +21,7 @@ export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
   const outcomeLabel = resolveOrderOutcomeLabel(item, t);
   const stakeText = `${formatAmount(item.stakeAmount)} ${item.stakeCurrency}`;
   const profitText = `${formatAmount(item.estimatedProfit)}${item.profitCurrency}`;
+  const payStatusLabel = item.payStatus.toUpperCase();
 
   return (
     <article className="rounded-[12px] border border-[#f0f1f3] bg-white p-[14px] shadow-[0_10px_14px_rgba(17,24,39,0.08)]">
@@ -45,8 +40,8 @@ export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
             {item.title}
           </h3>
         </div>
-        <span className="ml-2 shrink-0 rounded-[12px] bg-[#fff1f2] px-2 py-0.5 text-xs font-extrabold text-[#f0181e]">
-          {t(EVENT_STATUS_KEYS[item.eventStatus])}
+        <span className="ml-2 shrink-0 rounded-[12px] bg-[#fff1f2] px-2 py-0.5 text-xs font-extrabold uppercase text-[#f0181e]">
+          {payStatusLabel}
         </span>
       </div>
 

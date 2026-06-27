@@ -119,8 +119,6 @@ export function normalizePolymarketHoldingOrder(
     buildBaseOrderFields(order);
   if (!eventSnapshot.title && !question) return null;
 
-  const placedStatus = String(order.placedStatus ?? "");
-
   return {
     id,
     category: DEFAULT_CATEGORY,
@@ -138,7 +136,7 @@ export function normalizePolymarketHoldingOrder(
     side,
     selectedOutcome,
     betPrice,
-    positionStatus: resolveHoldingPositionStatus(placedStatus),
+    payStatus: String(order.payStatus ?? "").trim() || "--",
     stakeAmount,
     stakeCurrency: "USDT",
     estimatedProfit: parseNum(order.netPayoutUsdt),
