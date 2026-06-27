@@ -1,7 +1,3 @@
-import { formatDateTime, type Locale } from "@/lib/local";
-
-const WORLD_CUP_LOCALE: Locale = "en_US";
-
 export function formatOrderAmount(value: number) {
   return value.toLocaleString("en-US", {
     minimumFractionDigits: 0,
@@ -16,12 +12,14 @@ export function formatSignedOrderAmount(value: number) {
 
 export function formatOrderDateTime(value?: string) {
   if (!value) return "--";
-  const formatted = formatDateTime(WORLD_CUP_LOCALE, value, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  return formatted || "--";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "--";
+
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  const hour = String(date.getHours()).padStart(2, "0");
+  const minute = String(date.getMinutes()).padStart(2, "0");
+
+  return `${month}/${day}/${year} ${hour}:${minute}`;
 }

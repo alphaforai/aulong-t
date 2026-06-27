@@ -21,7 +21,7 @@ function MetaRow({
   value: string;
 }) {
   return (
-    <p className="text-sm text-[#707070]">
+    <p className="whitespace-nowrap text-sm text-[#707070]">
       <span>{label}</span>
       <span className="font-semibold text-[#1a1a1a]">{value}</span>
     </p>

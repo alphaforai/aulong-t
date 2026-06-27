@@ -28,7 +28,7 @@ function MetaRow({
   valueClassName?: string;
 }) {
   return (
-    <p className="text-sm text-[#707070]">
+    <p className="whitespace-nowrap text-sm text-[#707070]">
       <span>{label}</span>
       <span className={`font-semibold ${valueClassName}`}>{value}</span>
     </p>
@@ -96,7 +96,7 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
         </p>
       </div>
 
-      <div className="mt-3 grid grid-cols-1 gap-1.5 border-t border-[#f0f1f3] pt-3 sm:grid-cols-2">
+      <div className="mt-3 flex flex-col gap-1.5 border-t border-[#f0f1f3] pt-3">
         <MetaRow label={t("worldCup.betAul")} value={stakeAulText} />
         <MetaRow label={t("worldCup.betTime")} value={betTimeText} />
         <MetaRow label={t("worldCup.winLoss")} value={winLossText} />
