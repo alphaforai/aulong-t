@@ -24,7 +24,11 @@ export function resolveOrderOutcomeLabel(
   }
 
   if (side === "NO" && selectedOutcome) {
-    return t("worldCup.outcomeNo", { outcome: baseLabel });
+    return t("worldCup.outcomeNot", { outcome: baseLabel });
+  }
+
+  if (side === "NO" && question) {
+    return t("worldCup.outcomeNot", { outcome: question });
   }
 
   return baseLabel;

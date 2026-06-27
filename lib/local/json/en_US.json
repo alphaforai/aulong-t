@@ -362,7 +362,7 @@
     "statusOrdering": "Pending",
     "outcomeDraw": "Draw",
     "outcomeHomeWin": "{team} Win",
-    "outcomeNo": "Not {outcome}",
+    "outcomeNot": "Not {outcome}",
     "matchVs": "{home} vs {away}",
     "stakeAmount": "Stake: ",
     "estimatedProfit": "Est. profit: ",

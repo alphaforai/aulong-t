@@ -84,7 +84,8 @@ function resolveHistoryProfit(
   if (win === "WIN") return payoutAul - aul;
   if (win === "LOSE") return -aul;
   if (win === "CANCELLED") return 0;
-  return payoutAul - aul;
+  // 未结算（win 为 null）：payoutAul 默认为 0，不应按 -aul 显示亏损
+  return 0;
 }
 
 function buildBaseOrderFields(order: PolymarketBetOrderApiItem) {
