@@ -6,6 +6,7 @@ import { AnnouncementList } from "@/components/entrust/AnnouncementList";
 import { AnnouncementDetail } from "@/components/entrust/AnnouncementDetail";
 import type { ArticleItem } from "@/components/entrust/announcementTypes";
 import { ProjectBannerCard } from "@/components/entrust/ProjectBannerCard";
+import { WorldCupBannerCard } from "@/components/entrust/WorldCupBannerCard";
 import { StartAiBannerCard } from "@/components/entrust/StartAiBannerCard";
 import { PriceChartSection } from "@/components/entrust/PriceChartSection";
 import { StrategyCard } from "@/components/entrust/StrategyCard";
@@ -111,6 +112,8 @@ export default function HomePage() {
   return (
     <AulongPageShell panelClassName="bg-white">
       <Announcement onClick={() => setShowAnnouncementList(true)} />
+
+      <WorldCupBannerCard />
 
       <ProjectBannerCard
         onClick={() => {

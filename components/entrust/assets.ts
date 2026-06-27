@@ -13,6 +13,7 @@ export const entrustAssets = {
   announcementWindowFrameOverlay:
     "/assets/entrust/announcement-window-frame-overlay.png",
   projectBanner: "/assets/entrust/project-banner.png",
+  worldCupBanner: "/assets/entrust/world-cup-banner.png",
   startAiBanner: "/assets/entrust/start-ai-banner.png",
   chartFill: "/assets/entrust/chart-fill.png",
   chartLine: "/assets/entrust/chart-line.png",

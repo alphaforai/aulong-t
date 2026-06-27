@@ -32,6 +32,7 @@ export const stackY10 = "flex flex-col space-y-[10px]";
 export const stackY4 = "flex flex-col space-y-4";
 export const stackY2 = "flex flex-col space-y-2";
 export const stackY1_5 = "flex flex-col space-y-1.5";
+export const stackY3 = "flex flex-col space-y-3";
 
 /** 横向间距 */
 export const rowX4 = "flex items-center space-x-4";
