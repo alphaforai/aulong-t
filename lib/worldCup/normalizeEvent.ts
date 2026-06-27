@@ -19,21 +19,9 @@ function parseNumber(value: unknown, fallback = 0): number {
   return Number.isFinite(num) ? num : fallback;
 }
 
-function parseEndDate(value: string): Date | null {
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
-  const date = new Date(normalized);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-/** 根据 closed 与 endDate 推导展示状态 */
-export function resolveEventStatus(
-  closed: boolean,
-  endDate: string,
-): WorldCupMatchStatus {
-  if (closed) return "ended";
-  const end = parseEndDate(endDate);
-  if (end && end.getTime() < Date.now()) return "ended";
-  return "upcoming";
+/** 根据 closed 推导展示状态 */
+export function resolveEventStatus(closed: boolean): WorldCupMatchStatus {
+  return closed ? "ended" : "upcoming";
 }
 
 /** 从 title 解析主客队，如 "Norway vs. France" */
@@ -87,7 +75,7 @@ export function normalizePolymarketEvent(
       item.totalBetUsdt != null ? parseNumber(item.totalBetUsdt) : undefined,
     feeRate: parseNumber(item.feeRate, 0.05),
     enabled: item.enabled !== false,
-    status: resolveEventStatus(closed, endDate),
+    status: resolveEventStatus(closed),
     outcomes: item.outcomes,
     homeScore: item.homeScore,
     awayScore: item.awayScore,

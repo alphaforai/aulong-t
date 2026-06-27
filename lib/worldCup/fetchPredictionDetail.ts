@@ -43,7 +43,7 @@ function buildParticipateDetail(
     feeRate: cachedEvent?.feeRate ?? 0.05,
     closed,
     enabled,
-    status: cachedEvent?.status ?? resolveEventStatus(closed, endDate),
+    status: cachedEvent?.status ?? resolveEventStatus(closed),
     homeScore: cachedEvent?.homeScore,
     awayScore: cachedEvent?.awayScore,
     markets,

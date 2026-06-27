@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { AppImage } from "@/components/AppImage";
 import type {
   WorldCupOutcomeSide,
   WorldCupPredictionItem,
 } from "@/lib/worldCup/types";
+import { formatUtcMatchTime } from "@/lib/worldCup/utcDate";
 import { hasOutcomeOptions, canParticipateInEvent } from "@/lib/worldCup/types";
 
 const GRADIENT_BTN =
@@ -22,13 +22,6 @@ const STATUS_LABEL_KEYS = {
   ongoing: "worldCup.statusOngoing",
   ended: "worldCup.statusEnded",
 } as const;
-
-function formatMatchTime(value: string) {
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
-  const date = new Date(normalized);
-  if (Number.isNaN(date.getTime())) return "--";
-  return format(date, "MM-dd HH:mm") + "(UTC)";
-}
 
 function formatScore(item: WorldCupPredictionItem) {
   if (item.homeScore == null || item.awayScore == null) return "VS";
@@ -138,7 +131,7 @@ export function WorldCupPredictionCard({
             {formatScore(item)}
           </p>
           <p className="mt-0.5 whitespace-nowrap text-xs leading-none text-[#949494]">
-            {formatMatchTime(item.endDate)}
+            {formatUtcMatchTime(item.endDate)}
           </p>
         </div>
 

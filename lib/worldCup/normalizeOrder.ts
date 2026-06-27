@@ -54,7 +54,7 @@ function resolveOrderEventSnapshot(
     awayTeam,
     endDate,
     icon: event?.icon ? String(event.icon) : undefined,
-    eventStatus: resolveEventStatus(closed, endDate),
+    eventStatus: resolveEventStatus(closed),
     homeScore:
       event?.homeScore != null ? parseNum(event.homeScore) : undefined,
     awayScore:

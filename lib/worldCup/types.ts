@@ -239,11 +239,11 @@ export function isEventValid(item: WorldCupPredictionItem): boolean {
   return item.enabled && !item.closed;
 }
 
-/** 是否允许参与预测（已结束 / 已关闭 / 未开启不可下注） */
+/** 是否允许参与预测（已关闭 / 未开启不可下注） */
 export function canParticipateInEvent(item: WorldCupPredictionItem): boolean {
-  return isEventValid(item) && item.status !== "ended";
+  return isEventValid(item);
 }
 
 export function canParticipateInDetail(detail: WorldCupParticipateDetail): boolean {
-  return detail.enabled && !detail.closed && detail.status !== "ended";
+  return detail.enabled && !detail.closed;
 }

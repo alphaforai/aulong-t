@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import AulongHeader from "@/components/AulongHeader";
 import { AppImage } from "@/components/AppImage";
@@ -27,6 +26,7 @@ import type {
   WorldCupParticipateDetail,
 } from "@/lib/worldCup/types";
 import { canParticipateInDetail } from "@/lib/worldCup/types";
+import { formatUtcMatchTime } from "@/lib/worldCup/utcDate";
 import { WorldCupParticipateSuccess } from "./WorldCupParticipateSuccess";
 
 const GRADIENT_BTN =
@@ -42,13 +42,6 @@ const QUICK_ADD_AMOUNTS = [1, 5, 10, 50, 100] as const;
 
 /** YES = 押该选项发生；NO = 押不发生，展示互补概率 */
 type ParticipateStance = "yes" | "no";
-
-function formatMatchTime(value: string) {
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
-  const date = new Date(normalized);
-  if (Number.isNaN(date.getTime())) return "--";
-  return format(date, "MM-dd HH:mm") + "(UTC)";
-}
 
 function formatScore(item: WorldCupParticipateDetail) {
   if (item.homeScore == null || item.awayScore == null) return "VS";
@@ -440,7 +433,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
                 {formatScore(item)}
               </p>
               <p className="mt-0.5 whitespace-nowrap text-xs leading-none text-[#949494]">
-                {formatMatchTime(item.endDate)}
+                {formatUtcMatchTime(item.endDate)}
               </p>
             </div>
 
