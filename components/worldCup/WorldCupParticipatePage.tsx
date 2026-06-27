@@ -48,23 +48,13 @@ function formatScore(item: WorldCupParticipateDetail) {
   return `${item.homeScore}:${item.awayScore}`;
 }
 
+const DRAW_OUTCOME_LABEL = "Draw";
+
 function parseAmountInput(value: string) {
   const trimmed = value.trim();
   if (!trimmed) return 0;
   const parsed = Number(trimmed);
   return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
-}
-
-function resolveOutcomeLabel(
-  outcome: WorldCupOutcomeSide,
-  homeTeam: string,
-  awayTeam: string,
-  t: (key: string, params?: Record<string, string | number>) => string,
-) {
-  if (outcome === "draw") return t("worldCup.outcomeDraw");
-  return t("worldCup.outcomeHomeWin", {
-    team: outcome === "home" ? homeTeam : awayTeam,
-  });
 }
 
 type ParticipateSuccessState = WorldCupParticipateSubmitResult;
@@ -245,10 +235,10 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
   const outcomeShortLabels: Record<WorldCupOutcomeSide, string> = useMemo(
     () => ({
       home: homeTeam,
-      draw: t("worldCup.outcomeDraw"),
+      draw: DRAW_OUTCOME_LABEL,
       away: awayTeam,
     }),
-    [awayTeam, homeTeam, t],
+    [awayTeam, homeTeam],
   );
 
   const activePercent = useMemo(() => {
