@@ -3,8 +3,14 @@
 import { AppImage } from "@/components/AppImage";
 import type { WorldCupHistoryItem } from "@/lib/worldCup/types";
 import {
+  formatOrderAmount,
+  formatOrderDateTime,
+  formatSignedOrderAmount,
+} from "@/lib/worldCup/formatOrderDisplay";
+import {
   formatHistoryMatchResult,
   resolveOrderOutcomeLabel,
+  resolveOrderWinLabel,
 } from "@/lib/worldCup/resolveOrderOutcomeLabel";
 
 type WorldCupHistoryCardProps = {
@@ -12,16 +18,21 @@ type WorldCupHistoryCardProps = {
   t: (key: string, params?: Record<string, string | number>) => string;
 };
 
-function formatAmount(value: number) {
-  return Math.abs(value).toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
-}
-
-function formatSignedProfit(value: number) {
-  if (value < 0) return `-${formatAmount(value)}`;
-  return formatAmount(value);
+function MetaRow({
+  label,
+  value,
+  valueClassName = "text-[#1a1a1a]",
+}: {
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <p className="text-sm text-[#707070]">
+      <span>{label}</span>
+      <span className={`font-semibold ${valueClassName}`}>{value}</span>
+    </p>
+  );
 }
 
 function resolveProfitTone(value: number) {
@@ -30,12 +41,17 @@ function resolveProfitTone(value: number) {
   return "text-[#707070]";
 }
 
-/** 历史记录列表卡片 — 紧凑三行布局（Figma 预测市场-历史记录） */
+/** 历史记录列表卡片 — 紧凑布局（Figma 预测市场-历史记录） */
 export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const outcomeLabel = resolveOrderOutcomeLabel(item, t);
-  const stakeText = `${formatAmount(item.stakeAmount)} ${item.stakeCurrency}`;
+  const stakeText = `${formatOrderAmount(item.stakeAmount)} ${item.stakeCurrency}`;
+  const stakeAulText = `${formatOrderAmount(item.stakeAul)} AUL`;
+  const betTimeText = formatOrderDateTime(item.betAt);
   const resultText = formatHistoryMatchResult(item, t);
-  const profitText = `${formatSignedProfit(item.profitAmount)} ${item.profitCurrency}`;
+  const winLossText = resolveOrderWinLabel(item.win, t);
+  const settlementAulText = `${formatOrderAmount(item.settlementAul)} AUL`;
+  const settlementTimeText = formatOrderDateTime(item.settledAt);
+  const profitText = `${formatSignedOrderAmount(item.profitAmount)} ${item.profitCurrency}`;
   const profitTone = resolveProfitTone(item.profitAmount);
 
   return (
@@ -55,10 +71,7 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
             {item.title}
           </h3>
         </div>
-        <p className="ml-2 shrink-0 text-right text-sm text-[#707070]">
-          <span>{t("worldCup.stakeAmount")}</span>
-          <span className="font-semibold text-[#1a1a1a]">{stakeText}</span>
-        </p>
+        <MetaRow label={t("worldCup.stakeAmount")} value={stakeText} />
       </div>
 
       <div className="mt-3.5 flex items-center justify-between">
@@ -81,6 +94,17 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
           <span>{t("worldCup.profit")}</span>
           <span>{profitText}</span>
         </p>
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-1.5 border-t border-[#f0f1f3] pt-3 sm:grid-cols-2">
+        <MetaRow label={t("worldCup.betAul")} value={stakeAulText} />
+        <MetaRow label={t("worldCup.betTime")} value={betTimeText} />
+        <MetaRow label={t("worldCup.winLoss")} value={winLossText} />
+        <MetaRow label={t("worldCup.settlementAul")} value={settlementAulText} />
+        <MetaRow
+          label={t("worldCup.settlementTime")}
+          value={settlementTimeText}
+        />
       </div>
     </article>
   );

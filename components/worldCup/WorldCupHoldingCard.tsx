@@ -2,6 +2,10 @@
 
 import { AppImage } from "@/components/AppImage";
 import type { WorldCupHoldingItem } from "@/lib/worldCup/types";
+import {
+  formatOrderAmount,
+  formatOrderDateTime,
+} from "@/lib/worldCup/formatOrderDisplay";
 import { resolveOrderOutcomeLabel } from "@/lib/worldCup/resolveOrderOutcomeLabel";
 
 type WorldCupHoldingCardProps = {
@@ -9,18 +13,28 @@ type WorldCupHoldingCardProps = {
   t: (key: string, params?: Record<string, string | number>) => string;
 };
 
-function formatAmount(value: number) {
-  return value.toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
+function MetaRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <p className="text-sm text-[#707070]">
+      <span>{label}</span>
+      <span className="font-semibold text-[#1a1a1a]">{value}</span>
+    </p>
+  );
 }
 
 /** 持仓中列表卡片 — 纯文字紧凑布局（Figma 预测市场-进行中） */
 export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
   const outcomeLabel = resolveOrderOutcomeLabel(item, t);
-  const stakeText = `${formatAmount(item.stakeAmount)} ${item.stakeCurrency}`;
-  const profitText = `${formatAmount(item.estimatedProfit)}${item.profitCurrency}`;
+  const stakeText = `${formatOrderAmount(item.stakeAmount)} ${item.stakeCurrency}`;
+  const profitText = `${formatOrderAmount(item.estimatedProfit)} ${item.profitCurrency}`;
+  const stakeAulText = `${formatOrderAmount(item.stakeAul)} AUL`;
+  const betTimeText = formatOrderDateTime(item.betAt);
   const payStatusLabel = item.payStatus.toUpperCase();
 
   return (
@@ -45,7 +59,7 @@ export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
         </span>
       </div>
 
-      <div className="mt-3.5 flex items-center justify-between">
+      <div className="mt-3.5 flex items-start justify-between">
         <div className="flex min-w-0 flex-col justify-between space-y-3">
           <p className="truncate text-base font-semibold text-[#1a1a1a]">
             {outcomeLabel}
@@ -58,15 +72,11 @@ export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
           </p>
         </div>
 
-        <div className="ml-3 flex shrink-0 flex-col items-end space-y-1.5 text-right text-sm text-[#707070]">
-          <p>
-            <span>{t("worldCup.stakeAmount")}</span>
-            <span className="font-semibold text-[#1a1a1a]">{stakeText}</span>
-          </p>
-          <p>
-            <span>{t("worldCup.estimatedProfit")}</span>
-            <span className="font-semibold text-[#1a1a1a]">{profitText}</span>
-          </p>
+        <div className="ml-3 flex shrink-0 flex-col items-end space-y-1.5 text-right">
+          <MetaRow label={t("worldCup.stakeAmount")} value={stakeText} />
+          <MetaRow label={t("worldCup.estimatedProfit")} value={profitText} />
+          <MetaRow label={t("worldCup.betAul")} value={stakeAulText} />
+          <MetaRow label={t("worldCup.betTime")} value={betTimeText} />
         </div>
       </div>
     </article>

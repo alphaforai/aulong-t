@@ -103,6 +103,8 @@ function buildBaseOrderFields(order: PolymarketBetOrderApiItem) {
     ),
     betPrice: parseNum(order.betPrice),
     stakeAmount: parseNum(order.actualUsdt, parseNum(order.usdt)),
+    stakeAul: parseNum(order.aul),
+    betAt: order.createdAt ? String(order.createdAt) : undefined,
   };
 }
 
@@ -115,7 +117,7 @@ export function normalizePolymarketHoldingOrder(
   const id = parseId(order.id);
   if (id <= 0) return null;
 
-  const { eventSnapshot, question, side, selectedOutcome, betPrice, stakeAmount } =
+  const { eventSnapshot, question, side, selectedOutcome, betPrice, stakeAmount, stakeAul, betAt } =
     buildBaseOrderFields(order);
   if (!eventSnapshot.title && !question) return null;
 
@@ -139,6 +141,8 @@ export function normalizePolymarketHoldingOrder(
     payStatus: String(order.payStatus ?? "").trim() || "--",
     stakeAmount,
     stakeCurrency: "USDT",
+    stakeAul,
+    betAt,
     estimatedProfit: parseNum(order.netPayoutUsdt),
     profitCurrency: "USDT",
   };
@@ -153,7 +157,7 @@ export function normalizePolymarketHistoryOrder(
   const id = parseId(order.id);
   if (id <= 0) return null;
 
-  const { eventSnapshot, question, side, selectedOutcome, betPrice, stakeAmount } =
+  const { eventSnapshot, question, side, selectedOutcome, betPrice, stakeAmount, stakeAul, betAt } =
     buildBaseOrderFields(order);
   if (!eventSnapshot.title && !question) return null;
 
@@ -180,9 +184,12 @@ export function normalizePolymarketHistoryOrder(
     betPrice,
     stakeAmount,
     stakeCurrency: "USDT",
+    stakeAul,
+    betAt,
     profitAmount: resolveHistoryProfit(win, payoutAul, aul),
     profitCurrency: "AUL",
     win,
+    settlementAul: payoutAul,
     settledAt: order.settledAt ? String(order.settledAt) : undefined,
   };
 }

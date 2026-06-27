@@ -34,6 +34,22 @@ export function resolveOrderOutcomeLabel(
   return baseLabel;
 }
 
+export function resolveOrderWinLabel(
+  win: string | null,
+  t: (key: string, params?: Record<string, string | number>) => string,
+) {
+  switch (win) {
+    case "WIN":
+      return t("worldCup.orderResultWin");
+    case "LOSE":
+      return t("worldCup.orderResultLose");
+    case "CANCELLED":
+      return t("worldCup.orderResultCancelled");
+    default:
+      return t("worldCup.orderResultPending");
+  }
+}
+
 export function formatHistoryMatchResult(
   item: Pick<
     WorldCupHistoryItem,

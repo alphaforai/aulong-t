@@ -136,9 +136,12 @@ export type WorldCupHistoryItem = {
   betPrice: number;
   stakeAmount: number;
   stakeCurrency: string;
+  stakeAul: number;
+  betAt?: string;
   profitAmount: number;
   profitCurrency: string;
   win: string | null;
+  settlementAul: number;
   settledAt?: string;
 };
 
@@ -163,6 +166,8 @@ export type WorldCupHoldingItem = {
   payStatus: string;
   stakeAmount: number;
   stakeCurrency: string;
+  stakeAul: number;
+  betAt?: string;
   estimatedProfit: number;
   profitCurrency: string;
 };

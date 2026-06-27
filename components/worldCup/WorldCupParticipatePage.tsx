@@ -47,7 +47,7 @@ function formatMatchTime(value: string) {
   const normalized = value.includes("T") ? value : value.replace(" ", "T");
   const date = new Date(normalized);
   if (Number.isNaN(date.getTime())) return "--";
-  return format(date, "MM-dd HH:mm");
+  return format(date, "MM-dd HH:mm") + "(UTC)";
 }
 
 function formatScore(item: WorldCupParticipateDetail) {
