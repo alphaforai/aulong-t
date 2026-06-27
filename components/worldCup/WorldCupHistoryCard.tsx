@@ -35,6 +35,9 @@ function resolveWinLabel(status: OrderWinStatus, t: WorldCupHistoryCardProps["t"
   }
 }
 
+
+
+
 /** 历史记录列表卡片 — 对齐持仓卡布局，补充结算信息 */
 export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const outcomeLabel = resolveOrderOutcomeLabel(item, t);
