@@ -139,8 +139,10 @@ export function normalizePolymarketHoldingOrder(
     payStatus: String(order.payStatus ?? "").trim() || "--",
     stakeAmount,
     stakeCurrency: "USDT",
+    stakeAul: parseNum(order.aul),
     estimatedProfit: parseNum(order.netPayoutUsdt),
     profitCurrency: "USDT",
+    createdAt: order.createdAt ? String(order.createdAt) : undefined,
   };
 }
 
@@ -180,9 +182,12 @@ export function normalizePolymarketHistoryOrder(
     betPrice,
     stakeAmount,
     stakeCurrency: "USDT",
+    stakeAul: aul,
+    payoutAul,
     profitAmount: resolveHistoryProfit(win, payoutAul, aul),
     profitCurrency: "AUL",
     win,
+    createdAt: order.createdAt ? String(order.createdAt) : undefined,
     settledAt: order.settledAt ? String(order.settledAt) : undefined,
   };
 }

@@ -136,9 +136,15 @@ export type WorldCupHistoryItem = {
   betPrice: number;
   stakeAmount: number;
   stakeCurrency: string;
+  /** 下注扣除的 AUL 数量 */
+  stakeAul: number;
+  /** 结算赔付 AUL */
+  payoutAul: number;
   profitAmount: number;
   profitCurrency: string;
   win: string | null;
+  /** 下注时间 */
+  createdAt?: string;
   settledAt?: string;
 };
 
@@ -163,8 +169,12 @@ export type WorldCupHoldingItem = {
   payStatus: string;
   stakeAmount: number;
   stakeCurrency: string;
+  /** 下注扣除的 AUL 数量 */
+  stakeAul: number;
   estimatedProfit: number;
   profitCurrency: string;
+  /** 下注时间（订单 createdAt） */
+  createdAt?: string;
 };
 
 export type WorldCupListItem =

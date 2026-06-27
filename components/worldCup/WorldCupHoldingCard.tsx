@@ -1,6 +1,11 @@
 "use client";
 
 import { AppImage } from "@/components/AppImage";
+import {
+  formatAulAmount,
+  formatOrderDateTime,
+  formatUsdtAmount,
+} from "@/lib/worldCup/formatOrderDisplay";
 import type { WorldCupHoldingItem } from "@/lib/worldCup/types";
 import { resolveOrderOutcomeLabel } from "@/lib/worldCup/resolveOrderOutcomeLabel";
 
@@ -9,18 +14,13 @@ type WorldCupHoldingCardProps = {
   t: (key: string, params?: Record<string, string | number>) => string;
 };
 
-function formatAmount(value: number) {
-  return value.toLocaleString("en-US", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  });
-}
-
 /** 持仓中列表卡片 — 纯文字紧凑布局（Figma 预测市场-进行中） */
 export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
   const outcomeLabel = resolveOrderOutcomeLabel(item, t);
-  const stakeText = `${formatAmount(item.stakeAmount)} ${item.stakeCurrency}`;
-  const profitText = `${formatAmount(item.estimatedProfit)}${item.profitCurrency}`;
+  const stakeText = `${formatUsdtAmount(item.stakeAmount)} ${item.stakeCurrency}`;
+  const stakeAulText = `${formatAulAmount(item.stakeAul)} AUL`;
+  const profitText = `${formatUsdtAmount(item.estimatedProfit)}${item.profitCurrency}`;
+  const betTimeText = formatOrderDateTime(item.createdAt);
   const payStatusLabel = item.payStatus.toUpperCase();
 
   return (
@@ -56,12 +56,20 @@ export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
               away: item.awayTeam,
             })}
           </p>
+          <p className="truncate text-xs text-[#707070]">
+            <span>{t("worldCup.betTime")}</span>
+            <span className="text-[#1a1a1a]">{betTimeText}</span>
+          </p>
         </div>
 
         <div className="ml-3 flex shrink-0 flex-col items-end space-y-1.5 text-right text-sm text-[#707070]">
           <p>
             <span>{t("worldCup.stakeAmount")}</span>
             <span className="font-semibold text-[#1a1a1a]">{stakeText}</span>
+          </p>
+          <p>
+            <span>{t("worldCup.stakeAul")}</span>
+            <span className="font-semibold text-[#1a1a1a]">{stakeAulText}</span>
           </p>
           <p>
             <span>{t("worldCup.estimatedProfit")}</span>
