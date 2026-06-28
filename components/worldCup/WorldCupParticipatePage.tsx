@@ -13,18 +13,14 @@ import { getXcoinPrice } from "@/lib/api/users";
 import { useWorldCupTranslation } from "@/lib/worldCup/useWorldCupTranslation";
 import { stackY3 } from "@/lib/mobileCompat";
 import { useUserInfoStore } from "@/lib/store/userInfo";
-import { fetchWorldCupPredictionDetail } from "@/lib/worldCup/fetchPredictionDetail";
+import { fetchWorldCupPredictionDetail, WorldCupNoBetMarketsError } from "@/lib/worldCup/fetchPredictionDetail";
 import { getWorldCupErrorMessage } from "@/lib/worldCup/getErrorMessage";
 import { marketOddsPercent } from "@/lib/worldCup/normalizeMarkets";
 import { calcParticipateSummary } from "@/lib/worldCup/participateCalc";
 import { readCachedParticipateEvent } from "@/lib/worldCup/participateEventCache";
-import { DEFAULT_PARTICIPATE_OUTCOME, parseOutcomeParam } from "@/lib/worldCup/participateUrl";
+import { parseOutcomeParam } from "@/lib/worldCup/participateUrl";
 import { fetchWorldCupParticipateSubmit } from "@/lib/worldCup/submitParticipate";
 import type { WorldCupParticipateSubmitResult } from "@/lib/worldCup/participateTypes";
-import type {
-  WorldCupOutcomeSide,
-  WorldCupParticipateDetail,
-} from "@/lib/worldCup/types";
 import { canParticipateInDetail } from "@/lib/worldCup/types";
 import { formatUtcMatchTime } from "@/lib/worldCup/utcDate";
 import { WorldCupParticipateSuccess } from "./WorldCupParticipateSuccess";
@@ -43,13 +39,6 @@ const QUICK_ADD_AMOUNTS = [1, 5, 10, 50, 100] as const;
 /** YES = 押该选项发生；NO = 押不发生，展示互补概率 */
 type ParticipateStance = "yes" | "no";
 
-function formatScore(item: WorldCupParticipateDetail) {
-  if (item.homeScore == null || item.awayScore == null) return "VS";
-  return `${item.homeScore}:${item.awayScore}`;
-}
-
-const DRAW_OUTCOME_LABEL = "Draw";
-
 function parseAmountInput(value: string) {
   const trimmed = value.trim();
   if (!trimmed) return 0;
@@ -59,57 +48,80 @@ function parseAmountInput(value: string) {
 
 type ParticipateSuccessState = WorldCupParticipateSubmitResult;
 
-function OutcomePill({
-  label,
+function QuestionOption({
+  question,
   selected,
   onSelect,
 }: {
-  label: string;
+  question: string;
   selected: boolean;
   onSelect: () => void;
 }) {
   return (
     <button
       type="button"
-      aria-pressed={selected}
+      role="radio"
+      aria-checked={selected}
       onClick={onSelect}
-      className={`flex h-[38px] min-w-0 flex-1 items-center justify-center rounded-[10px] border px-2 touch-manipulation ${
+      className={`flex w-full items-start rounded-[10px] border px-3 py-2.5 text-left touch-manipulation ${
         selected
-          ? "border-[#ffd6d8] bg-[#fff1f2] text-[#e84040]"
-          : "border-transparent bg-[#f4f4f4] text-[#333]"
+          ? "border-[#ffd6d8] bg-[#fff1f2]"
+          : "border-[#f0f1f3] bg-[#f8f8f8]"
       }`}
     >
-      <span className="truncate text-xs font-bold">{label}</span>
+      <span
+        className={`mt-0.5 mr-2.5 flex size-4 shrink-0 items-center justify-center rounded-full border ${
+          selected ? "border-[#f0181e]" : "border-[#c7c7c7]"
+        }`}
+        aria-hidden
+      >
+        {selected ? (
+          <span className="size-2 rounded-full bg-[#f0181e]" />
+        ) : null}
+      </span>
+      <span
+        className={`min-w-0 flex-1 text-sm leading-snug ${
+          selected ? "font-bold text-[#1a1a1a]" : "text-[#333]"
+        }`}
+      >
+        {question}
+      </span>
     </button>
   );
 }
+
+const STANCE_YES_BG = "#2A9D6E";
+const STANCE_NO_BG = "#f0181e";
 
 function StanceCell({
   label,
   percent,
   selected,
+  variant,
   onSelect,
 }: {
   label: string;
   percent: number;
   selected: boolean;
+  variant: "yes" | "no";
   onSelect: () => void;
 }) {
+  const activeBg = variant === "yes" ? STANCE_YES_BG : STANCE_NO_BG;
+
   return (
     <button
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
-      className={`flex h-[60px] min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] border px-2 py-3 touch-manipulation ${
+      className="flex h-[60px] min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] border border-transparent px-2 py-3 touch-manipulation"
+      style={
         selected
-          ? "border-[#ffd6d8] bg-[#fff1f2]"
-          : "border-transparent bg-[#f4f4f4]"
-      }`}
+          ? { backgroundColor: activeBg, color: "#fff" }
+          : { backgroundColor: "#f4f4f4", color: "#333" }
+      }
     >
-      <span className="text-xs font-bold text-[#333]">{label}</span>
-      <span className="mt-2.5 text-lg font-bold text-[#1a1a1a]">
-        {percent.toFixed(1)}%
-      </span>
+      <span className="text-xs font-bold">{label}</span>
+      <span className="mt-2.5 text-lg font-bold">{percent.toFixed(1)}%</span>
     </button>
   );
 }
@@ -160,9 +172,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
   );
 
   // 表单状态；提交成功后 successData 非空则切换为成功视图
-  const [selectedOutcome, setSelectedOutcome] = useState<WorldCupOutcomeSide>(
-    initialOutcome ?? DEFAULT_PARTICIPATE_OUTCOME,
-  );
+  const [selectedBetId, setSelectedBetId] = useState<number | null>(null);
   const [stance, setStance] = useState<ParticipateStance>("yes");
   const [amountInput, setAmountInput] = useState("");
   const [activeQuickAdd, setActiveQuickAdd] = useState<number | null>(null);
@@ -170,14 +180,6 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
   const [successData, setSuccessData] = useState<ParticipateSuccessState | null>(
     null,
   );
-
-  useEffect(() => {
-    if (initialOutcome) {
-      setSelectedOutcome(initialOutcome);
-      return;
-    }
-    setSelectedOutcome(DEFAULT_PARTICIPATE_OUTCOME);
-  }, [initialOutcome]);
 
   const {
     data: item,
@@ -190,10 +192,25 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     enabled: idValid,
   });
 
-  const detailErrorMessage = useMemo(
-    () => getWorldCupErrorMessage(error, t("worldCup.detailNotFound")),
-    [error, t],
-  );
+  useEffect(() => {
+    if (!item?.betList.length) return;
+    setSelectedBetId((prev) => {
+      if (prev != null && item.betList.some((bet) => bet.id === prev)) {
+        return prev;
+      }
+      const fromOutcome = initialOutcome
+        ? item.markets[initialOutcome]
+        : undefined;
+      return fromOutcome?.id ?? item.betList[0].id;
+    });
+  }, [item, initialOutcome]);
+
+  const detailErrorMessage = useMemo(() => {
+    if (error instanceof WorldCupNoBetMarketsError) {
+      return t("worldCup.noBetMarkets");
+    }
+    return getWorldCupErrorMessage(error, t("worldCup.detailNotFound"));
+  }, [error, t]);
 
   const detailErrorToastRef = useRef<string | null>(null);
   useEffect(() => {
@@ -222,23 +239,9 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
   // 接口暂无价格时兜底，避免除零
   const aulPrice = aulPriceFromApi > 0 ? aulPriceFromApi : 2;
 
-  const homeTeam = item?.homeTeam ?? "";
-  const awayTeam = item?.awayTeam ?? "";
-  const showOutcomes = Boolean(
-    item && Object.keys(item.markets).length > 0,
-  );
-
-  const selectedMarket = selectedOutcome
-    ? item?.markets[selectedOutcome]
-    : undefined;
-
-  const outcomeShortLabels: Record<WorldCupOutcomeSide, string> = useMemo(
-    () => ({
-      home: homeTeam,
-      draw: DRAW_OUTCOME_LABEL,
-      away: awayTeam,
-    }),
-    [awayTeam, homeTeam],
+  const selectedMarket = useMemo(
+    () => item?.betList.find((bet) => bet.id === selectedBetId),
+    [item?.betList, selectedBetId],
   );
 
   const activePercent = useMemo(() => {
@@ -274,7 +277,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
         amountUsdt > 0 &&
         !amountOutOfRange &&
         !insufficientBalance &&
-        (!showOutcomes || (selectedOutcome && selectedMarket)),
+        selectedMarket,
     ) &&
     !isSubmitting &&
     !successData;
@@ -297,8 +300,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!item) return;
-    if (showOutcomes && (!selectedOutcome || !selectedMarket)) {
+    if (!item || !selectedMarket) {
       toast.info(t("worldCup.selectOutcomeFirst"));
       return;
     }
@@ -325,15 +327,8 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
 
     setIsSubmitting(true);
     try {
-      const outcome = selectedOutcome ?? DEFAULT_PARTICIPATE_OUTCOME;
-      const market = selectedMarket ?? item.markets[outcome];
-      if (!market) {
-        toast.info(t("worldCup.selectOutcomeFirst"));
-        return;
-      }
-
       const result = await fetchWorldCupParticipateSubmit({
-        betId: String(market.id),
+        betId: String(selectedMarket.id),
         side: stance === "yes" ? "YES" : "NO",
         usdtAmount: amountUsdt,
       });
@@ -351,8 +346,6 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     insufficientBalance,
     item,
     selectedMarket,
-    selectedOutcome,
-    showOutcomes,
     stance,
     t,
   ]);
@@ -396,7 +389,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     return (
       <>
         <article className="w-full rounded-[12px] border border-[#f0f1f3] bg-white p-[15px] shadow-[0_10px_14px_rgba(17,24,39,0.08)]">
-          <div className="flex items-start space-x-2">
+          <div className="flex items-start gap-2">
             {item.icon ? (
               <AppImage
                 src={item.icon}
@@ -406,79 +399,59 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
                 className="size-8 shrink-0 rounded object-cover"
               />
             ) : null}
-            <h3 className="min-w-0 flex-1 text-base font-extrabold leading-snug text-[#1a1a1a]">
-              {item.title}
-            </h3>
-          </div>
-
-          <div className="relative mt-3 h-[59px]">
-            <div className="absolute top-[3px] left-0 flex w-[33%] flex-col items-center">
-              <p className="w-full truncate text-center text-sm font-extrabold text-[#333]">
-                {homeTeam}
-              </p>
-            </div>
-
-            <div className="absolute top-0 left-1/2 flex min-w-[88px] -translate-x-1/2 flex-col items-center">
-              <p className="text-[28px] font-black leading-none text-[#f0181e]">
-                {formatScore(item)}
-              </p>
-              <p className="mt-0.5 whitespace-nowrap text-xs leading-none text-[#949494]">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base font-extrabold leading-snug text-[#1a1a1a]">
+                {item.title}
+              </h3>
+              <p className="mt-0.5 truncate text-xs leading-none text-[#949494]">
                 {formatUtcMatchTime(item.endDate)}
               </p>
             </div>
-
-            <div className="absolute top-[3px] right-0 flex w-[33%] flex-col items-center">
-              <p className="w-full truncate text-center text-sm font-extrabold text-[#333]">
-                {awayTeam}
-              </p>
-            </div>
           </div>
 
-          {showOutcomes ? (
-            <div
-              className="mt-3.5 flex flex-col space-y-1.5"
-              role="radiogroup"
-              aria-label={t("worldCup.outcomeGroupAria")}
-            >
-              <div className="flex space-x-3">
-                {(["home", "draw", "away"] as const).map((side) => (
-                  <OutcomePill
-                    key={side}
-                    label={outcomeShortLabels[side]}
-                    selected={selectedOutcome === side}
-                    onSelect={() => setSelectedOutcome(side)}
-                  />
-                ))}
-              </div>
+          <div
+            className="mt-3.5 flex flex-col gap-2"
+            role="radiogroup"
+            aria-label={t("worldCup.outcomeGroupAria")}
+          >
+            {item.betList.map((bet) => (
+              <QuestionOption
+                key={bet.id}
+                question={bet.question}
+                selected={selectedBetId === bet.id}
+                onSelect={() => setSelectedBetId(bet.id)}
+              />
+            ))}
+          </div>
 
-              <div
-                className="flex space-x-3"
-                role="radiogroup"
-                aria-label={t("worldCup.stanceGroupAria")}
-              >
-                <StanceCell
-                  label={t("worldCup.outcomeYes")}
-                  percent={
-                    selectedMarket
-                      ? marketOddsPercent(selectedMarket, "yes")
-                      : 0
-                  }
-                  selected={stance === "yes"}
-                  onSelect={() => setStance("yes")}
-                />
-                <StanceCell
-                  label={t("worldCup.outcomeNo")}
-                  percent={
-                    selectedMarket
-                      ? marketOddsPercent(selectedMarket, "no")
-                      : 0
-                  }
-                  selected={stance === "no"}
-                  onSelect={() => setStance("no")}
-                />
-              </div>
-            </div>
-          ) : null}
+          <div
+            className="mt-3 flex gap-3"
+            role="radiogroup"
+            aria-label={t("worldCup.stanceGroupAria")}
+          >
+            <StanceCell
+              label={t("worldCup.outcomeYes")}
+              percent={
+                selectedMarket
+                  ? marketOddsPercent(selectedMarket, "yes")
+                  : 0
+              }
+              selected={stance === "yes"}
+              variant="yes"
+              onSelect={() => setStance("yes")}
+            />
+            <StanceCell
+              label={t("worldCup.outcomeNo")}
+              percent={
+                selectedMarket
+                  ? marketOddsPercent(selectedMarket, "no")
+                  : 0
+              }
+              selected={stance === "no"}
+              variant="no"
+              onSelect={() => setStance("no")}
+            />
+          </div>
         </article>
 
         <article className="w-full rounded-[12px] border border-[#f0f1f3] bg-white p-[15px]">
@@ -592,21 +565,17 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     aulPrice,
     amountOutOfRange,
     availableAul,
-    awayTeam,
     canSubmit,
     handleQuickAdd,
     handleSubmit,
-    homeTeam,
     detailErrorMessage,
     idValid,
     insufficientBalance,
     isError,
     isPending,
     item,
-    outcomeShortLabels,
-    selectedOutcome,
+    selectedBetId,
     selectedMarket,
-    showOutcomes,
     stance,
     summary,
     amountInput,

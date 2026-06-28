@@ -1,5 +1,5 @@
 import { getWorldCupPredictionDetail } from "@/lib/api/worldCup";
-import { extractTeamsFromBetQuestions, normalizePolymarketBets } from "./normalizeMarkets";
+import { extractTeamsFromBetQuestions, normalizePolymarketBetList, normalizePolymarketBets } from "./normalizeMarkets";
 import { parseTitleTeams, resolveEventStatus } from "./normalizeEvent";
 import type {
   PolymarketBetApiItem,
@@ -7,12 +7,20 @@ import type {
   WorldCupPredictionItem,
 } from "./types";
 
+export class WorldCupNoBetMarketsError extends Error {
+  constructor() {
+    super("WorldCupNoBetMarketsError");
+    this.name = "WorldCupNoBetMarketsError";
+  }
+}
+
 function buildParticipateDetail(
   gameId: string,
   bets: PolymarketBetApiItem[],
   cachedEvent: WorldCupPredictionItem | null | undefined,
 ): WorldCupParticipateDetail {
   const markets = normalizePolymarketBets(bets, cachedEvent ?? undefined);
+  const betList = normalizePolymarketBetList(bets);
 
   const teamsFromBets = extractTeamsFromBetQuestions(bets);
   const homeTeam =
@@ -46,6 +54,7 @@ function buildParticipateDetail(
     status: cachedEvent?.status ?? resolveEventStatus(closed),
     homeScore: cachedEvent?.homeScore,
     awayScore: cachedEvent?.awayScore,
+    betList,
     markets,
   };
 }
@@ -68,8 +77,8 @@ export async function fetchWorldCupPredictionDetail(
 
   const detail = buildParticipateDetail(gameId, data as PolymarketBetApiItem[], cachedEvent);
 
-  if (Object.keys(detail.markets).length === 0) {
-    throw new Error("暂无可下注玩法");
+  if (detail.betList.length === 0) {
+    throw new WorldCupNoBetMarketsError();
   }
 
   if (!detail.homeTeam && !detail.awayTeam && detail.title) {

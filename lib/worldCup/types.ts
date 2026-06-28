@@ -45,6 +45,8 @@ export type WorldCupParticipateDetail = {
   status: WorldCupMatchStatus;
   homeScore?: number;
   awayScore?: number;
+  /** 接口返回的玩法列表（按 question 展示） */
+  betList: WorldCupOutcomeMarket[];
   markets: Partial<Record<WorldCupOutcomeSide, WorldCupOutcomeMarket>>;
 };
 

@@ -24,12 +24,12 @@ export function resolveEventStatus(closed: boolean): WorldCupMatchStatus {
   return closed ? "ended" : "upcoming";
 }
 
-/** 从 title 解析主客队，如 "Norway vs. France" */
+/** 从 title 解析主客队，如 "Norway vs. France"、"南非对阵加拿大" */
 export function parseTitleTeams(title: string): {
   homeTeam: string;
   awayTeam: string;
 } {
-  const parts = title.split(/\s+vs\.?\s+/i);
+  const parts = title.split(/\s+vs\.?\s+|\s+对阵\s+|\s+VS\s+/i);
   if (parts.length >= 2) {
     return {
       homeTeam: parts[0]?.trim() || title,

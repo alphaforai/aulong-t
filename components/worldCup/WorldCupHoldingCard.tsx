@@ -6,78 +6,80 @@ import {
   formatOrderAmount,
   formatOrderDateTime,
 } from "@/lib/worldCup/formatOrderDisplay";
-import { resolveOrderOutcomeLabel } from "@/lib/worldCup/resolveOrderOutcomeLabel";
 
 type WorldCupHoldingCardProps = {
   item: WorldCupHoldingItem;
   t: (key: string, params?: Record<string, string | number>) => string;
 };
 
-function MetaRow({
+function MetaCell({
   label,
   value,
+  valueClassName = "text-[#1a1a1a]",
 }: {
   label: string;
   value: string;
+  valueClassName?: string;
 }) {
   return (
-    <p className="whitespace-nowrap text-sm text-[#707070]">
-      <span>{label}</span>
-      <span className="font-semibold text-[#1a1a1a]">{value}</span>
-    </p>
+    <div className="min-w-0">
+      <p className="text-xs leading-snug text-[#707070]">{label}</p>
+      <p
+        className={`mt-0.5 break-words text-sm font-semibold leading-snug ${valueClassName}`}
+      >
+        {value}
+      </p>
+    </div>
   );
 }
 
-/** 持仓中列表卡片 — 纯文字紧凑布局（Figma 预测市场-进行中） */
+function resolveSideLabel(
+  side: WorldCupHoldingItem["side"],
+  t: (key: string) => string,
+) {
+  return side === "NO" ? t("worldCup.outcomeNo") : t("worldCup.outcomeYes");
+}
+
+/** 持仓中列表卡片 */
 export function WorldCupHoldingCard({ item, t }: WorldCupHoldingCardProps) {
-  const outcomeLabel = resolveOrderOutcomeLabel(item, t);
+  const headline = item.question.trim() || item.title;
   const stakeText = `${formatOrderAmount(item.stakeAmount)} ${item.stakeCurrency}`;
   const profitText = `${formatOrderAmount(item.estimatedProfit)} ${item.profitCurrency}`;
   const stakeAulText = `${formatOrderAmount(item.stakeAul)} AUL`;
   const betTimeText = formatOrderDateTime(item.betAt);
-  const payStatusLabel = item.payStatus.toUpperCase();
+  const sideText = resolveSideLabel(item.side, t);
 
   return (
     <article className="rounded-[12px] border border-[#f0f1f3] bg-white p-[14px] shadow-[0_10px_14px_rgba(17,24,39,0.08)]">
-      <div className="flex items-start justify-between">
-        <div className="flex min-w-0 flex-1 items-center space-x-2">
-          {item.icon ? (
-            <AppImage
-              src={item.icon}
-              alt=""
-              width={32}
-              height={32}
-              className="size-8 shrink-0 rounded object-cover"
-            />
-          ) : null}
-          <h3 className="min-w-0 line-clamp-2 text-sm font-extrabold leading-snug text-[#1a1a1a]">
-            {item.title}
+      <div className="flex items-start gap-2">
+        {item.icon ? (
+          <AppImage
+            src={item.icon}
+            alt=""
+            width={32}
+            height={32}
+            className="size-8 shrink-0 rounded object-cover"
+          />
+        ) : null}
+        <div className="min-w-0 flex-1">
+          <h3 className="line-clamp-3 text-sm font-extrabold leading-snug text-[#1a1a1a]">
+            {headline}
           </h3>
+          <p className="mt-1 text-xs leading-snug text-[#949494]">
+            <span className="text-[#707070]">{t("worldCup.betTime")}</span>
+            <span className="font-medium text-[#5c5c5c]">{betTimeText}</span>
+          </p>
         </div>
-        <span className="ml-2 shrink-0 rounded-[12px] bg-[#fff1f2] px-2 py-0.5 text-xs font-extrabold uppercase text-[#f0181e]">
-          {payStatusLabel}
-        </span>
       </div>
 
-      <div className="mt-3.5 flex items-start justify-between">
-        <div className="flex min-w-0 flex-col justify-between space-y-3">
-          <p className="truncate text-base font-semibold text-[#1a1a1a]">
-            {outcomeLabel}
-          </p>
-          <p className="truncate text-sm text-[#1a1a1a]">
-            {t("worldCup.matchVs", {
-              home: item.homeTeam,
-              away: item.awayTeam,
-            })}
-          </p>
-        </div>
-
-        <div className="ml-3 flex shrink-0 flex-col items-end space-y-1.5 text-right">
-          <MetaRow label={t("worldCup.stakeAmount")} value={stakeText} />
-          <MetaRow label={t("worldCup.estimatedProfit")} value={profitText} />
-          <MetaRow label={t("worldCup.betAul")} value={stakeAulText} />
-          <MetaRow label={t("worldCup.betTime")} value={betTimeText} />
-        </div>
+      <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-[#f0f1f3] pt-3">
+        <MetaCell label={t("worldCup.stakeAmount")} value={stakeText} />
+        <MetaCell
+          label={t("worldCup.estimatedProfit")}
+          value={profitText}
+        />
+        <MetaCell label={t("worldCup.betAul")} value={stakeAulText} />
+        <MetaCell label={t("worldCup.betSide")} value={sideText} />
       </div>
     </article>
   );

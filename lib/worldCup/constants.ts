@@ -5,4 +5,4 @@ export type WorldCupTab = (typeof WORLD_CUP_TABS)[number];
 export const WORLD_CUP_CATEGORIES = ["world_cup"] as const;
 export type WorldCupCategory = (typeof WORLD_CUP_CATEGORIES)[number];
 
-export const WORLD_CUP_PAGE_SIZE = 5;
+export const WORLD_CUP_PAGE_SIZE = 20;

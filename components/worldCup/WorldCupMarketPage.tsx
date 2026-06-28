@@ -47,6 +47,7 @@ function WorldCupListCard({
   item,
   t,
   onParticipate,
+  showDivider,
 }: {
   item: WorldCupListItem;
   t: (key: string, params?: Record<string, string | number>) => string;
@@ -54,6 +55,7 @@ function WorldCupListCard({
     item: WorldCupMarketItem,
     selectedOutcome?: WorldCupOutcomeSide,
   ) => void;
+  showDivider?: boolean;
 }) {
   // 按 listType 渲染三种卡片（全部 / 持仓 / 历史）
   if (isWorldCupHoldingItem(item)) {
@@ -70,6 +72,7 @@ function WorldCupListCard({
         item={item}
         t={t}
         onParticipate={onParticipate}
+        showDivider={showDivider}
       />
     );
   }
@@ -178,6 +181,25 @@ export function WorldCupMarketPage() {
       return <WorldCupEmptyState t={t} />;
     }
 
+    if (activeTab === "all") {
+      return (
+        <div className="overflow-hidden rounded-[12px] bg-white shadow-[0_3px_6px_rgba(17,17,17,0.04)]">
+          <ul role="list">
+            {records.map((item, index) => (
+              <li key={item.id} role="listitem">
+                <WorldCupListCard
+                  item={item}
+                  t={t}
+                  onParticipate={handleParticipate}
+                  showDivider={index < records.length - 1}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
     return (
       <ul className="flex flex-col space-y-3" role="list">
         {records.map((item) => (
@@ -191,7 +213,7 @@ export function WorldCupMarketPage() {
         ))}
       </ul>
     );
-  }, [handleParticipate, isError, isPending, listErrorMessage, records, t]);
+  }, [activeTab, handleParticipate, isError, isPending, listErrorMessage, records, t]);
 
   return (
     <div className="min-h-screen w-full bg-[#f8f8f8] md:py-8">
