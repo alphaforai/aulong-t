@@ -24,3 +24,9 @@ export async function submitWorldCupParticipate(params: {
   side: WorldCupParticipateStance;
   usdtAmount: number;
 }): Promise<unknown>;
+
+export async function previewWorldCupParticipate(params: {
+  betId: number;
+  side: WorldCupParticipateStance;
+  usdtAmount: number;
+}): Promise<unknown>;

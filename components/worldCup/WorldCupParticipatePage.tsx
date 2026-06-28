@@ -9,14 +9,16 @@ import { AppImage } from "@/components/AppImage";
 import { formatAmount } from "@/components/team/format";
 import { teamAssets } from "@/components/team/assets";
 import { getUserAssets } from "@/lib/api/users";
-import { getXcoinPrice } from "@/lib/api/users";
 import { useWorldCupTranslation } from "@/lib/worldCup/useWorldCupTranslation";
 import { stackY3 } from "@/lib/mobileCompat";
 import { useUserInfoStore } from "@/lib/store/userInfo";
 import { fetchWorldCupPredictionDetail, WorldCupNoBetMarketsError } from "@/lib/worldCup/fetchPredictionDetail";
+import {
+  fetchWorldCupParticipatePreview,
+  resolvePreviewFeeAul,
+} from "@/lib/worldCup/fetchParticipatePreview";
 import { getWorldCupErrorMessage } from "@/lib/worldCup/getErrorMessage";
 import { marketOddsPercent } from "@/lib/worldCup/normalizeMarkets";
-import { calcParticipateSummary } from "@/lib/worldCup/participateCalc";
 import { readCachedParticipateEvent } from "@/lib/worldCup/participateEventCache";
 import { parseOutcomeParam } from "@/lib/worldCup/participateUrl";
 import { fetchWorldCupParticipateSubmit } from "@/lib/worldCup/submitParticipate";
@@ -35,6 +37,7 @@ const GRADIENT_INSET =
   "pointer-events-none absolute top-0 right-0 bottom-0 left-0 rounded-[inherit] shadow-[inset_0px_-4px_4px_0px_rgba(255,254,227,0.7),inset_0px_8px_17px_0px_#ffe5e5]";
 
 const QUICK_ADD_AMOUNTS = [1, 5, 10, 50, 100] as const;
+const PREVIEW_DEBOUNCE_MS = 300;
 
 /** YES = 押该选项发生；NO = 押不发生，展示互补概率 */
 type ParticipateStance = "yes" | "no";
@@ -180,6 +183,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
   const [successData, setSuccessData] = useState<ParticipateSuccessState | null>(
     null,
   );
+  const [debouncedAmountUsdt, setDebouncedAmountUsdt] = useState(0);
 
   const {
     data: item,
@@ -229,46 +233,74 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     enabled: Boolean(walletAddress),
   });
 
-  const { data: priceResponse } = useQuery({
-    queryKey: ["xcoinPrice"],
-    queryFn: () => getXcoinPrice(),
-  });
-
   const availableAul = Number(assetsResponse?.data?.xCoinBalance ?? 0);
-  const aulPriceFromApi = Number(priceResponse?.data?.currentPrice ?? 0);
-  // 接口暂无价格时兜底，避免除零
-  const aulPrice = aulPriceFromApi > 0 ? aulPriceFromApi : 2;
 
   const selectedMarket = useMemo(
     () => item?.betList.find((bet) => bet.id === selectedBetId),
     [item?.betList, selectedBetId],
   );
 
+  const amountUsdt = parseAmountInput(amountInput);
+  const previewSide = stance === "yes" ? "YES" : "NO";
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedAmountUsdt(amountUsdt);
+    }, PREVIEW_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [amountUsdt]);
+
+  const previewEnabled = Boolean(
+    item && selectedBetId && debouncedAmountUsdt > 0 && !successData,
+  );
+
+  const { data: preview, isFetching: isPreviewFetching } = useQuery({
+    queryKey: [
+      "worldCupBetPreview",
+      selectedBetId,
+      previewSide,
+      debouncedAmountUsdt,
+    ],
+    queryFn: () =>
+      fetchWorldCupParticipatePreview({
+        betId: selectedBetId!,
+        side: previewSide,
+        usdtAmount: debouncedAmountUsdt,
+      }),
+    enabled: previewEnabled,
+  });
+
+  const minBetAmount = item?.minBetAmount ?? 5;
+  const maxBetAmount =
+    preview?.maxBetAmount && preview.maxBetAmount > 0
+      ? preview.maxBetAmount
+      : item?.maxBetAmount ?? 10000;
+
   const activePercent = useMemo(() => {
     if (!selectedMarket) return 100;
     return marketOddsPercent(selectedMarket, stance);
   }, [selectedMarket, stance]);
 
-  const amountUsdt = parseAmountInput(amountInput);
-
   const amountOutOfRange = useMemo(() => {
     if (!item || amountUsdt <= 0) return false;
-    return amountUsdt < item.minBetAmount || amountUsdt > item.maxBetAmount;
-  }, [amountUsdt, item]);
+    return amountUsdt < minBetAmount || amountUsdt > maxBetAmount;
+  }, [amountUsdt, item, maxBetAmount, minBetAmount]);
 
-  const summary = useMemo(
-    () =>
-      calcParticipateSummary({
-        amountUsdt,
-        aulPrice,
-        stancePercent: activePercent,
-        feeRate: item?.feeRate ?? 0.05,
-      }),
-    [activePercent, amountUsdt, aulPrice, item?.feeRate],
-  );
+  const summaryAulPrice = preview?.xCoinPrice ?? 0;
+  const summaryRequiredAul = preview?.requiredAul ?? 0;
+  const summaryExpectedWin = preview?.netPayoutUsdt ?? 0;
+  const summaryFeeAul = preview ? resolvePreviewFeeAul(preview) : 0;
+
+  const amountSynced = debouncedAmountUsdt === amountUsdt;
+
+  const previewPending =
+    amountUsdt > 0 &&
+    (!amountSynced || isPreviewFetching || (previewEnabled && !preview));
 
   const insufficientBalance =
-    amountUsdt > 0 && summary.totalAulCost > availableAul;
+    amountUsdt > 0 &&
+    preview != null &&
+    preview.requiredAul > availableAul;
 
   const canSubmit =
     Boolean(
@@ -277,6 +309,7 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
         amountUsdt > 0 &&
         !amountOutOfRange &&
         !insufficientBalance &&
+        !previewPending &&
         selectedMarket,
     ) &&
     !isSubmitting &&
@@ -308,15 +341,15 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
       toast.info(t("worldCup.enterAmountFirst"));
       return;
     }
-    if (amountUsdt < item.minBetAmount) {
+    if (amountUsdt < minBetAmount) {
       toast.info(
-        t("worldCup.amountBelowMin", { min: formatAmount(item.minBetAmount) }),
+        t("worldCup.amountBelowMin", { min: formatAmount(minBetAmount) }),
       );
       return;
     }
-    if (amountUsdt > item.maxBetAmount) {
+    if (amountUsdt > maxBetAmount) {
       toast.info(
-        t("worldCup.amountAboveMax", { max: formatAmount(item.maxBetAmount) }),
+        t("worldCup.amountAboveMax", { max: formatAmount(maxBetAmount) }),
       );
       return;
     }
@@ -345,6 +378,8 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     amountUsdt,
     insufficientBalance,
     item,
+    maxBetAmount,
+    minBetAmount,
     selectedMarket,
     stance,
     t,
@@ -479,8 +514,8 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
             {amountOutOfRange ? (
               <p className="text-xs text-[#e84040]">
                 {t("worldCup.betAmountRange", {
-                  min: formatAmount(item.minBetAmount),
-                  max: formatAmount(item.maxBetAmount),
+                  min: formatAmount(minBetAmount),
+                  max: formatAmount(maxBetAmount),
                 })}
               </p>
             ) : null}
@@ -508,8 +543,8 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
 
           <p className="mt-2 text-sm text-[#5c5c5c]">
             {t("worldCup.betAmountRange", {
-              min: formatAmount(item.minBetAmount),
-              max: formatAmount(item.maxBetAmount),
+              min: formatAmount(minBetAmount),
+              max: formatAmount(maxBetAmount),
             })}
           </p>
           <p className="mt-1 text-sm text-[#5c5c5c]">
@@ -523,19 +558,19 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
           <div className="flex flex-col space-y-2.5">
             <SummaryRow
               label={t("worldCup.currentAulPrice")}
-              value={`${formatAmount(aulPrice)} USDT/AUL`}
+              value={`${formatAmount(summaryAulPrice)} USDT/AUL`}
             />
             <SummaryRow
               label={t("worldCup.aulToDeduct")}
-              value={`${formatAmount(summary.aulRequired)} AUL`}
+              value={`${formatAmount(summaryRequiredAul)} AUL`}
             />
             <SummaryRow
               label={t("worldCup.expectedWinUsdt")}
-              value={`${formatAmount(summary.expectedWinUsdt)} USDT`}
+              value={`${formatAmount(summaryExpectedWin)} USDT`}
             />
             <SummaryRow
               label={t("worldCup.feeAul")}
-              value={formatAmount(summary.feeAul)}
+              value={formatAmount(summaryFeeAul)}
               valueClassName="text-[#f0181e]"
             />
           </div>
@@ -562,7 +597,6 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     );
   }, [
     activeQuickAdd,
-    aulPrice,
     amountOutOfRange,
     availableAul,
     canSubmit,
@@ -574,10 +608,15 @@ export function WorldCupParticipatePage({ matchId }: WorldCupParticipatePageProp
     isError,
     isPending,
     item,
+    maxBetAmount,
+    minBetAmount,
     selectedBetId,
     selectedMarket,
     stance,
-    summary,
+    summaryAulPrice,
+    summaryExpectedWin,
+    summaryFeeAul,
+    summaryRequiredAul,
     amountInput,
     successData,
     t,

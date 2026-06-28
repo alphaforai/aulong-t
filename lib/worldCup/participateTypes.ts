@@ -8,6 +8,24 @@ export type WorldCupParticipateSubmitParams = {
   usdtAmount: number;
 };
 
+export type WorldCupParticipatePreviewParams = {
+  betId: number;
+  side: WorldCupParticipateStance;
+  usdtAmount: number;
+};
+
+/** 下注预览 — POST /api/polymarket/bet/preview 响应 data */
+export type WorldCupParticipatePreviewResult = {
+  usdtAmount: number;
+  fee: number;
+  actualUsdt: number;
+  betRate: number;
+  xCoinPrice: number;
+  requiredAul: number;
+  netPayoutUsdt: number;
+  maxBetAmount: number;
+};
+
 export type WorldCupOrderPlacedStatus = "NOT_PLACED" | "PLACED" | "FAILED";
 export type WorldCupOrderStatus = "PLACING" | "PLACED" | "FAILED";
 
