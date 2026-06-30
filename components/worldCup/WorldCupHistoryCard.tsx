@@ -50,7 +50,7 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const stakeAulText = `${formatOrderAmount(item.stakeAul)} AUL`;
   const betTimeText = formatOrderDateTime(item.betAt);
   const winLossText = resolveOrderWinLabel(item.win, t);
-  const settlementUsdtText = `${formatOrderAmount(item.netPayoutUsdt)} USDT`;
+  const estimatedProfitText = `${formatOrderAmount(item.netPayoutUsdt)} USDT`;
   const settlementAulText = `${formatOrderAmount(item.settlementAul)} AUL`;
   const settlementAulPriceText = `${formatOrderAmount(item.payoutAulPrice)} USDT/AUL`;
   const settlementTimeText = formatOrderDateTime(item.settledAt);
@@ -82,8 +82,8 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
       <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-[#f0f1f3] pt-3">
         <MetaCell label={t("worldCup.stakeAmount")} value={stakeText} />
         <MetaCell
-          label={t("worldCup.settlementUsdt")}
-          value={settlementUsdtText}
+          label={t("worldCup.estimatedProfit")}
+          value={estimatedProfitText}
         />
         <MetaCell label={t("worldCup.betAul")} value={stakeAulText} />
         <MetaCell label={t("worldCup.betSide")} value={sideText} />
