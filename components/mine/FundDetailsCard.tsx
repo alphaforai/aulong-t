@@ -849,7 +849,12 @@ function FundRecordRow({
 }) {
   const currency = record.currency ?? "";
   const amount = Number(record.amount ?? 0);
-  const amountTone = amount >= 0 ? "positive" : "negative";
+  const amountColor =
+    amount > 0
+      ? "text-[#16a855]"
+      : amount < 0
+        ? "text-[#e84040]"
+        : "text-[#707070]";
   const balanceText = `${t("common.balancePrefix")}${formatAmount(record.balanceAfter)} ${currency}`.trim();
 
   return (
@@ -865,9 +870,7 @@ function FundRecordRow({
       </div>
       <div className="flex shrink-0 flex-col items-end gap-3 text-right">
         <p
-          className={`font-mulish text-base font-semibold leading-normal whitespace-nowrap ${
-            amountTone === "positive" ? "text-[#ea4747]" : "text-[#129a48]"
-          }`}
+          className={`font-mulish text-base font-semibold leading-normal whitespace-nowrap ${amountColor}`}
         >
           {formatSignedAmount(amount)}
         </p>
