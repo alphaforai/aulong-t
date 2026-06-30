@@ -373,6 +373,8 @@
     "betSide": "Arah",
     "winLoss": "Keputusan: ",
     "settlementAul": "AUL penyelesaian: ",
+    "settlementUsdt": "Penyelesaian USDT: ",
+    "settlementAulPrice": "Harga AUL penyelesaian: ",
     "settlementTime": "Masa penyelesaian: ",
     "orderResultWin": "Menang",
     "orderResultLose": "Kalah",

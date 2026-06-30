@@ -373,6 +373,8 @@
     "betSide": "방향",
     "winLoss": "승패: ",
     "settlementAul": "정산 AUL: ",
+    "settlementUsdt": "정산 USDT: ",
+    "settlementAulPrice": "정산 AUL 가격: ",
     "settlementTime": "정산 시간: ",
     "orderResultWin": "승",
     "orderResultLose": "패",

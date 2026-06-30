@@ -373,6 +373,8 @@
     "betSide": "Hướng",
     "winLoss": "Kết quả: ",
     "settlementAul": "AUL thanh toán: ",
+    "settlementUsdt": "Thanh toán USDT: ",
+    "settlementAulPrice": "Giá AUL thanh toán: ",
     "settlementTime": "Thời gian thanh toán: ",
     "orderResultWin": "Thắng",
     "orderResultLose": "Thua",

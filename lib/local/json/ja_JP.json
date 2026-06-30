@@ -373,6 +373,8 @@
     "betSide": "方向",
     "winLoss": "勝敗: ",
     "settlementAul": "決済 AUL: ",
+    "settlementUsdt": "決済 USDT: ",
+    "settlementAulPrice": "決済 AUL 価格: ",
     "settlementTime": "決済時間: ",
     "orderResultWin": "勝ち",
     "orderResultLose": "負け",

@@ -373,6 +373,8 @@
     "betSide": "Side",
     "winLoss": "Result: ",
     "settlementAul": "Settlement AUL: ",
+    "settlementUsdt": "Settlement USDT: ",
+    "settlementAulPrice": "Settlement AUL price: ",
     "settlementTime": "Settlement time: ",
     "orderResultWin": "Won",
     "orderResultLose": "Lost",

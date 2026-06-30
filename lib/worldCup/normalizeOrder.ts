@@ -76,18 +76,6 @@ export function resolveHoldingPositionStatus(
   return "ongoing";
 }
 
-function resolveHistoryProfit(
-  win: string | null | undefined,
-  payoutAul: number,
-  aul: number,
-): number {
-  if (win === "WIN") return payoutAul - aul;
-  if (win === "LOSE") return -aul;
-  if (win === "CANCELLED") return 0;
-  // 未结算（win 为 null）：payoutAul 默认为 0，不应按 -aul 显示亏损
-  return 0;
-}
-
 function buildBaseOrderFields(order: PolymarketBetOrderApiItem) {
   const eventSnapshot = resolveOrderEventSnapshot(order);
   const question = resolveOrderQuestion(order);
@@ -162,7 +150,6 @@ export function normalizePolymarketHistoryOrder(
   if (!eventSnapshot.title && !question) return null;
 
   const payoutAul = parseNum(order.payoutAul);
-  const aul = parseNum(order.aul);
   const win = order.win != null ? String(order.win) : null;
 
   return {
@@ -186,8 +173,8 @@ export function normalizePolymarketHistoryOrder(
     stakeCurrency: "USDT",
     stakeAul,
     betAt,
-    profitAmount: resolveHistoryProfit(win, payoutAul, aul),
-    profitCurrency: "AUL",
+    netPayoutUsdt: parseNum(order.netPayoutUsdt),
+    payoutAulPrice: parseNum(order.payoutAulPrice),
     win,
     settlementAul: payoutAul,
     settledAt: order.settledAt ? String(order.settledAt) : undefined,
