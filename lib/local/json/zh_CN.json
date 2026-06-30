@@ -403,7 +403,7 @@
     "orderSuccessDesc": "您已成功买入{outcome}。",
     "orderStakeAmount": "投入金额",
     "orderDeductAmount": "扣除数量",
-    "orderExpectedPayout": "预期赢取 USDT",
+    "orderExpectedPayout": "预期赢取",
     "orderStatus": "状态",
     "orderStatusPlacing": "下单中",
     "orderStatusPlaced": "已下单",

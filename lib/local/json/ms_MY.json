@@ -403,7 +403,7 @@
     "orderSuccessDesc": "Anda berjaya membeli {outcome}.",
     "orderStakeAmount": "Jumlah pelaburan",
     "orderDeductAmount": "Jumlah ditolak",
-    "orderExpectedPayout": "Anggaran menang (USDT)",
+    "orderExpectedPayout": "Anggaran menang",
     "orderStatus": "Status",
     "orderStatusPlacing": "Sedang memesan",
     "orderStatusPlaced": "Dipesan",

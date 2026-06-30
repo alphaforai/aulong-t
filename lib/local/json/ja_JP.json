@@ -403,7 +403,7 @@
     "orderSuccessDesc": "{outcome}の購入に成功しました。",
     "orderStakeAmount": "投入金額",
     "orderDeductAmount": "差し引き数量",
-    "orderExpectedPayout": "予想獲得 USDT",
+    "orderExpectedPayout": "予想獲得",
     "orderStatus": "状態",
     "orderStatusPlacing": "注文中",
     "orderStatusPlaced": "注文済",

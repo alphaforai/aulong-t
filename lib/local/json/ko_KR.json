@@ -403,7 +403,7 @@
     "orderSuccessDesc": "{outcome} 매수에 성공했습니다.",
     "orderStakeAmount": "투입 금액",
     "orderDeductAmount": "차감 수량",
-    "orderExpectedPayout": "예상 수익 (USDT)",
+    "orderExpectedPayout": "예상 수익",
     "orderStatus": "상태",
     "orderStatusPlacing": "주문 중",
     "orderStatusPlaced": "주문 완료",
