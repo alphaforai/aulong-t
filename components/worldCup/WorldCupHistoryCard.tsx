@@ -44,9 +44,9 @@ function resolveSideLabel(
   return side === "NO" ? t("worldCup.outcomeNo") : t("worldCup.outcomeYes");
 }
 
-function resolveProfitTone(value: number) {
-  if (value > 0) return "text-[#16a855]";
-  if (value < 0) return "text-[#e84040]";
+function resolveProfitTone(win: WorldCupHistoryItem["win"]) {
+  if (win === "WIN") return "text-[#16a855]";
+  if (win === "LOSE") return "text-[#e84040]";
   return "text-[#707070]";
 }
 
@@ -60,7 +60,7 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const settlementAulText = `${formatOrderAmount(item.settlementAul)} AUL`;
   const settlementTimeText = formatOrderDateTime(item.settledAt);
   const profitText = `${formatSignedOrderAmount(item.profitAmount)} ${item.profitCurrency}`;
-  const profitTone = resolveProfitTone(item.profitAmount);
+  const profitTone = resolveProfitTone(item.win);
   const sideText = resolveSideLabel(item.side, t);
 
   return (

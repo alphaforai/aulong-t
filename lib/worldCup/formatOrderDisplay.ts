@@ -8,7 +8,8 @@ export function formatOrderAmount(value: number) {
 }
 
 export function formatSignedOrderAmount(value: number) {
-  if (value < 0) return `-${formatOrderAmount(value)}`;
+  if (value > 0) return `+${formatOrderAmount(value)}`;
+  if (value < 0) return `-${formatOrderAmount(Math.abs(value))}`;
   return formatOrderAmount(value);
 }
 
