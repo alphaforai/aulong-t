@@ -44,7 +44,7 @@ function resolveSideLabel(
   return side === "NO" ? t("worldCup.outcomeNo") : t("worldCup.outcomeYes");
 }
 
-function resolveProfitTone(win: WorldCupHistoryItem["win"]) {
+function resolveWinTone(win: WorldCupHistoryItem["win"]) {
   if (win === "WIN") return "text-[#16a855]";
   if (win === "LOSE") return "text-[#e84040]";
   return "text-[#707070]";
@@ -60,7 +60,7 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const settlementAulText = `${formatOrderAmount(item.settlementAul)} AUL`;
   const settlementTimeText = formatOrderDateTime(item.settledAt);
   const profitText = `${formatSignedOrderAmount(item.profitAmount)} ${item.profitCurrency}`;
-  const profitTone = resolveProfitTone(item.win);
+  const winTone = resolveWinTone(item.win);
   const sideText = resolveSideLabel(item.side, t);
 
   return (
@@ -91,11 +91,15 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
         <MetaCell
           label={t("worldCup.profit")}
           value={profitText}
-          valueClassName={profitTone}
+          valueClassName={winTone}
         />
         <MetaCell label={t("worldCup.betAul")} value={stakeAulText} />
         <MetaCell label={t("worldCup.betSide")} value={sideText} />
-        <MetaCell label={t("worldCup.winLoss")} value={winLossText} />
+        <MetaCell
+          label={t("worldCup.winLoss")}
+          value={winLossText}
+          valueClassName={winTone}
+        />
         <MetaCell
           label={t("worldCup.settlementAul")}
           value={settlementAulText}
