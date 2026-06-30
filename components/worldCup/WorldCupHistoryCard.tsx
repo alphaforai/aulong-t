@@ -5,6 +5,7 @@ import type { WorldCupHistoryItem } from "@/lib/worldCup/types";
 import {
   formatOrderAmount,
   formatOrderDateTime,
+  formatSignedOrderAmount,
 } from "@/lib/worldCup/formatOrderDisplay";
 import { resolveOrderWinLabel } from "@/lib/worldCup/resolveOrderOutcomeLabel";
 
@@ -43,6 +44,12 @@ function resolveSideLabel(
   return side === "NO" ? t("worldCup.outcomeNo") : t("worldCup.outcomeYes");
 }
 
+function resolveWinTone(win: WorldCupHistoryItem["win"]) {
+  if (win === "WIN") return "text-[#16a855]";
+  if (win === "LOSE") return "text-[#e84040]";
+  return "text-[#707070]";
+}
+
 /** 历史记录列表卡片 */
 export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const headline = item.question.trim() || item.title;
@@ -50,7 +57,8 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
   const stakeAulText = `${formatOrderAmount(item.stakeAul)} AUL`;
   const betTimeText = formatOrderDateTime(item.betAt);
   const winLossText = resolveOrderWinLabel(item.win, t);
-  const estimatedProfitText = `${formatOrderAmount(item.netPayoutUsdt)} USDT`;
+  const winTone = resolveWinTone(item.win);
+  const profitText = `${formatSignedOrderAmount(item.profitAmount)} ${item.profitCurrency}`;
   const settlementAulText = `${formatOrderAmount(item.settlementAul)} AUL`;
   const settlementAulPriceText = `${formatOrderAmount(item.payoutAulPrice)} USDT/AUL`;
   const settlementTimeText = formatOrderDateTime(item.settledAt);
@@ -82,12 +90,17 @@ export function WorldCupHistoryCard({ item, t }: WorldCupHistoryCardProps) {
       <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-[#f0f1f3] pt-3">
         <MetaCell label={t("worldCup.stakeAmount")} value={stakeText} />
         <MetaCell
-          label={t("worldCup.estimatedProfit")}
-          value={estimatedProfitText}
+          label={t("worldCup.profit")}
+          value={profitText}
+          valueClassName={winTone}
         />
         <MetaCell label={t("worldCup.betAul")} value={stakeAulText} />
         <MetaCell label={t("worldCup.betSide")} value={sideText} />
-        <MetaCell label={t("worldCup.winLoss")} value={winLossText} />
+        <MetaCell
+          label={t("worldCup.winLoss")}
+          value={winLossText}
+          valueClassName={winTone}
+        />
         <MetaCell
           label={t("worldCup.settlementAul")}
           value={settlementAulText}

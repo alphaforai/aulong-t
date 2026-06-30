@@ -140,6 +140,8 @@ export type WorldCupHistoryItem = {
   stakeCurrency: string;
   stakeAul: number;
   betAt?: string;
+  profitAmount: number;
+  profitCurrency: string;
   netPayoutUsdt: number;
   payoutAulPrice: number;
   win: string | null;
