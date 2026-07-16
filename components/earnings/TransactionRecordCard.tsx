@@ -1,73 +1,29 @@
 "use client";
 
 import React, { Fragment } from "react";
+import { useRouter } from "next/navigation";
 import { AppImage } from "@/components/AppImage";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { earningsAssets } from "./assets";
-// import { mineAssets } from "@/components/mine/assets";
-import { getSolanablockinfoPage } from "@/lib/api/users";
+import { getArbitrageLatest, type ArbitrageLatestItem } from "@/lib/api/arbitrage";
+import {
+  formatChainLabel,
+  formatCloseTime,
+  formatPlatformName,
+  formatProfitAmount,
+  formatProfitRate,
+  formatTradingPair,
+  TX_CURRENCY,
+} from "@/lib/earnings/arbitrageFormat";
+import { cacheTransactionDetail } from "@/lib/earnings/transactionDetailCache";
 import { useQuery } from "@tanstack/react-query";
-import { formatAmount } from "@/components/team/format";
 
 const PAGE_SIZE = 7;
 const TX_POLL_INTERVAL_MS = 5000;
-const TX_CURRENCY = "USDT";
-const SOLANA_EXPLORER_ADDRESS_BASE = "https://explorer.solana.com/address/";
-const BSC_EXPLORER_ADDRESS_BASE = "https://bscscan.com/address/";
-
-type TxChain = "SOL" | "BSC";
-
-type SolanaBlockItem = {
-  id?: number;
-  chain?: TxChain | string;
-  slot?: number;
-  blockHash?: string;
-  leader?: string;
-  txCount?: number;
-  totalFee?: number;
-  totalReward?: number;
-  relatedTxCount?: number;
-  relatedTotalFee?: number;
-  relatedTotalReward?: number;
-  blockTime?: number;
-  blockTimeAt?: string;
-  createdAt?: string;
-};
-
-function getExplorerAddressUrl(
-  chain: string | undefined,
-  address: string,
-): string | null {
-  if (!address) return null;
-  if (chain === "BSC") return `${BSC_EXPLORER_ADDRESS_BASE}${address}`;
-  if (chain === "SOL") return `${SOLANA_EXPLORER_ADDRESS_BASE}${address}`;
-  return null;
-}
-
-function shortAddress(value?: string | null) {
-  if (!value || typeof value !== "string") return "—";
-  const address = value.trim();
-  if (address.length <= 13) return address;
-  return `${address.slice(0, 8)}...${address.slice(-4)}`;
-}
-
-function formatBlockTime(value?: string | null) {
-  if (!value || typeof value !== "string") return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  const y = date.getFullYear();
-  const m = date.getMonth() + 1;
-  const d = date.getDate();
-  const h = String(date.getHours()).padStart(2, "0");
-  const min = String(date.getMinutes()).padStart(2, "0");
-  const s = String(date.getSeconds()).padStart(2, "0");
-  return `${y}.${m}.${d} ${h}:${min}:${s}`;
-}
 
 export function TransactionRecordCard() {
   const { t } = useTranslation();
   const listScrollRef = React.useRef<HTMLDivElement>(null);
-  // const [page, setPage] = React.useState(0);
 
   const {
     data: txResponse,
@@ -75,21 +31,11 @@ export function TransactionRecordCard() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["solanaBlockInfoPage"],
-    queryFn: () =>
-      getSolanablockinfoPage({
-        page: 0,
-        limit: PAGE_SIZE,
-        searchCount: false,
-        lastId: undefined,
-        slot: undefined,
-        blockHash: undefined,
-        leader: undefined,
-      }),
+    queryKey: ["arbitrageLatest", PAGE_SIZE],
+    queryFn: () => getArbitrageLatest({ limit: PAGE_SIZE }),
     refetchInterval: TX_POLL_INTERVAL_MS,
     refetchOnWindowFocus: true,
   });
-
 
   React.useEffect(() => {
     const handlePageShow = () => {
@@ -99,26 +45,10 @@ export function TransactionRecordCard() {
     return () => window.removeEventListener("pageshow", handlePageShow);
   }, [refetch]);
 
-  const rawList = (
-    txResponse?.data as { list?: SolanaBlockItem[]; total?: number } | undefined
-  )?.list;
+  const rawList = txResponse?.data;
   const records = Array.isArray(rawList) ? rawList.slice(0, PAGE_SIZE) : [];
-  // const totalRaw = Number(
-  //   (txResponse?.data as { total?: number } | undefined)?.total,
-  // );
-  // const totalSafe = Number.isFinite(totalRaw)
-  //   ? Math.max(0, Math.trunc(totalRaw))
-  //   : 0;
-  // const totalPages = totalSafe === 0 ? 1 : Math.ceil(totalSafe / PAGE_SIZE);
-  // const canPrev = page > 0;
-  // const canNext = totalSafe > 0 && page + 1 < totalPages;
   const isInitialLoading = isPending && !txResponse;
   const hasRecords = records.length > 0;
-
-  // const goToPage = React.useCallback((nextPage: number) => {
-  //   setPage(Math.max(0, nextPage));
-  //   listScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  // }, []);
 
   return (
     <section className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-[10px] overflow-hidden rounded-[12px] bg-white/80 p-3 shadow-[0_5px_10px_rgba(51,51,51,0.08)] backdrop-blur-[7px]">
@@ -171,34 +101,13 @@ export function TransactionRecordCard() {
           </div>
         ) : (
           records.map((record, index) => (
-            <Fragment key={record.id ?? `${record.blockHash}-${index}`}>
-              <TransactionRow
-                chain={record.chain}
-                address={record.leader || record.blockHash}
-                amount={`+${formatAmount(record.relatedTotalReward)}`}
-                currency={TX_CURRENCY}
-                time={formatBlockTime(record.blockTimeAt || record.createdAt)}
-                tradeTimeLabel={t("earnings.tradeTime")}
-              />
+            <Fragment key={record.id ?? `${record.sellTxHash}-${index}`}>
+              <TransactionRow record={record} />
               {index < records.length - 1 ? <RecordDivider /> : null}
             </Fragment>
           ))
         )}
       </div>
-
-      {/* {totalSafe > PAGE_SIZE ? (
-        <TransactionPagination
-          page={page}
-          totalPages={totalPages}
-          canPrev={canPrev}
-          canNext={canNext}
-          loading={listPending}
-          onPrev={() => goToPage(page - 1)}
-          onNext={() => goToPage(page + 1)}
-          onPageChange={goToPage}
-          t={t}
-        />
-      ) : null} */}
     </section>
   );
 }
@@ -217,195 +126,78 @@ function RecordDivider() {
   );
 }
 
-function TransactionRow({
-  chain,
-  address,
-  amount,
-  currency,
-  time,
-  tradeTimeLabel,
-}: {
-  chain?: string | null;
-  address?: string | null;
-  amount: string;
-  currency: string;
-  time: string;
-  tradeTimeLabel: string;
-}) {
-  const fullAddress = address?.trim() ?? "";
-  const explorerUrl = getExplorerAddressUrl(chain ?? undefined, fullAddress);
+function TransactionRow({ record }: { record: ArbitrageLatestItem }) {
+  const router = useRouter();
 
-  const handleOpenExplorer = () => {
-    if (!explorerUrl) return;
-    window.location.assign(explorerUrl);
+  const handleOpenDetail = () => {
+    if (!record.id) return;
+    cacheTransactionDetail(record.id, record);
+    router.push(`/earnings/transaction/${record.id}`);
   };
 
   return (
     <button
       type="button"
-      onClick={handleOpenExplorer}
-      disabled={!explorerUrl}
-      className="block w-full shrink-0 appearance-none border-0 bg-transparent py-3 text-left transition-opacity disabled:cursor-default active:opacity-70"
+      onClick={handleOpenDetail}
+      disabled={!record.id}
+      className="flex w-full shrink-0 appearance-none flex-col gap-[5px] border-0 bg-transparent py-2 text-left transition-opacity disabled:cursor-default active:opacity-70"
     >
-      <div className="flex w-full items-start justify-between">
-        <p className="min-w-0 flex-1 truncate pr-2 text-xs leading-5 tracking-[0.1px] text-black">
-          {shortAddress(fullAddress)}
-        </p>
-        <span className="shrink-0 whitespace-nowrap text-xs leading-5 text-black">
-          {tradeTimeLabel}
+      <div className="flex h-4 w-full items-center justify-between">
+        <span className="shrink-0 whitespace-nowrap text-[11px] leading-4 text-[#9c8787]">
+          {formatCloseTime(record.closeTime)}
+        </span>
+        <span className="inline-flex h-4 shrink-0 items-center justify-center rounded-lg bg-[#fff1f2] px-1.5">
+          <span className="text-[9px] font-semibold leading-3 text-[#e01e2c]">
+            {formatChainLabel(record.chain)}
+          </span>
         </span>
       </div>
-      <div className="mt-2 flex w-full items-end justify-between">
-        <div className="flex min-w-0 flex-1 items-end pr-2">
-          <span className="shrink-0 font-mulish text-lg font-semibold leading-none text-[#138144]">
-            {amount}
+
+      <div className="flex h-6 w-full items-center justify-between">
+        <span className="min-w-0 truncate pr-2 text-base font-semibold leading-[22px] text-[#1a1a1a]">
+          {formatTradingPair(record.tokenSymbol)}
+        </span>
+        <div className="flex shrink-0 items-end gap-1">
+          <span className="font-mulish text-base font-semibold leading-[22px] text-[#16a855]">
+            {formatProfitAmount(record.profitAmount)}
           </span>
-          <span className="ml-1.5 shrink-0 pb-px text-xs leading-none text-black/70">
-            {currency}
+          <span className="pb-px text-[10px] leading-4 text-[#665c5c]">
+            {TX_CURRENCY}
           </span>
         </div>
-        <span className="shrink-0 whitespace-nowrap text-xs leading-none text-black/70">
-          {time}
-        </span>
+      </div>
+
+      <div className="flex h-[18px] w-full items-center justify-between">
+        <div className="flex min-w-0 items-center gap-1.5 pr-2">
+          <span className="truncate text-xs leading-[18px] text-[#665c5c]">
+            {formatPlatformName(record.buyPlatform)}
+          </span>
+          <AppImage
+            src={earningsAssets.recordArrow}
+            alt=""
+            width={10}
+            height={10}
+            className="size-2.5 shrink-0 -scale-y-100 rotate-90 opacity-35"
+            aria-hidden
+          />
+          <span className="truncate text-xs leading-[18px] text-[#665c5c]">
+            {formatPlatformName(record.sellPlatform)}
+          </span>
+        </div>
+        <div className="flex shrink-0 items-center gap-[5px]">
+          <span className="inline-flex h-[22px] items-center justify-center rounded-[7px] bg-[#ecf8f1] px-[7px] text-[11px] font-semibold leading-4 text-[#16a855]">
+            {formatProfitRate(record.profitRate)}
+          </span>
+          <AppImage
+            src={earningsAssets.recordArrow}
+            alt=""
+            width={12}
+            height={12}
+            className="size-3 shrink-0 -scale-y-100 rotate-90 opacity-40"
+            aria-hidden
+          />
+        </div>
       </div>
     </button>
   );
 }
-
-/*
-function buildPageRange(
-  current: number,
-  total: number,
-): Array<number | "ellipsis"> {
-  if (total <= 0) return [];
-  if (total <= 7) {
-    return Array.from({ length: total }, (_, index) => index);
-  }
-
-  const indices = new Set<number>([0, total - 1]);
-  for (let i = current - 1; i <= current + 1; i++) {
-    if (i >= 0 && i < total) indices.add(i);
-  }
-
-  const sorted = [...indices].sort((a, b) => a - b);
-  const range: Array<number | "ellipsis"> = [];
-  for (let i = 0; i < sorted.length; i++) {
-    if (i > 0 && sorted[i] - sorted[i - 1] > 1) {
-      range.push("ellipsis");
-    }
-    range.push(sorted[i]);
-  }
-  return range;
-}
-
-function TransactionPagination({
-  page,
-  totalPages,
-  canPrev,
-  canNext,
-  loading,
-  onPrev,
-  onNext,
-  onPageChange,
-  t,
-}: {
-  page: number;
-  totalPages: number;
-  canPrev: boolean;
-  canNext: boolean;
-  loading?: boolean;
-  onPrev: () => void;
-  onNext: () => void;
-  onPageChange: (page: number) => void;
-  t: (key: string) => string;
-}) {
-  const items = buildPageRange(page, totalPages);
-
-  return (
-    <nav
-      className="flex shrink-0 items-center justify-center gap-[6px] py-2"
-      aria-label={t("mine.paginationAria")}
-      aria-busy={loading}
-    >
-      <PaginationNavButton
-        src={mineAssets.pageChevronLeft}
-        label={t("mine.prevPage")}
-        disabled={loading || !canPrev}
-        onClick={onPrev}
-      />
-
-      {items.map((item, index) =>
-        item === "ellipsis" ? (
-          <PageEllipsisDots key={`ellipsis-${index}`} />
-        ) : (
-          <button
-            key={item}
-            type="button"
-            disabled={loading}
-            onClick={() => onPageChange(item)}
-            className={`flex h-5 min-w-5 items-center justify-center rounded-[2px] text-xs leading-normal disabled:opacity-50 ${
-              item === page
-                ? "w-5 bg-[#ff4646] px-[9px] py-0.5 text-white/90"
-                : "w-5 border-[0.5px] border-white bg-white px-2 py-0.5 text-black/90"
-            }`}
-          >
-            {item + 1}
-          </button>
-        ),
-      )}
-
-      <PaginationNavButton
-        src={mineAssets.pageChevronRight}
-        label={t("mine.nextPage")}
-        disabled={loading || !canNext}
-        onClick={onNext}
-      />
-    </nav>
-  );
-}
-
-function PageEllipsisDots() {
-  return (
-    <span
-      className="flex size-[22.5px] shrink-0 items-center justify-center"
-      aria-hidden
-    >
-      <span className="inline-flex items-center gap-[3px]">
-        <span className="size-[2px] rounded-full bg-[rgba(255,0,0,0.9)]" />
-        <span className="size-[2px] rounded-full bg-[rgba(255,0,0,0.9)]" />
-        <span className="size-[2px] rounded-full bg-[rgba(255,0,0,0.9)]" />
-      </span>
-    </span>
-  );
-}
-
-function PaginationNavButton({
-  src,
-  label,
-  disabled,
-  onClick,
-}: {
-  src: string;
-  label: string;
-  disabled?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
-      className="flex size-[22.5px] shrink-0 items-center justify-center rounded-[2px] disabled:cursor-not-allowed disabled:opacity-40"
-    >
-      <AppImage
-        src={src}
-        alt=""
-        width={9}
-        height={9}
-        className="size-[9px] shrink-0"
-      />
-    </button>
-  );
-}
-*/
