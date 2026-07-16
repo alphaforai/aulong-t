@@ -3,13 +3,11 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 import AulongHeader from "@/components/AulongHeader";
 import { AppImage } from "@/components/AppImage";
 import { earningsAssets } from "@/components/earnings/assets";
 import { teamAssets } from "@/components/team/assets";
 import { getArbitrageLatest, type ArbitrageLatestItem } from "@/lib/api/arbitrage";
-import { copyText } from "@/lib/earnings/copyText";
 import {
   formatChainLabel,
   formatDecimalValue,
@@ -20,7 +18,6 @@ import {
   formatProfitRate,
   formatSpreadRate,
   formatTradingPair,
-  shortMiddleText,
   TX_CURRENCY,
 } from "@/lib/earnings/arbitrageFormat";
 import { readCachedTransactionDetail } from "@/lib/earnings/transactionDetailCache";
@@ -29,6 +26,28 @@ import { stackY3 } from "@/lib/mobileCompat";
 
 const DETAIL_CARD =
   "w-full shrink-0 overflow-hidden rounded-[12px] bg-[rgba(255,255,255,0.95)] p-4 shadow-[0_5px_10px_rgba(51,51,51,0.08)]";
+
+const SOLANA_EXPLORER_TX_BASE = "https://explorer.solana.com/tx/";
+const BSC_EXPLORER_TX_BASE = "https://bscscan.com/tx/";
+const ETH_EXPLORER_TX_BASE = "https://etherscan.io/tx/";
+const POLYGON_EXPLORER_TX_BASE = "https://polygonscan.com/tx/";
+const TRX_EXPLORER_TX_BASE = "https://tronscan.org/#/transaction/";
+
+function getExplorerTxUrl(
+  chain: string | undefined,
+  txHash: string,
+): string | null {
+  if (!txHash) return null;
+  const normalized = chain?.toUpperCase();
+  if (normalized === "BSC") return `${BSC_EXPLORER_TX_BASE}${txHash}`;
+  if (normalized === "ETH") return `${ETH_EXPLORER_TX_BASE}${txHash}`;
+  if (normalized === "POLYGON") return `${POLYGON_EXPLORER_TX_BASE}${txHash}`;
+  if (normalized === "TRX") return `${TRX_EXPLORER_TX_BASE}${txHash}`;
+  if (normalized === "SOLANA" || normalized === "SOL") {
+    return `${SOLANA_EXPLORER_TX_BASE}${txHash}`;
+  }
+  return null;
+}
 
 type TransactionDetailPageProps = {
   transactionId: string;
@@ -83,20 +102,6 @@ export function TransactionDetailPage({
     [formatDurationText, t],
   );
 
-  const handleCopy = React.useCallback(
-    async (value?: string | null) => {
-      const text = value?.trim();
-      if (!text) return;
-      const ok = await copyText(text);
-      if (ok) {
-        toast.success(t("earnings.copied"));
-        return;
-      }
-      toast.error(t("common.copyFailed"));
-    },
-    [t],
-  );
-
   let content: React.ReactNode;
   if (!record && isPending) {
     content = (
@@ -125,7 +130,7 @@ export function TransactionDetailPage({
           t={t}
         />
         <ExecutionDataCard record={record} t={t} />
-        <OnchainInfoCard record={record} t={t} onCopy={handleCopy} />
+        <TransactionRecordsCard record={record} t={t} />
       </>
     );
   }
@@ -199,7 +204,7 @@ function SummaryCard({
       </div>
 
       <div className="mt-3 flex flex-col">
-        <span className="text-xs leading-[18px] text-[#9c8787]">
+        <span className="text-xs leading-[18px] text-black">
           {t("earnings.netProfit")}
         </span>
         <div className="mt-0.5 flex items-baseline">
@@ -214,13 +219,13 @@ function SummaryCard({
 
       <div className="my-3 h-px w-full bg-[#ece7e7]" />
 
-      <span className="text-xs leading-[18px] text-[#9c8787]">
+      <span className="text-xs leading-[18px] text-black">
         {t("earnings.arbitrageRoute")}
       </span>
 
       <div className="mt-3 flex h-[70px] w-full items-center justify-between rounded-[12px] bg-[#fbf8f8] px-3.5 py-2.5">
         <div className="flex w-[110px] flex-col">
-          <span className="text-sm leading-4 text-[#9c8787]">
+          <span className="text-sm leading-4 text-black">
             {t("earnings.buy")}
           </span>
           <span className="mt-0.5 text-base font-semibold leading-[22px] text-[#1a1a1a]">
@@ -238,7 +243,7 @@ function SummaryCard({
           />
         </span>
         <div className="flex w-[110px] flex-col items-end text-right">
-          <span className="text-sm leading-4 text-[#9c8787]">
+          <span className="text-sm leading-4 text-black">
             {t("earnings.sell")}
           </span>
           <span className="mt-0.5 text-base font-semibold leading-[22px] text-[#1a1a1a]">
@@ -247,7 +252,7 @@ function SummaryCard({
         </div>
       </div>
 
-      <p className="mt-3 text-[11px] leading-[18px] text-[#9c8787]">
+      <p className="mt-3 text-[11px] leading-[18px] text-black">
         {timeRangeText}
       </p>
     </section>
@@ -270,7 +275,7 @@ function ExecutionDataCard({
 
       <div className="mt-3 flex h-[76px] w-full items-center justify-between rounded-[12px] bg-[#fbf8f8] px-3.5">
         <div className="flex w-[132px] flex-col">
-          <span className="text-sm leading-4 text-[#9c8787]">
+          <span className="text-sm leading-4 text-black">
             {t("earnings.buyPrice")}
           </span>
           <div className="mt-1 flex items-baseline">
@@ -284,7 +289,7 @@ function ExecutionDataCard({
         </div>
         <span className="h-11 w-px shrink-0 bg-[#ece7e7]" aria-hidden />
         <div className="flex w-[132px] flex-col items-end text-right">
-          <span className="text-sm leading-4 text-[#9c8787]">
+          <span className="text-sm leading-4 text-black">
             {t("earnings.sellPrice")}
           </span>
           <div className="mt-1 flex items-baseline justify-end">
@@ -329,65 +334,74 @@ function ExecutionDataCard({
   );
 }
 
-function OnchainInfoCard({
+function TransactionRecordsCard({
   record,
   t,
-  onCopy,
 }: {
   record: ArbitrageLatestItem;
   t: (key: string) => string;
-  onCopy: (value?: string | null) => void;
 }) {
-  const rows = [
+  const links = [
     {
-      label: t("earnings.operationId"),
-      value: record.id,
-      display: record.id ?? "—",
+      label: t("earnings.explorerTx1"),
+      url: getExplorerTxUrl(record.chain, record.buyTxHash ?? ""),
     },
     {
-      label: t("earnings.walletAddress"),
-      value: record.walletAddress,
-      display: shortMiddleText(record.walletAddress),
-    },
-    {
-      label: t("earnings.tokenContract"),
-      value: record.tokenAddress,
-      display: shortMiddleText(record.tokenAddress, 12, 9),
-    },
-    {
-      label: t("earnings.buyTx"),
-      value: record.buyTxHash,
-      display: shortMiddleText(record.buyTxHash),
-    },
-    {
-      label: t("earnings.sellTx"),
-      value: record.sellTxHash,
-      display: shortMiddleText(record.sellTxHash),
+      label: t("earnings.explorerTx2"),
+      url: getExplorerTxUrl(record.chain, record.sellTxHash ?? ""),
     },
   ];
 
   return (
     <section className={`${DETAIL_CARD} flex flex-col`}>
-      <SectionHeader title={t("earnings.onchainInfo")} />
+      <SectionHeader title={t("earnings.transactionRecords")} />
 
       <div className="mt-3 flex flex-col">
-        {rows.map((row, index) => (
-          <React.Fragment key={row.label}>
-            <CopyRow
-              label={row.label}
-              displayValue={row.display ?? "—"}
-              onCopy={() => onCopy(row.value)}
-              copyLabel={t("earnings.copy")}
+        {links.map((link, index) => (
+          <React.Fragment key={link.label}>
+            {index > 0 ? <div className="h-3" aria-hidden /> : null}
+            <ExplorerLinkButton
+              label={link.label}
+              url={link.url}
             />
-            {index < rows.length - 1 ? <DetailDivider /> : null}
           </React.Fragment>
         ))}
       </div>
-
-      <p className="mt-3 text-[11px] leading-[18px] text-[#9c8787]">
-        {t("earnings.copyHint")}
-      </p>
     </section>
+  );
+}
+
+function ExplorerLinkButton({
+  label,
+  url,
+}: {
+  label: string;
+  url: string | null;
+}) {
+  const handleOpen = () => {
+    if (!url) return;
+    window.location.assign(url);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleOpen}
+      disabled={!url}
+      className="flex h-[49px] w-full touch-manipulation items-center justify-between rounded-[9px] border border-[#dcdcdc] bg-white px-3 text-left disabled:cursor-default disabled:opacity-50 [-webkit-tap-highlight-color:transparent]"
+    >
+      <span className="min-w-0 truncate text-sm leading-[18px] text-black">
+        {label}
+      </span>
+      <AppImage
+        src={teamAssets.detailArrow}
+        alt=""
+        width={24}
+        height={24}
+        className="ml-2 size-6 shrink-0 -scale-y-100 rotate-90 opacity-50"
+        aria-hidden
+      />
+    </button>
   );
 }
 
@@ -416,38 +430,8 @@ function DetailRow({
 }) {
   return (
     <div className="flex h-9 w-full items-center justify-between text-sm leading-5">
-      <span className="shrink-0 text-[#9c8787]">{label}</span>
+      <span className="shrink-0 text-black">{label}</span>
       <span className={`font-mulish font-medium ${valueClassName}`}>{value}</span>
-    </div>
-  );
-}
-
-function CopyRow({
-  label,
-  displayValue,
-  copyLabel,
-  onCopy,
-}: {
-  label: string;
-  displayValue: string;
-  copyLabel: string;
-  onCopy: () => void;
-}) {
-  return (
-    <div className="flex h-[42px] w-full items-center">
-      <span className="w-16 shrink-0 text-sm leading-[18px] text-[#9c8787]">
-        {label}
-      </span>
-      <span className="min-w-0 flex-1 truncate font-mulish text-sm font-medium leading-[18px] text-[#1a1a1a]">
-        {displayValue}
-      </span>
-      <button
-        type="button"
-        onClick={onCopy}
-        className="ml-2 shrink-0 touch-manipulation text-xs leading-[18px] text-[#e01e2c] [-webkit-tap-highlight-color:transparent]"
-      >
-        {copyLabel}
-      </button>
     </div>
   );
 }

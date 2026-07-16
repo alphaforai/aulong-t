@@ -143,7 +143,7 @@ function TransactionRow({ record }: { record: ArbitrageLatestItem }) {
       className="flex w-full shrink-0 appearance-none flex-col gap-[5px] border-0 bg-transparent py-2 text-left transition-opacity disabled:cursor-default active:opacity-70"
     >
       <div className="flex h-4 w-full items-center justify-between">
-        <span className="shrink-0 whitespace-nowrap text-[11px] leading-4 text-[#9c8787]">
+        <span className="shrink-0 whitespace-nowrap text-[11px] leading-4 text-black">
           {formatCloseTime(record.closeTime)}
         </span>
         <span className="inline-flex h-4 shrink-0 items-center justify-center rounded-lg bg-[#fff1f2] px-1.5">
@@ -161,7 +161,7 @@ function TransactionRow({ record }: { record: ArbitrageLatestItem }) {
           <span className="font-mulish text-base font-semibold leading-[22px] text-[#16a855]">
             {formatProfitAmount(record.profitAmount)}
           </span>
-          <span className="pb-px text-[10px] leading-4 text-[#665c5c]">
+          <span className="pb-px text-[10px] leading-4 text-black">
             {TX_CURRENCY}
           </span>
         </div>
@@ -169,7 +169,7 @@ function TransactionRow({ record }: { record: ArbitrageLatestItem }) {
 
       <div className="flex h-[18px] w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-1.5 pr-2">
-          <span className="truncate text-xs leading-[18px] text-[#665c5c]">
+          <span className="truncate text-xs leading-[18px] text-black">
             {formatPlatformName(record.buyPlatform)}
           </span>
           <AppImage
@@ -180,7 +180,7 @@ function TransactionRow({ record }: { record: ArbitrageLatestItem }) {
             className="size-2.5 shrink-0 -scale-y-100 rotate-90 opacity-35"
             aria-hidden
           />
-          <span className="truncate text-xs leading-[18px] text-[#665c5c]">
+          <span className="truncate text-xs leading-[18px] text-black">
             {formatPlatformName(record.sellPlatform)}
           </span>
         </div>
