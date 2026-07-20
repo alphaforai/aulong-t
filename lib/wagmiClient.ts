@@ -4,19 +4,14 @@ import { injected, walletConnect } from "wagmi/connectors";
 
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID?.trim();
 
-const DEFAULT_DAPP_ORIGIN = "https://aulong.australianlobster.xyz";
-
 /**
  * WalletConnect metadata.url（见下方 walletConnect.metadata）
- * 须与当前浏览器地址一致；不要用 NEXT_PUBLIC_BASE_INVITE_LINK（那是邀请链接域名）
  */
 function getDappOrigin(): string {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
-  if (appUrl) return appUrl;
-  return DEFAULT_DAPP_ORIGIN;
+  return "";
 }
 
 const dappOrigin = getDappOrigin();

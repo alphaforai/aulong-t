@@ -1,8 +1,8 @@
 /** 邀请链接基础域名（优先环境变量，否则用当前站点 origin） */
 export function getInviteLinkBase(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_BASE_INVITE_LINK?.trim() ?? "";
-  if (fromEnv) return fromEnv;
-  if (typeof window !== "undefined") return window.location.origin;
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
   return "";
 }
 
