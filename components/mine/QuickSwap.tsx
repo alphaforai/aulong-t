@@ -5,6 +5,7 @@ import AulongHeader from "@/components/AulongHeader";
 import { AppImage } from "@/components/AppImage";
 import { teamAssets } from "@/components/team/assets";
 import { mineAssets } from "./assets";
+import { checkSwapAllowed } from "@/lib/api/users";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { useUserInfoStore } from "@/lib/store";
 import { sidePanelOverlayFrame, sidePanelOverlayRoot } from "@/lib/mobileShell";
@@ -190,11 +191,14 @@ export function QuickSwap({ open, onClose }: QuickSwapProps) {
   const [entered, setEntered] = React.useState(false);
   const [fromAmount, setFromAmount] = React.useState("");
   const [isSwapTxActive, setIsSwapTxActive] = React.useState(false);
+  const [isPrechecking, setIsPrechecking] = React.useState(false);
   const txStepRef = React.useRef<SwapTxStep>("idle");
   const pendingAmountWeiRef = React.useRef(parseEther("0"));
   const processedTxHashRef = React.useRef<`0x${string}` | undefined>(undefined);
   const lastWriteErrorRef = React.useRef<unknown>(null);
   const lastReceiptErrorRef = React.useRef<unknown>(null);
+  const openRef = React.useRef(open);
+  openRef.current = open;
 
   const walletAddress = userInfo.walletAddress as `0x${string}` | undefined;
   const readEnabled = open && isWalletConnected && Boolean(walletAddress);
@@ -315,6 +319,7 @@ export function QuickSwap({ open, onClose }: QuickSwapProps) {
   React.useEffect(() => {
     if (!open) {
       setIsSwapTxActive(false);
+      setIsPrechecking(false);
       txStepRef.current = "idle";
       processedTxHashRef.current = undefined;
       resetWrite();
@@ -425,7 +430,7 @@ export function QuickSwap({ open, onClose }: QuickSwapProps) {
   const placeholder = t("mine.swapInputPlaceholder");
   const fillMaxAria = t("mine.swapFillMaxAria");
 
-  const isTxBusy = isSwapTxActive;
+  const isTxBusy = isSwapTxActive || isPrechecking;
 
   const submitButtonLabel = !isWalletConnected
     ? t("common.connectWalletBtn")
@@ -433,7 +438,7 @@ export function QuickSwap({ open, onClose }: QuickSwapProps) {
       ? t("entrust.deployTxConfirming")
       : t("mine.swapTitle");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit || isTxBusy) return;
 
     let amountWei: bigint;
@@ -453,9 +458,24 @@ export function QuickSwap({ open, onClose }: QuickSwapProps) {
       return;
     }
 
+    setIsPrechecking(true);
+    try {
+      await checkSwapAllowed();
+    } catch (error) {
+      setIsPrechecking(false);
+      toast.error(getErrorMessage(error, opFailed));
+      return;
+    }
+
+    if (!openRef.current) {
+      setIsPrechecking(false);
+      return;
+    }
+
     pendingAmountWeiRef.current = amountWei;
     processedTxHashRef.current = undefined;
     setIsSwapTxActive(true);
+    setIsPrechecking(false);
 
     const allowance =
       typeof aulAllowanceData === "bigint"
@@ -600,7 +620,9 @@ export function QuickSwap({ open, onClose }: QuickSwapProps) {
                 <button
                   type="button"
                   disabled={!canSubmit || isTxBusy}
-                  onClick={handleSubmit}
+                  onClick={() => {
+                    void handleSubmit();
+                  }}
                   className={cls.submit}
                 >
                   {!canSubmit || isTxBusy ? (
